@@ -16,7 +16,11 @@ namespace EasyTalker.Api.Authentication.Handlers
 
         public TokenHandler()
         {
-            
+            _symmetricSecurityKey =
+                new SymmetricSecurityKey(Convert.FromBase64String("ZGZnaGRmZ2VkeWVydHlSRGhkZnUzZTQ2NTM0NjVnNDM1djY0NWJ2d3ZiZHh2"));
+
+            _signingCredentials = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         }
 
         public Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore,
@@ -42,8 +46,8 @@ namespace EasyTalker.Api.Authentication.Handlers
                 ValidateLifetime = validateLifetime,
                 ValidateIssuerSigningKey = true,
 
-                ValidIssuer = "http://easytalker.pl",
-                ValidAudience = "http://easytalker.pl",
+                ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
+                ValidAudience = Constants.Authentication.JwtBearer.Audience,
 
                 IssuerSigningKey = _symmetricSecurityKey,
                 RoleClaimType = ClaimTypes.Role
