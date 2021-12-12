@@ -2,13 +2,12 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
-namespace EasyTalker.Database.Entities
+namespace EasyTalker.Database.Entities;
+
+public class UserDb : IdentityUser
 {
-    public class UserDb : IdentityUser
-    {
-        public bool IsActive { get; set; }
+    public bool IsActive { get; set; }
         
-        [JsonIgnore]
-        public List<RefreshToken> RefreshTokens { get; set; }
-    }
+    [JsonIgnore]
+    public List<RefreshToken> RefreshTokens { get; set; }
 }

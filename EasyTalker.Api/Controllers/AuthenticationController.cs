@@ -7,34 +7,33 @@ using EasyTalker.Api.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EasyTalker.Api.Controllers
+namespace EasyTalker.Api.Controllers;
+
+public class AuthenticationController : ControllerBase
 {
-    public class AuthenticationController : ControllerBase
-    {
-        private readonly IAuthenticationService _authenticationService;
+    private readonly IAuthenticationService _authenticationService;
         
-        public AuthenticationController(IAuthenticationService authenticationService)
-        {
-            _authenticationService = authenticationService;
-        }
+    public AuthenticationController(IAuthenticationService authenticationService)
+    {
+        _authenticationService = authenticationService;
+    }
 
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<ApiResponse<AuthenticationResultDto>> Login(LoginRequest request)
-        {
-            if (!ModelState.IsValid)
-                return ApiResponse<AuthenticationResultDto>.Failure(string.Empty);
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<ApiResponse<AuthenticationResultDto>> Login(LoginRequest request)
+    {
+        if (!ModelState.IsValid)
+            return ApiResponse<AuthenticationResultDto>.Failure(string.Empty);
 
-            try
-            {
-                var result = await _authenticationService.Authenticate(request.Username, request.Password, "ip");
+        try
+        {
+            var result = await _authenticationService.Authenticate(request.Username, request.Password, "ip");
             
-                return ApiResponse<AuthenticationResultDto>.Success(result);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<AuthenticationResultDto>.Failure(ex.Message);
-            }
+            return ApiResponse<AuthenticationResultDto>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<AuthenticationResultDto>.Failure(ex.Message);
         }
     }
 }

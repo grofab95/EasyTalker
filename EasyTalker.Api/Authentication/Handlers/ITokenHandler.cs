@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace EasyTalker.Api.Authentication.Handlers
+namespace EasyTalker.Api.Authentication.Handlers;
+
+public interface ITokenHandler
 {
-    public interface ITokenHandler
-    {
-        Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore, DateTimeOffset expiresAt);
-        Task<string> GenerateRefreshToken();
-        ClaimsPrincipal ValidateToken(string token, bool validateLifetime);
-    }
+    Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore, DateTimeOffset expiresAt);
+    Task<string> GenerateRefreshToken();
+    ClaimsPrincipal ValidateToken(string token, bool validateLifetime);
 }

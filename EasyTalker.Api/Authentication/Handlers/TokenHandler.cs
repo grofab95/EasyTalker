@@ -6,74 +6,73 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EasyTalker.Api.Authentication.Handlers
+namespace EasyTalker.Api.Authentication.Handlers;
+
+public class TokenHandler : ITokenHandler
 {
-    public class TokenHandler : ITokenHandler
+    private readonly SymmetricSecurityKey _symmetricSecurityKey;
+    private readonly SigningCredentials _signingCredentials;
+    private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
+
+    public TokenHandler()
     {
-        private readonly SymmetricSecurityKey _symmetricSecurityKey;
-        private readonly SigningCredentials _signingCredentials;
-        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
+        _symmetricSecurityKey =
+            new SymmetricSecurityKey(Convert.FromBase64String("ZGZnaGRmZ2VkeWVydHlSRGhkZnUzZTQ2NTM0NjVnNDM1djY0NWJ2d3ZiZHh2"));
 
-        public TokenHandler()
+        _signingCredentials = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+        _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+    }
+
+    public Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore,
+        DateTimeOffset expiresAt)
+    {
+        return Task.FromResult(_jwtSecurityTokenHandler
+            .WriteToken(new JwtSecurityToken(
+                Constants.Authentication.JwtBearer.Issuer,
+                Constants.Authentication.JwtBearer.Audience,
+                claims,
+                notBefore.DateTime,
+                expiresAt.DateTime,
+                _signingCredentials
+            )));
+    }
+
+    public ClaimsPrincipal ValidateToken(string token, bool validateLifetime)
+    {
+        var validationParameters = new TokenValidationParameters
         {
-            _symmetricSecurityKey =
-                new SymmetricSecurityKey(Convert.FromBase64String("ZGZnaGRmZ2VkeWVydHlSRGhkZnUzZTQ2NTM0NjVnNDM1djY0NWJ2d3ZiZHh2"));
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = validateLifetime,
+            ValidateIssuerSigningKey = true,
 
-            _signingCredentials = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
-            _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
+            ValidAudience = Constants.Authentication.JwtBearer.Audience,
+
+            IssuerSigningKey = _symmetricSecurityKey,
+            RoleClaimType = ClaimTypes.Role
+        };
+
+        try
+        {
+            return _jwtSecurityTokenHandler.ValidateToken(token, validationParameters, out _);
         }
-
-        public Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore,
-            DateTimeOffset expiresAt)
+        catch
         {
-            return Task.FromResult(_jwtSecurityTokenHandler
-                .WriteToken(new JwtSecurityToken(
-                    Constants.Authentication.JwtBearer.Issuer,
-                    Constants.Authentication.JwtBearer.Audience,
-                    claims,
-                    notBefore.DateTime,
-                    expiresAt.DateTime,
-                    _signingCredentials
-                )));
+            return null;
         }
+    }
 
-        public ClaimsPrincipal ValidateToken(string token, bool validateLifetime)
-        {
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = validateLifetime,
-                ValidateIssuerSigningKey = true,
+    public Task<string> GenerateRefreshToken()
+    {
+        var randomBytes = new byte[64];
 
-                ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
-                ValidAudience = Constants.Authentication.JwtBearer.Audience,
-
-                IssuerSigningKey = _symmetricSecurityKey,
-                RoleClaimType = ClaimTypes.Role
-            };
-
-            try
-            {
-                return _jwtSecurityTokenHandler.ValidateToken(token, validationParameters, out _);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public Task<string> GenerateRefreshToken()
-        {
-            var randomBytes = new byte[64];
-
-            using var rngCrypto = new RNGCryptoServiceProvider();
+        using var rngCrypto = new RNGCryptoServiceProvider();
             
-            rngCrypto.GetBytes(randomBytes);
+        rngCrypto.GetBytes(randomBytes);
 
-            var randomValue = Convert.ToBase64String(randomBytes);
+        var randomValue = Convert.ToBase64String(randomBytes);
 
-            return Task.FromResult(randomValue);
-        }
+        return Task.FromResult(randomValue);
     }
 }

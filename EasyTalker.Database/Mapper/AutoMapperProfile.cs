@@ -2,14 +2,13 @@
 using EasyTalker.Database.Entities;
 using EasyTalker.Infrastructure.Dto.User;
 
-namespace EasyTalker.Database.Mapper
+namespace EasyTalker.Database.Mapper;
+
+public class AutoMapperProfile : Profile
 {
-    public class AutoMapperProfile : Profile
+    public AutoMapperProfile()
     {
-        public AutoMapperProfile()
-        {
-            CreateMap<UserDto, UserDb>();
-            CreateMap<UserDb, UserDto>();
-        }
+        CreateMap<UserDto, UserDb>();
+        CreateMap<UserDb, UserDto>();
     }
 }
