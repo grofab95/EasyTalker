@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EasyTalker.Api.Authentication.Handlers;
 using EasyTalker.Api.Dto;
-using EasyTalker.Api.Requests;
 using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Dto;
 using EasyTalker.Infrastructure.Dto.User;
 using Microsoft.AspNetCore.Identity;
 
@@ -42,6 +40,9 @@ namespace EasyTalker.Api.Authentication.Services
             var user = await _userManager.FindByNameAsync(username)
                 ?? throw new Exception("Login not found");
 
+            if (!await _userManager.CheckPasswordAsync(user, password))
+                throw new Exception("Incorrect password");
+            
             var accessToken = await GetAccessToken(user);
             var refreshToken = GetRefreshToken();
 
@@ -78,12 +79,12 @@ namespace EasyTalker.Api.Authentication.Services
             claims.AddRange(userRoles.Select(x => new Claim(ClaimTypes.Role, x)));
             claims.AddRange(userPermissions.Select(x => new Claim(PermissionClaim, x.Value)));
 
-            var currentDateTime = DateTime.UtcNow;
+            var currentDateTime = DateTime.Now;
             
             return await _tokenHandler.GenerateAccessToken(
                 claims,
                 currentDateTime,
-                currentDateTime.AddMinutes(30) // to options
+                currentDateTime.AddSeconds(30) // to options
             );
         }
 
@@ -98,8 +99,8 @@ namespace EasyTalker.Api.Authentication.Services
             return new RefreshToken
             {
                 Token = Convert.ToBase64String(randomBytes),
-                ExpiredAt = DateTime.UtcNow.AddDays(1),
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now,
+                ExpiredAt = DateTime.Now.AddDays(1)
             };
         }
     }

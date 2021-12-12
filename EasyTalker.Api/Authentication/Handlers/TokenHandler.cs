@@ -28,11 +28,11 @@ namespace EasyTalker.Api.Authentication.Handlers
         {
             return Task.FromResult(_jwtSecurityTokenHandler
                 .WriteToken(new JwtSecurityToken(
-                    "http://easytalker.pl",
-                    "http://easytalker.pl",
+                    Constants.Authentication.JwtBearer.Issuer,
+                    Constants.Authentication.JwtBearer.Audience,
                     claims,
-                    notBefore.UtcDateTime,
-                    expiresAt.UtcDateTime,
+                    notBefore.DateTime,
+                    expiresAt.DateTime,
                     _signingCredentials
                 )));
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using EasyTalker.Api.Authentication.Handlers;
 using EasyTalker.Api.Authentication.Services;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.VisualBasic;
 using TokenHandler = EasyTalker.Api.Authentication.Handlers.TokenHandler;
 
 namespace EasyTalker.Api.Extensions
@@ -51,7 +49,7 @@ namespace EasyTalker.Api.Extensions
                         ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
                         ValidAudience = Constants.Authentication.JwtBearer.Audience,
                         IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String("ZGZnaGRmZ2VkeWVydHlSRGhkZnUzZTQ2NTM0NjVnNDM1djY0NWJ2d3ZiZHh2")),
-                        ClockSkew = TimeSpan.FromSeconds(30)
+                        ClockSkew = TimeSpan.FromMinutes(30)
                     };
                     options.Events = new JwtBearerEvents
                     {
