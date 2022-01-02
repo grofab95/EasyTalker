@@ -9,13 +9,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTalker.Api.Controllers;
 
+[ApiController]
+[Authorize]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserDao _userDao;
+    private readonly IUserStore _userStore;
 
-    public UserController(IUserDao userDao)
+    public UserController(IUserStore userStore)
     {
-        _userDao = userDao;
+        _userStore = userStore;
     }
 
     [AllowAnonymous]
@@ -27,9 +30,23 @@ public class UserController : ControllerBase
 
         try
         {
-            var user = await _userDao.RegisterUser(request.Username, request.Password);
+            var user = await _userStore.RegisterUser(request.Username, request.Email, request.Password);
             
             return ApiResponse<UserDto>.Success(user);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<UserDto>.Failure(ex.Message);
+        }
+    }
+    
+    [HttpGet("{userId}")]
+    public async Task<ApiResponse<UserDto>> GetUser([FromRoute] string userId)
+    {
+        try
+        {
+            var result = await _userStore.GetById(userId);
+            return ApiResponse<UserDto>.Success(result);
         }
         catch (Exception ex)
         {

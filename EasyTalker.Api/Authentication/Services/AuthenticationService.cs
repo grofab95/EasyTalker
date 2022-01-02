@@ -17,7 +17,7 @@ namespace EasyTalker.Api.Authentication.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private const string PermissionClaim = "http://easytalker.pl/identity/claims/permission";
+    private const string PermissionClaim = "https://easytalker.pl/identity/claims/permission";
         
     private readonly UserManager<UserDb> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -46,7 +46,7 @@ public class AuthenticationService : IAuthenticationService
         var accessToken = await GetAccessToken(user);
         var refreshToken = GetRefreshToken();
 
-        user.RefreshTokens ??= new List<RefreshToken>();
+        user.RefreshTokens ??= new List<RefreshTokenDb>();
             
         user.RefreshTokens.Add(refreshToken);
             
@@ -84,11 +84,11 @@ public class AuthenticationService : IAuthenticationService
         return await _tokenHandler.GenerateAccessToken(
             claims,
             currentDateTime,
-            currentDateTime.AddSeconds(30) // to options
+            currentDateTime.AddMinutes(30) // to options
         );
     }
 
-    public RefreshToken GetRefreshToken()
+    public RefreshTokenDb GetRefreshToken()
     {
         var randomBytes = new byte[64];
 
@@ -96,11 +96,16 @@ public class AuthenticationService : IAuthenticationService
             
         rngCrypto.GetBytes(randomBytes);
 
-        return new RefreshToken
+        return new RefreshTokenDb
         {
             Token = Convert.ToBase64String(randomBytes),
             CreatedAt = DateTime.Now,
             ExpiredAt = DateTime.Now.AddDays(1)
         };
     }
+
+    // public async Task RevokeToken(string token)
+    // {
+    //     
+    // }
 }

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTalker.Api.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
@@ -20,7 +22,7 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ApiResponse<AuthenticationResultDto>> Login(LoginRequest request)
+    public async Task<ApiResponse<AuthenticationResultDto>> Login([FromBody] LoginRequest request)
     {
         if (!ModelState.IsValid)
             return ApiResponse<AuthenticationResultDto>.Failure(string.Empty);

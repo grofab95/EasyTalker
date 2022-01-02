@@ -26,6 +26,7 @@ public class Startup
         services.AddDatabase(_configuration);
         services.AddEasyTalkerAuthentication();
         services.AddSwagger();
+        services.AddCors();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -41,7 +42,12 @@ public class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(origin => true) // allow any origin
+            .AllowCredentials()); // allow credentials
+        
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

@@ -9,5 +9,5 @@ public interface IAuthenticationService
 {
     Task<AuthenticationResultDto> Authenticate(string username, string password, string ipAddress);
     Task<string> GetAccessToken(UserDb user);
-    RefreshToken GetRefreshToken();
+    RefreshTokenDb GetRefreshToken();
 }

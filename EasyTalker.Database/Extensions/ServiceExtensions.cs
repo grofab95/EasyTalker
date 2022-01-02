@@ -1,6 +1,6 @@
 ﻿using EasyTalker.Core.Adapters;
-using EasyTalker.Database.Dao;
 using EasyTalker.Database.Mapper;
+using EasyTalker.Database.Store;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,7 @@ public static class ServiceExtensions
     {
         services.AddDbContext<EasyTalkerContext>();
         services.AddAutoMapper(typeof(AutoMapperProfile));
-        services.AddTransient<IUserDao, UserDao>();
+        services.AddTransient<IUserStore, UserStore>();
         //services.AddDbContext<EasyTalkerContext>(options =>
         //options.UseSqlServer(configuration.GetConnectionString("ConnectionString")));
     }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace EasyTalker.Database.Entities;
 
-public class RefreshToken
+public class RefreshTokenDb
 {
     [JsonIgnore]
     public int Id { get; set; }
