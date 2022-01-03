@@ -50,6 +50,21 @@ namespace EasyTalker.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Conversations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Files",
                 columns: table => new
                 {
@@ -213,6 +228,64 @@ namespace EasyTalker.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ConversationDbUserDb",
+                columns: table => new
+                {
+                    ConversationsId = table.Column<long>(type: "bigint", nullable: false),
+                    ParticipantsId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConversationDbUserDb", x => new { x.ConversationsId, x.ParticipantsId });
+                    table.ForeignKey(
+                        name: "FK_ConversationDbUserDb_AspNetUsers_ParticipantsId",
+                        column: x => x.ParticipantsId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ConversationDbUserDb_Conversations_ConversationsId",
+                        column: x => x.ConversationsId,
+                        principalTable: "Conversations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ConversationId = table.Column<long>(type: "bigint", nullable: true),
+                    FileId = table.Column<long>(type: "bigint", nullable: true),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_Conversations_ConversationId",
+                        column: x => x.ConversationId,
+                        principalTable: "Conversations",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_Files_FileId",
+                        column: x => x.FileId,
+                        principalTable: "Files",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GroupDbUserDb",
                 columns: table => new
                 {
@@ -234,46 +307,6 @@ namespace EasyTalker.Database.Migrations
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Messages",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ReceivingUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ReceivingGroupId = table.Column<long>(type: "bigint", nullable: true),
-                    FileId = table.Column<long>(type: "bigint", nullable: true),
-                    Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_ReceivingUserId",
-                        column: x => x.ReceivingUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Messages_AspNetUsers_SenderId",
-                        column: x => x.SenderId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Messages_Files_FileId",
-                        column: x => x.FileId,
-                        principalTable: "Files",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Messages_Groups_ReceivingGroupId",
-                        column: x => x.ReceivingGroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -316,24 +349,24 @@ namespace EasyTalker.Database.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ConversationDbUserDb_ParticipantsId",
+                table: "ConversationDbUserDb",
+                column: "ParticipantsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupDbUserDb_UsersId",
                 table: "GroupDbUserDb",
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Messages_ConversationId",
+                table: "Messages",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messages_FileId",
                 table: "Messages",
                 column: "FileId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_ReceivingGroupId",
-                table: "Messages",
-                column: "ReceivingGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Messages_ReceivingUserId",
-                table: "Messages",
-                column: "ReceivingUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_SenderId",
@@ -364,6 +397,9 @@ namespace EasyTalker.Database.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ConversationDbUserDb");
+
+            migrationBuilder.DropTable(
                 name: "GroupDbUserDb");
 
             migrationBuilder.DropTable(
@@ -376,10 +412,13 @@ namespace EasyTalker.Database.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Files");
+                name: "Groups");
 
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "Conversations");
+
+            migrationBuilder.DropTable(
+                name: "Files");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

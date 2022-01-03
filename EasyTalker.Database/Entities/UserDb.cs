@@ -9,7 +9,6 @@ namespace EasyTalker.Database.Entities;
 public class UserDb : IdentityUser
 {
     public bool IsActive { get; set; }
-    public IEnumerable<GroupDb> Groups { get; set; }
         
     [JsonIgnore]
     public List<RefreshTokenDb> RefreshTokens { get; set; }

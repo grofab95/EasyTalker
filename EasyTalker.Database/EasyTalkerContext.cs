@@ -6,10 +6,9 @@ namespace EasyTalker.Database;
 
 public class EasyTalkerContext : IdentityDbContext<UserDb>
 {
-
-    public DbSet<GroupDb> Groups { get; set; }
+    public DbSet<ConversationDb> Conversations { get; set; }
     public DbSet<MessageDb> Messages { get; set; }
-    public DbSet<FileDb> Files { get; set; }
+    public DbSet<UserConversationDb> UsersConversations { get; set; }
     public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
 
     public EasyTalkerContext()
@@ -26,7 +25,7 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     {
         optionsBuilder
             .UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker;User Id=sa; Password=Q1w2e3;");
-
+        
         optionsBuilder.EnableSensitiveDataLogging();
     }
     

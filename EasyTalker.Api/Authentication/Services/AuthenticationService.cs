@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EasyTalker.Api.Authentication.Handlers;
 using EasyTalker.Api.Dto;
+using EasyTalker.Database;
 using EasyTalker.Database.Entities;
 using EasyTalker.Infrastructure.Dto.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyTalker.Api.Authentication.Services;
 
@@ -27,12 +29,22 @@ public class AuthenticationService : IAuthenticationService
     public AuthenticationService(UserManager<UserDb> userManager,
         RoleManager<IdentityRole> roleManager, 
         ITokenHandler tokenHandler, 
-        IMapper mapper)
+        IMapper mapper,
+        EasyTalkerContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _tokenHandler = tokenHandler;
         _mapper = mapper;
+
+        try
+        {
+            context.Database.Migrate();
+        }
+        catch (Exception e)
+        {
+            
+        }
     }
 
     public async Task<AuthenticationResultDto> Authenticate(string username, string password, string ipAddress)

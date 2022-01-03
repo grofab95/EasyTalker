@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTalker.Database.Migrations
 {
     [DbContext(typeof(EasyTalkerContext))]
-    [Migration("20211224135447_Initial")]
+    [Migration("20220103181608_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,43 @@ namespace EasyTalker.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("ConversationDbUserDb", b =>
+                {
+                    b.Property<long>("ConversationsId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ParticipantsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ConversationsId", "ParticipantsId");
+
+                    b.HasIndex("ParticipantsId");
+
+                    b.ToTable("ConversationDbUserDb");
+                });
+
+            modelBuilder.Entity("EasyTalker.Database.Entities.ConversationDb", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Conversations");
+                });
 
             modelBuilder.Entity("EasyTalker.Database.Entities.FileDb", b =>
                 {
@@ -85,17 +122,14 @@ namespace EasyTalker.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<long?>("ConversationId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<long?>("FileId")
                         .HasColumnType("bigint");
-
-                    b.Property<long?>("ReceivingGroupId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ReceivingUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("SenderId")
                         .HasColumnType("nvarchar(450)");
@@ -112,11 +146,9 @@ namespace EasyTalker.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConversationId");
+
                     b.HasIndex("FileId");
-
-                    b.HasIndex("ReceivingGroupId");
-
-                    b.HasIndex("ReceivingUserId");
 
                     b.HasIndex("SenderId");
 
@@ -378,29 +410,38 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ConversationDbUserDb", b =>
+                {
+                    b.HasOne("EasyTalker.Database.Entities.ConversationDb", null)
+                        .WithMany()
+                        .HasForeignKey("ConversationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                        .WithMany()
+                        .HasForeignKey("ParticipantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EasyTalker.Database.Entities.MessageDb", b =>
                 {
+                    b.HasOne("EasyTalker.Database.Entities.ConversationDb", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId");
+
                     b.HasOne("EasyTalker.Database.Entities.FileDb", "File")
                         .WithMany()
                         .HasForeignKey("FileId");
-
-                    b.HasOne("EasyTalker.Database.Entities.GroupDb", "ReceivingGroup")
-                        .WithMany()
-                        .HasForeignKey("ReceivingGroupId");
-
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", "ReceivingUser")
-                        .WithMany()
-                        .HasForeignKey("ReceivingUserId");
 
                     b.HasOne("EasyTalker.Database.Entities.UserDb", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId");
 
+                    b.Navigation("Conversation");
+
                     b.Navigation("File");
-
-                    b.Navigation("ReceivingGroup");
-
-                    b.Navigation("ReceivingUser");
 
                     b.Navigation("Sender");
                 });
@@ -476,6 +517,11 @@ namespace EasyTalker.Database.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EasyTalker.Database.Entities.ConversationDb", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("EasyTalker.Database.Entities.UserDb", b =>
