@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace EasyTalker.Infrastructure.Dto.User;
+namespace EasyTalker.Core.Dto.User;
 
 public class UserDto
 {

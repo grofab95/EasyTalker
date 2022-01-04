@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using EasyTalker.Core.Dto.Conversation;
+using EasyTalker.Core.Dto.Message;
+using EasyTalker.Core.Dto.User;
 using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Dto.Conversation;
-using EasyTalker.Infrastructure.Dto.Message;
-using EasyTalker.Infrastructure.Dto.User;
 
 namespace EasyTalker.Database.Mapper;
 
@@ -15,6 +15,9 @@ public class AutoMapperProfile : Profile
         
         CreateMap<MessageDto, MessageDb>();
         CreateMap<MessageDb, MessageDto>();
+        
+        CreateMap<MessageCreateDto, MessageDb>();
+        CreateMap<MessageDb, MessageCreateDto>();
         
         CreateMap<ConversationDto, ConversationDb>();
         CreateMap<ConversationDb, ConversationDto>();

@@ -1,4 +1,5 @@
 ﻿using System;
+using EasyTalker.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,17 +14,14 @@ public class MessageDb : EntityDb
     public MessageStatus Status { get; set; }
 }
 
-public enum MessageStatus
-{
-    Send,
-    Delivered,
-    Read
-}
-
 public class MessageDbConfiguration : IEntityTypeConfiguration<MessageDb>
 {
     public void Configure(EntityTypeBuilder<MessageDb> builder)
     {
+        builder
+            .Property(b => b.CreatedAt )
+            .HasDefaultValueSql("getdate()");
+        
         builder
             .Property(x => x.Status)
             .HasConversion(

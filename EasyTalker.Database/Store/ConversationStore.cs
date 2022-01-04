@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EasyTalker.Core.Adapters;
+using EasyTalker.Core.Dto.Conversation;
+using EasyTalker.Core.Dto.Message;
+using EasyTalker.Core.Dto.User;
 using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Dto.Conversation;
-using EasyTalker.Infrastructure.Dto.Message;
-using EasyTalker.Infrastructure.Dto.User;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Database.Store;
@@ -27,119 +29,49 @@ public class ConversationStore : IConversationStore
 
     public async Task<ConversationDto[]> GetUserConversations(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        var userDto = _mapper.Map<UserDto>(user);
-        var fakeUser = new UserDto
-        {
-            UserName = "Worms",
-            Email = "test@easytalker.pl",
-            IsActive = "true"
-        };
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
         
-        return new List<ConversationDto>
-        {
-            new ConversationDto
+        var conversationsIds = await dbContext.UsersConversations
+            .Where(x => x.UserId == userId)
+            .Select(x => x.ConversationId)
+            .ToArrayAsync();
+
+        var conversations = await dbContext.Conversations
+            .Where(x => conversationsIds.Contains(x.Id))
+            .ToArrayAsync();
+
+        return _mapper.Map<ConversationDto[]>(conversations);
+    }
+
+    public async Task<MessageDto[]> GetMessages(long conversationId)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var messages = await dbContext.Messages
+            .Where(x => x.ConversationId == conversationId)
+            .ToArrayAsync();
+
+        var sendersIds = messages.Select(x => x.SenderId).Distinct().ToArray();
+        var senders = await dbContext.Users
+            .Where(x => sendersIds.Contains(x.Id))
+            .ToArrayAsync();
+
+        var messagesDto = messages
+            .Join(senders, x => x.SenderId, x => x.Id, (message, sender) => new {message = message, sender})
+            .Select(x => new MessageDto
             {
-                Id = 1,
-                Participants = new []{ userDto, fakeUser },
-                Title = "Hello World",
-                CreatedAt = DateTime.Now.AddDays(-7),
-                UpdatedAt = DateTime.Now,
-                Messages = new []
-                {
-                    new MessageDto
-                    {
-                        Id =  1,
-                        Sender = fakeUser,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Witam"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 2,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Dzień dobry"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 3,
-                        Sender = fakeUser,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 4,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "XD"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 5,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. "
-                    },
-                }
-            },
-            
-            new ConversationDto
-            {
-                Id = 2,
-                Participants = new []{ userDto, fakeUser },
-                Title = "Sylwester",
-                CreatedAt = DateTime.Now.AddDays(-7),
-                UpdatedAt = DateTime.Now,
-                Messages = new []
-                {
-                    new MessageDto
-                    {
-                        Id =  1,
-                        Sender = fakeUser,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Witam"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 2,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Dzień dobry"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 3,
-                        Sender = fakeUser,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 4,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "XD"
-                    },
-                    
-                    new MessageDto
-                    {
-                        Id = 5,
-                        Sender = userDto,
-                        Status = MessageStatus.Read.ToString(),
-                        Text = "The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. "
-                    }
-                }
-            }
-        }.ToArray();
+                Id = x.message.Id,
+                CreatedAt = x.message.CreatedAt,
+                Sender = _mapper.Map<UserDto>(x.sender),
+                Status = x.message.Status,
+                Text = x.message.Text
+            })
+            .OrderBy(x => x.CreatedAt)
+            .ToArray();
+
+        return messagesDto;
     }
 
     public async Task<ConversationDto> Add(ConversationCreateDto conversationCreateDto)

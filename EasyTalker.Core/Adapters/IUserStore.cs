@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using EasyTalker.Infrastructure.Dto.User;
+using EasyTalker.Core.Dto.User;
 
 namespace EasyTalker.Core.Adapters;
 

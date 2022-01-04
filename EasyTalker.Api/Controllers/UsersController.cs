@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using EasyTalker.Api.Models;
 using EasyTalker.Api.Requests;
 using EasyTalker.Core.Adapters;
-using EasyTalker.Infrastructure.Dto.User;
+using EasyTalker.Core.Dto.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +12,11 @@ namespace EasyTalker.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("[controller]")]
-public class UserController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly IUserStore _userStore;
 
-    public UserController(IUserStore userStore)
+    public UsersController(IUserStore userStore)
     {
         _userStore = userStore;
     }

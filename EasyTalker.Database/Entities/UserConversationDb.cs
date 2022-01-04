@@ -1,4 +1,7 @@
-﻿namespace EasyTalker.Database.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace EasyTalker.Database.Entities;
 
 public class UserConversationDb : EntityDb
 {
@@ -9,5 +12,15 @@ public class UserConversationDb : EntityDb
     {
         UserId = userId;
         ConversationId = conversationId;
+    }
+}
+
+public class UserConversationDbConfiguration : IEntityTypeConfiguration<UserConversationDb>
+{
+    public void Configure(EntityTypeBuilder<UserConversationDb> builder)
+    {
+        builder
+            .Property(b => b.CreatedAt )
+            .HasDefaultValueSql("getdate()");
     }
 }

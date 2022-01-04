@@ -8,4 +8,8 @@
     <ProjectReference Include="..\EasyTalker.Infrastructure\EasyTalker.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Easy.MessageHub" Version="5.0.0" />
+  </ItemGroup>
+
 </Project>

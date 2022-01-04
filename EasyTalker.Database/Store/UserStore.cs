@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EasyTalker.Core.Adapters;
+using EasyTalker.Core.Dto.User;
 using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Dto.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

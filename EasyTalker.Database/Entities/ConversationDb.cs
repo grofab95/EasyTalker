@@ -13,6 +13,8 @@ public class ConversationDbConfiguration : IEntityTypeConfiguration<Conversation
 {
     public void Configure(EntityTypeBuilder<ConversationDb> builder)
     {
-        
+        builder
+            .Property(b => b.CreatedAt )
+            .HasDefaultValueSql("getdate()");
     }
 }

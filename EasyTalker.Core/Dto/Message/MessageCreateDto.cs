@@ -1,8 +1,7 @@
-﻿namespace EasyTalker.Infrastructure.Dto.Message;
+﻿namespace EasyTalker.Core.Dto.Message;
 
 public class MessageCreateDto
 {
-    public long Id { get; set; }
     public string SenderId { get; set; }
     public long ConversationId { get; set; }
     

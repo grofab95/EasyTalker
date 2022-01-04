@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EasyTalker.Api.Authentication.Handlers;
 using EasyTalker.Api.Dto;
+using EasyTalker.Core.Dto.User;
 using EasyTalker.Database;
 using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Dto.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

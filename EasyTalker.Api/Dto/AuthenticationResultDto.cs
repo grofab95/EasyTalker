@@ -1,5 +1,4 @@
-﻿using EasyTalker.Infrastructure.Dto;
-using EasyTalker.Infrastructure.Dto.User;
+﻿using EasyTalker.Core.Dto.User;
 
 namespace EasyTalker.Api.Dto;
 
