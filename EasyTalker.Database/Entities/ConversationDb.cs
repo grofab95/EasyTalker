@@ -6,6 +6,7 @@ namespace EasyTalker.Database.Entities;
 
 public class ConversationDb : EntityDb
 {
+    //public string CreatorId { get; set; }
     public string Title { get; set; }
 }
 

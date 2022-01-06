@@ -33,6 +33,9 @@ public class ConversationsController : ControllerBase
         try
         {
             var conversation = await _conversationStore.Add(conversationCreateDto);
+            
+            _messageHub.Publish(new ConversationCreated(conversation));
+            
             return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
@@ -63,7 +66,7 @@ public class ConversationsController : ControllerBase
         {
             var createdMessage = await _messageStore.Add(messageCreateDto);
             
-            _messageHub.Publish(new MessageChanged(createdMessage));
+            _messageHub.Publish(new MessageCreated(createdMessage));
 
             return ApiResponse<MessageDto>.Success(createdMessage);
         }

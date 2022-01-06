@@ -45,7 +45,8 @@ public class Startup
         
         services.AddSingleton<IMessageHub, MessageHub>();
         services.AddTransient<EventHandlerCollector>();
-        services.AddTransient<IEventHandler, MessagesEventHandler>();
+        services.AddTransient<IEventHandler, ConversationsEventHandler>();
+        services.AddTransient<IEventHandler, UsersEventHandler>();
         
         services.AddSignalR();
         services.AddControllers().AddControllersAsServices();

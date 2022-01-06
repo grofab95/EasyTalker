@@ -4,22 +4,22 @@ using EasyTalker.Core.Events;
 
 namespace EasyTalker.Core.EventHandlers;
 
-public class MessagesEventHandler : IEventHandler
+public class UsersEventHandler : IEventHandler
 {
     private readonly IWebUiNotifier _webUiNotifier;
 
-    public MessagesEventHandler(IWebUiNotifier webUiNotifier)
+    public UsersEventHandler(IWebUiNotifier webUiNotifier)
     {
         _webUiNotifier = webUiNotifier;
     }
     
     public void Subscribe(IMessageHub messageHub)
     {
-        messageHub.Subscribe<MessageChanged>(OnMessageChanged);
+        messageHub.Subscribe<UserRegistered>(OnUserRegistered);
     }
 
-    private void OnMessageChanged(MessageChanged message)
+    private void OnUserRegistered(UserRegistered message)
     {
-        _webUiNotifier.MessageChanged(message.Message);
+        _webUiNotifier.UserRegistered(message.User);
     }
 }

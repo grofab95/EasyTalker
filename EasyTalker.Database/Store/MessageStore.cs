@@ -37,6 +37,7 @@ public class MessageStore : IMessageStore
         return new MessageDto
         {
             Id = messageDb.Entity.Id,
+            ConversationId = messageDb.Entity.ConversationId,
             Status = messageDb.Entity.Status,
             Text = messageDb.Entity.Text,
             CreatedAt = messageDb.Entity.CreatedAt,

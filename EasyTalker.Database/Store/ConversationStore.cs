@@ -32,16 +32,38 @@ public class ConversationStore : IConversationStore
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
         
-        var conversationsIds = await dbContext.UsersConversations
+        var usersConversations = await dbContext.UsersConversations
             .Where(x => x.UserId == userId)
-            .Select(x => x.ConversationId)
+            //.Select(x => x.ConversationId)
             .ToArrayAsync();
 
-        var conversations = await dbContext.Conversations
+        var conversationsIds = usersConversations.Select(x => x.ConversationId).ToArray();
+        var conversationsDb = await dbContext.Conversations
             .Where(x => conversationsIds.Contains(x.Id))
             .ToArrayAsync();
 
-        return _mapper.Map<ConversationDto[]>(conversations);
+        var conversationsUsers = await dbContext.UsersConversations
+            .Where(x => conversationsIds.Contains(x.ConversationId))
+            .ToArrayAsync();
+
+        
+        var conversations = _mapper.Map<ConversationDto[]>(conversationsDb);
+        var joined = conversations
+            .Join(conversationsUsers, x => x.Id, x => x.ConversationId, (conversation, conversationUser) => new
+            {
+                conversation,
+                conversationUser
+            })
+            .GroupBy(x => x.conversation.Id)
+            .ToArray();
+
+        foreach (var group in joined)
+        {
+            var participantsIds = group.Select(x => x.conversationUser.UserId).ToArray();
+            group.First().conversation.ParticipantsId = participantsIds;
+        }
+
+        return conversations;
     }
 
     public async Task<MessageDto[]> GetMessages(long conversationId)
@@ -63,6 +85,7 @@ public class ConversationStore : IConversationStore
             .Select(x => new MessageDto
             {
                 Id = x.message.Id,
+                ConversationId = x.message.ConversationId,
                 CreatedAt = x.message.CreatedAt,
                 Sender = _mapper.Map<UserDto>(x.sender),
                 Status = x.message.Status,
@@ -81,26 +104,40 @@ public class ConversationStore : IConversationStore
        
         var conversationDb = new ConversationDb
         {
+            //CreatorId = conversationCreateDto.CreatorId,
             Title = conversationCreateDto.Title
         };
 
         await dbContext.Conversations.AddAsync(conversationDb);
-        //await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
 
-        var messageDb = _mapper.Map<MessageDb>(conversationCreateDto.Message);
+        // var messageDb = _mapper.Map<MessageDb>(conversationCreateDto.Message);
+        //
+        // await dbContext.Messages.AddAsync(messageDb);
 
-        await dbContext.Messages.AddAsync(messageDb);
+        var userConversations = conversationCreateDto.ParticipantsId
+            .Select(x => new UserConversationDb(x, conversationDb.Id))
+            .ToList();
         
-        var userConversations = new[]
-        {
-            new UserConversationDb(conversationCreateDto.CreatorId, conversationDb.Id),
-            new UserConversationDb(conversationCreateDto.ParticipantId, conversationDb.Id),
-        };
-
+        userConversations.Add(new UserConversationDb(conversationCreateDto.CreatorId, conversationDb.Id));
+        
         await dbContext.UsersConversations.AddRangeAsync(userConversations);
         
         await dbContext.SaveChangesAsync();
 
-        return _mapper.Map<ConversationDto>(conversationDb);
+        var conversation = _mapper.Map<ConversationDto>(conversationDb);
+
+        conversation.CreatorId = conversationCreateDto.CreatorId;
+        var participantsId = new List<string>
+        {
+            conversationCreateDto.CreatorId
+        };
+        
+        participantsId.AddRange(conversationCreateDto.ParticipantsId);
+
+        conversation.ParticipantsId = participantsId.ToArray();
+        
+        
+        return conversation;
     }
 }

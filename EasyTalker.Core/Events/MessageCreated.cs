@@ -2,4 +2,4 @@
 
 namespace EasyTalker.Core.Events;
 
-public record MessageChanged(MessageDto Message);
+public record MessageCreated(MessageDto Message);

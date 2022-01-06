@@ -1,5 +1,7 @@
 ﻿using EasyTalker.Core.Adapters;
+using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
+using EasyTalker.Core.Dto.User;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EasyTalker.Api.Hubs;
@@ -13,5 +15,10 @@ public class WebUiNotifier : IWebUiNotifier
         _hubContext = hubContext;
     }
 
-    public void MessageChanged(MessageDto message) => _hubContext.Clients.All.SendAsync("MessageChanged", message);
+    public void ConversationCreated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync("ConversationCreated", conversation);
+
+    public void MessageCreated(MessageDto message) => _hubContext.Clients.All.SendAsync("MessageCreated", message);
+    //public void MessageCreated(MessageDto message) => _hubContext.Clients.Group(message.ConversationId.ToString()).SendAsync("MessageCreated", message);
+
+    public void UserRegistered(UserDto user) => _hubContext.Clients.All.SendAsync("UserRegistered", user);
 }
