@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Events;

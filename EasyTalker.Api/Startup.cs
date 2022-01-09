@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EasyTalker.Database.Extensions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyTalker.Api;
@@ -85,5 +86,15 @@ public class Startup
         });
         
         eventHandlerCollector.RegisterHandlers();
+        
+        app.UseSpa(spa =>
+        {
+            spa.Options.SourcePath = "ClientApp";
+
+            if (env.IsDevelopment())
+            {
+                spa.UseReactDevelopmentServer(npmScript: "start");
+            }
+        });
     }
 }

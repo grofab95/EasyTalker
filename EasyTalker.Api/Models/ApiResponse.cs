@@ -2,7 +2,7 @@
 
 public class ApiResponse<T>
 {
-    public static ApiResponse<T> Success(T data) => new(data);
+    public static ApiResponse<T> Success(T data = default) => new(data);
     public static ApiResponse<T> Failure(string error) => new(error);
 
     public T Data { get; }
@@ -14,6 +14,26 @@ public class ApiResponse<T>
     private ApiResponse(T data)
     {
         Data = data;
+    }
+
+    private ApiResponse(string error)
+    {
+        Error = error;
+    }
+}
+
+public class ApiResponse
+{
+    public static ApiResponse Success() => new();
+    public static ApiResponse Failure(string error) => new(error);
+
+    public string Error { get; }
+
+    public bool IsError => !string.IsNullOrEmpty(Error);
+    public bool IsSuccess => string.IsNullOrEmpty(Error);
+
+    private ApiResponse()
+    {
     }
 
     private ApiResponse(string error)

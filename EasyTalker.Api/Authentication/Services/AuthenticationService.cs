@@ -14,6 +14,8 @@ using EasyTalker.Database;
 using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Api.Authentication.Services;
 
@@ -23,17 +25,20 @@ public class AuthenticationService : IAuthenticationService
         
     private readonly UserManager<UserDb> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ITokenHandler _tokenHandler;
     private readonly IMapper _mapper;
 
     public AuthenticationService(UserManager<UserDb> userManager,
         RoleManager<IdentityRole> roleManager, 
+        IServiceScopeFactory serviceScopeFactory,
         ITokenHandler tokenHandler, 
         IMapper mapper,
         EasyTalkerContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _serviceScopeFactory = serviceScopeFactory;
         _tokenHandler = tokenHandler;
         _mapper = mapper;
 
@@ -66,7 +71,52 @@ public class AuthenticationService : IAuthenticationService
 
         return new AuthenticationResultDto(_mapper.Map<UserDto>(user), accessToken, refreshToken.Token);
     }
+
+    public async Task<AuthenticationResultDto> RefreshToken(string token)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var user = await dbContext.Users
+                       //.Include(x => x.RefreshTokens)
+                       .SingleOrDefaultAsync(x => x.RefreshTokens.Any(y => y.Token == token))
+                   ?? throw new Exception("Invalid token");
+
+        var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+        if (!refreshToken.IsActive)
+            throw new Exception("Invalid token");
+
+        var newRefreshToken = GetRefreshToken();
+        user.RefreshTokens.Add(newRefreshToken);
+        user.RefreshTokens.Remove(refreshToken);
+        dbContext.Update(user);
+        await dbContext.SaveChangesAsync();
+
+        var jwtToken = await GetAccessToken(user);
+
+        return new AuthenticationResultDto(_mapper.Map<UserDto>(user), jwtToken, newRefreshToken.Token);
+    }
+
+    public async Task RevokeToken(string token)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
         
+        var user = await dbContext.Users
+                      //.Include(x => x.RefreshTokens)
+                      .SingleOrDefaultAsync(x => x.RefreshTokens.Any(y => y.Token == token))
+                  ?? throw new Exception("Invalid token");
+        
+        var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+        if (!refreshToken.IsActive)
+            throw new Exception("Invalid token");
+        
+        refreshToken.RevokedAt = DateTime.Now;
+
+        dbContext.Update(user);
+        await dbContext.SaveChangesAsync();
+    }
+
     public async Task<string> GetAccessToken(UserDb user)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
@@ -115,9 +165,4 @@ public class AuthenticationService : IAuthenticationService
             ExpiredAt = DateTime.Now.AddDays(1)
         };
     }
-
-    // public async Task RevokeToken(string token)
-    // {
-    //     
-    // }
 }

@@ -29,7 +29,7 @@ public class AuthenticationController : ControllerBase
 
         try
         {
-            var result = await _authenticationService.Authenticate(request.Username, request.Password, "ip");
+            var result = await _authenticationService.Authenticate(request.Username, request.Password, GetRequestIpAddress());
             
             return ApiResponse<AuthenticationResultDto>.Success(result);
         }
@@ -37,5 +37,42 @@ public class AuthenticationController : ControllerBase
         {
             return ApiResponse<AuthenticationResultDto>.Failure(ex.Message);
         }
+    }
+    
+    [HttpPost("refresh-token")]
+    public async Task<ApiResponse<AuthenticationResultDto>> RefreshToken([FromBody] RefreshTokenRequest request)
+    {
+        try
+        {
+            var result = await _authenticationService.RefreshToken(request.RefreshToken);
+            
+            return ApiResponse<AuthenticationResultDto>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<AuthenticationResultDto>.Failure(ex.Message);
+        }
+    }
+    
+    [HttpPost("revoke-token")]
+    public async Task<ApiResponse> RevokeToken([FromBody] RevokeTokenRequest request)
+    {
+        try
+        {
+            await _authenticationService.RevokeToken(request.RefreshToken);
+            
+            return ApiResponse.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Failure(ex.Message);
+        }
+    }
+    
+    private string GetRequestIpAddress()
+    {
+        return Request.Headers.ContainsKey("X-Forwarded-For")
+            ? Request.Headers["X-Forwarded-For"]
+            : HttpContext?.Connection?.RemoteIpAddress?.MapToIPv4().ToString();
     }
 }

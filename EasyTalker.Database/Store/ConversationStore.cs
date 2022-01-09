@@ -8,6 +8,7 @@ using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Database.Entities;
+using EasyTalker.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ public class ConversationStore : IConversationStore
         _userManager = userManager;
         _mapper = mapper;
     }
-
+    
     public async Task<ConversationDto[]> GetUserConversations(string userId)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
@@ -59,8 +60,11 @@ public class ConversationStore : IConversationStore
 
         foreach (var group in joined)
         {
-            var participantsIds = group.Select(x => x.conversationUser.UserId).ToArray();
-            group.First().conversation.ParticipantsId = participantsIds;
+            var participants = group
+                .Select(x => new ConversationParticipantDto(x.conversationUser.UserId.ToString(), x.conversationUser.HasAccess))
+                .ToArray();
+
+            group.First().conversation.Participants = participants;
         }
 
         return conversations;
@@ -99,12 +103,21 @@ public class ConversationStore : IConversationStore
 
     public async Task<ConversationDto> Add(ConversationCreateDto conversationCreateDto)
     {
+        if (string.IsNullOrEmpty(conversationCreateDto.Title))
+            throw new Exception("Title is required");
+
+        if (string.IsNullOrEmpty(conversationCreateDto.CreatorId))
+            throw new Exception("Creator is required");
+
+        if (!conversationCreateDto.ParticipantsId?.Any() ?? false)
+            throw new Exception("At least one participant is required");
+        
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
        
         var conversationDb = new ConversationDb
         {
-            //CreatorId = conversationCreateDto.CreatorId,
+            CreatorId = conversationCreateDto.CreatorId,
             Title = conversationCreateDto.Title
         };
 
@@ -128,16 +141,52 @@ public class ConversationStore : IConversationStore
         var conversation = _mapper.Map<ConversationDto>(conversationDb);
 
         conversation.CreatorId = conversationCreateDto.CreatorId;
-        var participantsId = new List<string>
+        var conversationParticipants = new List<ConversationParticipantDto>
         {
-            conversationCreateDto.CreatorId
+            new(conversation.CreatorId, true)
         };
         
-        participantsId.AddRange(conversationCreateDto.ParticipantsId);
-
-        conversation.ParticipantsId = participantsId.ToArray();
         
+        conversationParticipants.AddRange(conversationCreateDto.ParticipantsId.Select(x => new ConversationParticipantDto(x, true)));
+
+        conversation.Participants = conversationParticipants.ToArray();
         
         return conversation;
+    }
+    
+    public async Task AddParticipant(long conversationId, string[] userIds)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var userConversationsDb = await dbContext.UsersConversations
+            .Where(x => x.ConversationId == conversationId)
+            .ToListAsync();
+
+        var existing = userConversationsDb.GetSame(userIds, x => x.UserId, x => x).ToList();
+        existing.ForEach(x => x.HasAccess = true);
+
+        //dbContext.UpdateRange(existing);
+        
+        var newUserConversations = userIds
+            .GetUniques(userConversationsDb, x => x, x => x.UserId)
+            .Select(x => new UserConversationDb(x, conversationId))
+            .ToArray();
+        
+        await dbContext.UsersConversations.AddRangeAsync(newUserConversations);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task RemoveParticipant(long conversationId, string[] userIds)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+        
+        var userConversationsDb = await dbContext.UsersConversations
+            .Where(x => x.ConversationId == conversationId)
+            .ToListAsync();
+        
+        userConversationsDb.ForEach(x => x.HasAccess = false);
+        await dbContext.SaveChangesAsync();
     }
 }

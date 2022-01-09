@@ -7,11 +7,13 @@ public class UserConversationDb : EntityDb
 {
     public string UserId { get; set; }
     public long ConversationId { get; set; }
+    public bool HasAccess { get; set; }
 
     public UserConversationDb(string userId, long conversationId)
     {
         UserId = userId;
         ConversationId = conversationId;
+        HasAccess = true;
     }
 }
 
@@ -22,5 +24,7 @@ public class UserConversationDbConfiguration : IEntityTypeConfiguration<UserConv
         builder
             .Property(b => b.CreatedAt )
             .HasDefaultValueSql("getdate()");
+
+        builder.HasIndex(x => new {x.ConversationId, x.UserId}).IsUnique();
     }
 }

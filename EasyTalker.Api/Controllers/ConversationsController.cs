@@ -91,4 +91,36 @@ public class ConversationsController : ControllerBase
             return ApiResponse<MessageDto[]>.Failure(ex.Message);
         }
     }
+
+    [Route("{conversationId:long}/participants/add")]
+    public async Task<ApiResponse<ConversationDto>> AddParticipants([FromRoute] long conversationId,
+        [FromBody] string[] usersId)
+    {
+        try
+        {
+            await _conversationStore.AddParticipant(conversationId, usersId);
+            
+            return ApiResponse<ConversationDto>.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<ConversationDto>.Failure(ex.Message);
+        }
+    }
+    
+    [Route("{conversationId:long}/participants/remove")]
+    public async Task<ApiResponse<ConversationDto>> RemoveParticipants([FromRoute] long conversationId,
+        [FromBody] string[] usersId)
+    {
+        try
+        {
+            await _conversationStore.RemoveParticipant(conversationId, usersId);
+            
+            return ApiResponse<ConversationDto>.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<ConversationDto>.Failure(ex.Message);
+        }
+    }
 }
