@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json.Serialization;
 using Easy.MessageHub;
 using EasyTalker.Api.Extensions;
@@ -35,7 +36,7 @@ public class Startup
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .SetIsOriginAllowed(x => true)
+            .SetIsOriginAllowed(_ => true)
             .Build()));
         
         services.AddSignalR()
@@ -57,6 +58,11 @@ public class Startup
         services.AddEasyTalkerAuthentication();
         services.AddSwagger();
         services.AddCors();
+        
+        services.AddSpaStaticFiles(configuration =>
+        {
+            configuration.RootPath = "UiApp/build";
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventHandlerCollector eventHandlerCollector)
@@ -86,10 +92,13 @@ public class Startup
         });
         
         eventHandlerCollector.RegisterHandlers();
-        
+        app.UseSpaStaticFiles();
         app.UseSpa(spa =>
         {
-            spa.Options.SourcePath = "ClientApp";
+            //var a = File.Exists("UiApp");
+            //var q = Directory.GetCurrentDirectory().pa;
+            
+            spa.Options.SourcePath = "UiApp";
 
             if (env.IsDevelopment())
             {
