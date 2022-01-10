@@ -16,6 +16,8 @@ public class WebUiNotifier : IWebUiNotifier
     }
 
     public void ConversationCreated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync("ConversationCreated", conversation);
+    
+    public void ConversationUpdated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync("ConversationUpdated", conversation);
 
     public void MessageCreated(MessageDto message) => _hubContext.Clients.All.SendAsync("MessageCreated", message);
     //public void MessageCreated(MessageDto message) => _hubContext.Clients.Group(message.ConversationId.ToString()).SendAsync("MessageCreated", message);

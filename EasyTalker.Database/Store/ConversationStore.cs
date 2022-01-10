@@ -8,6 +8,7 @@ using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Database.Entities;
+using EasyTalker.Database.Extensions;
 using EasyTalker.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,41 +34,47 @@ public class ConversationStore : IConversationStore
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
         
-        var usersConversations = await dbContext.UsersConversations
+        var conversationsIds = await dbContext.UsersConversations
             .Where(x => x.UserId == userId)
-            //.Select(x => x.ConversationId)
+            .Select(x => x.ConversationId)
             .ToArrayAsync();
 
-        var conversationsIds = usersConversations.Select(x => x.ConversationId).ToArray();
-        var conversationsDb = await dbContext.Conversations
-            .Where(x => conversationsIds.Contains(x.Id))
-            .ToArrayAsync();
+        return await GetConversations(dbContext, conversationsIds);
 
-        var conversationsUsers = await dbContext.UsersConversations
-            .Where(x => conversationsIds.Contains(x.ConversationId))
-            .ToArrayAsync();
-
-        
-        var conversations = _mapper.Map<ConversationDto[]>(conversationsDb);
-        var joined = conversations
-            .Join(conversationsUsers, x => x.Id, x => x.ConversationId, (conversation, conversationUser) => new
-            {
-                conversation,
-                conversationUser
-            })
-            .GroupBy(x => x.conversation.Id)
-            .ToArray();
-
-        foreach (var group in joined)
-        {
-            var participants = group
-                .Select(x => new ConversationParticipantDto(x.conversationUser.UserId.ToString(), x.conversationUser.HasAccess))
-                .ToArray();
-
-            group.First().conversation.Participants = participants;
-        }
-
-        return conversations;
+        // var usersConversations = await dbContext.UsersConversations
+        //     .Where(x => x.UserId == userId)
+        //     //.Select(x => x.ConversationId)
+        //     .ToArrayAsync();
+        //
+        // var conversationsIds = usersConversations.Select(x => x.ConversationId).ToArray();
+        // var conversationsDb = await dbContext.Conversations
+        //     .Where(x => conversationsIds.Contains(x.Id))
+        //     .ToArrayAsync();
+        //
+        // var conversationsUsers = await dbContext.UsersConversations
+        //     .Where(x => conversationsIds.Contains(x.ConversationId))
+        //     .ToArrayAsync();
+        //
+        // var conversations = _mapper.Map<ConversationDto[]>(conversationsDb);
+        // var joined = conversations
+        //     .Join(conversationsUsers, x => x.Id, x => x.ConversationId, (conversation, conversationUser) => new
+        //     {
+        //         conversation,
+        //         conversationUser
+        //     })
+        //     .GroupBy(x => x.conversation.Id)
+        //     .ToArray();
+        //
+        // foreach (var group in joined)
+        // {
+        //     var participants = group
+        //         .Select(x => new ConversationParticipantDto(x.conversationUser.UserId.ToString(), x.conversationUser.HasAccess))
+        //         .ToArray();
+        //
+        //     group.First().conversation.Participants = participants;
+        // }
+        //
+        // return conversations;
     }
 
     public async Task<MessageDto[]> GetMessages(long conversationId)
@@ -85,7 +92,7 @@ public class ConversationStore : IConversationStore
             .ToArrayAsync();
 
         var messagesDto = messages
-            .Join(senders, x => x.SenderId, x => x.Id, (message, sender) => new {message = message, sender})
+            .Join(senders, x => x.SenderId, x => x.Id, (message, sender) => new {message, sender})
             .Select(x => new MessageDto
             {
                 Id = x.message.Id,
@@ -154,7 +161,7 @@ public class ConversationStore : IConversationStore
         return conversation;
     }
     
-    public async Task AddParticipant(long conversationId, string[] userIds)
+    public async Task<ConversationDto> AddParticipant(long conversationId, string[] userIds)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
@@ -175,18 +182,36 @@ public class ConversationStore : IConversationStore
         
         await dbContext.UsersConversations.AddRangeAsync(newUserConversations);
         await dbContext.SaveChangesAsync();
+        
+        return await GetConversation(dbContext, conversationId);
     }
 
-    public async Task RemoveParticipant(long conversationId, string[] userIds)
+    public async Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
         
         var userConversationsDb = await dbContext.UsersConversations
-            .Where(x => x.ConversationId == conversationId)
+            .Where(x => x.ConversationId == conversationId && participantsIds.Contains(x.UserId))
             .ToListAsync();
         
         userConversationsDb.ForEach(x => x.HasAccess = false);
         await dbContext.SaveChangesAsync();
+
+        return await GetConversation(dbContext, conversationId);
+    }
+
+    private async Task<ConversationDto> GetConversation(EasyTalkerContext dbContext, long conversationId)
+    {
+        return (await GetConversations(dbContext, new[] {conversationId}))?.SingleOrDefault();
+    }
+    
+    private async Task<ConversationDto[]> GetConversations(EasyTalkerContext dbContext, long[] conversationsIds)
+    {
+        var conversationsInfos = await dbContext.ConversationInfosView
+            .Where(x => conversationsIds.Contains(x.ConversationId))
+            .ToArrayAsync();
+
+        return conversationsInfos.Select(x => x.ToConversationDto()).ToArray();
     }
 }

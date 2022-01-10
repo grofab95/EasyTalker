@@ -9,6 +9,6 @@ public interface IConversationStore
     Task<ConversationDto> Add(ConversationCreateDto conversationCreateDto);
     Task<ConversationDto[]> GetUserConversations(string userId);
     Task<MessageDto[]> GetMessages(long conversationId);
-    Task AddParticipant(long conversationId, string[] userIds);
-    Task RemoveParticipant(long conversationId, string[] userIds);
+    Task<ConversationDto> AddParticipant(long conversationId, string[] userIds);
+    Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds);
 }

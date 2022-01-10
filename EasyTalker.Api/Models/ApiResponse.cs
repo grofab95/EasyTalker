@@ -2,7 +2,7 @@
 
 public class ApiResponse<T>
 {
-    public static ApiResponse<T> Success(T data = default) => new(data);
+    public static ApiResponse<T> Success(T data) => new(data);
     public static ApiResponse<T> Failure(string error) => new(error);
 
     public T Data { get; }

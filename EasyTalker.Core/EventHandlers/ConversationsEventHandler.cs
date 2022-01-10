@@ -17,5 +17,6 @@ public class ConversationsEventHandler : IEventHandler
     {
         messageHub.Subscribe<MessageCreated>(m => _webUiNotifier.MessageCreated(m.Message));
         messageHub.Subscribe<ConversationCreated>(m => _webUiNotifier.ConversationCreated(m.Conversation));
+        messageHub.Subscribe<ConversationUpdated>(m => _webUiNotifier.ConversationUpdated(m.Conversation));
     }
 }

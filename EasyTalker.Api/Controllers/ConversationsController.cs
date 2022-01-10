@@ -98,9 +98,11 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            await _conversationStore.AddParticipant(conversationId, usersId);
+            var conversation = await _conversationStore.AddParticipant(conversationId, usersId);
             
-            return ApiResponse<ConversationDto>.Success();
+            _messageHub.Publish(new ConversationUpdated(conversation));
+            
+            return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
         {
@@ -110,13 +112,15 @@ public class ConversationsController : ControllerBase
     
     [Route("{conversationId:long}/participants/remove")]
     public async Task<ApiResponse<ConversationDto>> RemoveParticipants([FromRoute] long conversationId,
-        [FromBody] string[] usersId)
+        [FromBody] string[] participantsIds)
     {
         try
         {
-            await _conversationStore.RemoveParticipant(conversationId, usersId);
+            var conversation = await _conversationStore.RemoveParticipant(conversationId, participantsIds);
             
-            return ApiResponse<ConversationDto>.Success();
+            _messageHub.Publish(new ConversationUpdated(conversation));
+            
+            return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
         {

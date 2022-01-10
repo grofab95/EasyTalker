@@ -1,4 +1,5 @@
 ﻿using EasyTalker.Database.Entities;
+using EasyTalker.Database.Views;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     public DbSet<MessageDb> Messages { get; set; }
     public DbSet<UserConversationDb> UsersConversations { get; set; }
     public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
+    
+    public DbSet<ConversationInfosView> ConversationInfosView { get; set; }
 
     public EasyTalkerContext()
     {
@@ -33,6 +36,13 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<ConversationInfosView>(x =>
+        {
+            x.HasNoKey();
+            x.ToView("ConversationInfosView"); 
+        });
+
+        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EasyTalkerContext).Assembly); // Here UseConfiguration is any IEntityTypeConfiguration
     }
 }

@@ -7,6 +7,7 @@ namespace EasyTalker.Core.Adapters;
 public interface IWebUiNotifier
 {
     void ConversationCreated(ConversationDto conversation);
+    void ConversationUpdated(ConversationDto conversation);
     void MessageCreated(MessageDto message);
     void UserRegistered(UserDto user);
 }
