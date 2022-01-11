@@ -24,8 +24,6 @@ public class Startup
 
     public Startup(IConfiguration configuration)
     {
-        var test = configuration.GetConnectionString("ConnectionString");
-            
         _configuration = configuration;
     }
 
