@@ -24,6 +24,8 @@ public class Startup
 
     public Startup(IConfiguration configuration)
     {
+        var test = configuration.GetConnectionString("ConnectionString");
+            
         _configuration = configuration;
     }
 
@@ -33,7 +35,7 @@ public class Startup
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .SetIsOriginAllowed(x => true)
+            .SetIsOriginAllowed(_ => true)
             .Build()));
         
         services.AddSignalR()
@@ -84,5 +86,15 @@ public class Startup
         });
         
         eventHandlerCollector.RegisterHandlers();
+        
+        app.UseSpa(spa =>
+        {
+            spa.Options.SourcePath = "ClientApp";
+
+            if (env.IsDevelopment())
+            {
+                spa.UseReactDevelopmentServer(npmScript: "start");
+            }
+        });
     }
 }
