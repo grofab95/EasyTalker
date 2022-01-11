@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Database.Views;
 
@@ -18,6 +19,7 @@ public static class ViewsExtesnions
             Id = view.ConversationId,
             Title = view.Title,
             CreatorId = view.CreatorId,
+            LastMessageAt = view.LastMessageAt ?? view.CreatedAt,
             Participants = participants
         };
     }

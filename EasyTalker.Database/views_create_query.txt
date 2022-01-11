@@ -12,5 +12,7 @@ select
       c.Id as ConversationId, 
       c.Title, 
       c.CreatorId,
+      c.CreatedAt,
+      (select max(createdAt) from messages m where m.ConversationId = c.Id) as LastMessageAt,
       (select ConversationParticipants from ConversationInfos where ConversationId = c.Id) as ConversationParticipantsString
 from Conversations c;

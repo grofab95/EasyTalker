@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyTalker.Database.Entities;
@@ -8,6 +9,7 @@ public class UserConversationDb : EntityDb
     public string UserId { get; set; }
     public long ConversationId { get; set; }
     public bool HasAccess { get; set; }
+    public DateTime LastSeenAt { get; set; }
 
     public UserConversationDb(string userId, long conversationId)
     {

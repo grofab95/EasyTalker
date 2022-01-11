@@ -146,6 +146,7 @@ public class ConversationStore : IConversationStore
         await dbContext.SaveChangesAsync();
 
         var conversation = _mapper.Map<ConversationDto>(conversationDb);
+        conversation.LastMessageAt = conversationDb.CreatedAt;
 
         conversation.CreatorId = conversationCreateDto.CreatorId;
         var conversationParticipants = new List<ConversationParticipantDto>
