@@ -4,6 +4,7 @@ using EasyTalker.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTalker.Database.Migrations
 {
     [DbContext(typeof(EasyTalkerContext))]
-    partial class EasyTalkerContextModelSnapshot : ModelSnapshot
+    [Migration("20220113212740_addFile")]
+    partial class addFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,45 +53,6 @@ namespace EasyTalker.Database.Migrations
                         .HasFilter("[CreatorId] IS NOT NULL AND [Title] IS NOT NULL");
 
                     b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("EasyTalker.Database.Entities.FileDb", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<string>("ExternalId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FileStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId", "FileName")
-                        .IsUnique()
-                        .HasFilter("[ExternalId] IS NOT NULL AND [FileName] IS NOT NULL");
-
-                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("EasyTalker.Database.Entities.MessageDb", b =>
@@ -271,6 +234,45 @@ namespace EasyTalker.Database.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("EasyTalker.Database.Store.FileDb", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<long>("ExternalId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FileStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalId", "FileName")
+                        .IsUnique()
+                        .HasFilter("[FileName] IS NOT NULL");
+
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("EasyTalker.Database.Views.ConversationInfosView", b =>

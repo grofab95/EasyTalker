@@ -53,7 +53,7 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<UserDto>.Failure(ex.Message);
+            return ApiResponse<UserDto>.Failure(ex);
         }
     }
     
@@ -67,7 +67,7 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<UserDto>.Failure(ex.Message);
+            return ApiResponse<UserDto>.Failure(ex);
         }
     }
     
@@ -81,7 +81,7 @@ public class UsersController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<UserDto[]>.Failure(ex.Message);
+            return ApiResponse<UserDto[]>.Failure(ex);
         }
     }
 }

@@ -215,4 +215,17 @@ public class ConversationStore : IConversationStore
 
         return conversationsInfos.Select(x => x.ToConversationDto()).ToArray();
     }
+
+    public async Task UpdateConversationLastSeenAt(long conversationId, string userId, DateTime seenAt)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var userConversation = await dbContext.UsersConversations
+            .FirstOrDefaultAsync(x => x.ConversationId == conversationId && x.UserId == userId)
+                               ?? throw new Exception($"Conversation with id {conversationId} not exist");
+
+        userConversation.LastSeenAt = seenAt;
+        await dbContext.SaveChangesAsync();
+    }
 }

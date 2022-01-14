@@ -15,6 +15,7 @@ public static class ServiceExtensions
         services.AddTransient<IUserStore, UserStore>();
         services.AddTransient<IConversationStore, ConversationStore>();
         services.AddTransient<IMessageStore, MessageStore>();
+        services.AddTransient<IFileStore, FileStore>();
         //services.AddDbContext<EasyTalkerContext>(options =>
         //options.UseSqlServer(configuration.GetConnectionString("ConnectionString")));
     }

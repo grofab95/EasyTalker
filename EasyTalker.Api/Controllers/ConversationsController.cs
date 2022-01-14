@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Easy.MessageHub;
 using EasyTalker.Api.Models;
@@ -40,11 +41,11 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<ConversationDto>.Failure(ex.Message);
+            return ApiResponse<ConversationDto>.Failure(ex);
         }
     }
     
-    [HttpGet("{userId}")]
+    [HttpGet("users/{userId}")]
     public async Task<ApiResponse<ConversationDto[]>> GetUserConversations([FromRoute] string userId)
     {
         try
@@ -54,7 +55,7 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<ConversationDto[]>.Failure(ex.Message);
+            return ApiResponse<ConversationDto[]>.Failure(ex);
         }
     }
     
@@ -72,7 +73,7 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<MessageDto>.Failure(ex.Message);
+            return ApiResponse<MessageDto>.Failure(ex);
         }
     }
     
@@ -88,11 +89,12 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<MessageDto[]>.Failure(ex.Message);
+            return ApiResponse<MessageDto[]>.Failure(ex);
         }
     }
 
     [Route("{conversationId:long}/participants/add")]
+    [HttpPut]
     public async Task<ApiResponse<ConversationDto>> AddParticipants([FromRoute] long conversationId,
         [FromBody] string[] usersId)
     {
@@ -106,11 +108,12 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<ConversationDto>.Failure(ex.Message);
+            return ApiResponse<ConversationDto>.Failure(ex);
         }
     }
     
     [Route("{conversationId:long}/participants/remove")]
+    [HttpPut]
     public async Task<ApiResponse<ConversationDto>> RemoveParticipants([FromRoute] long conversationId,
         [FromBody] string[] participantsIds)
     {
@@ -124,7 +127,25 @@ public class ConversationsController : ControllerBase
         }
         catch (Exception ex)
         {
-            return ApiResponse<ConversationDto>.Failure(ex.Message);
+            return ApiResponse<ConversationDto>.Failure(ex);
+        }
+    }
+
+    [Route("{conversationId:long}")]
+    [HttpPatch]
+    public async Task<ApiResponse> UpdateConversationLastSeenAt([FromRoute] long conversationId, [FromBody] DateTime seenAt)
+    {
+        try
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            
+            await _conversationStore.UpdateConversationLastSeenAt(conversationId, userId, seenAt);
+            
+            return ApiResponse.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Failure(ex);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
 
@@ -11,4 +12,5 @@ public interface IConversationStore
     Task<MessageDto[]> GetMessages(long conversationId);
     Task<ConversationDto> AddParticipant(long conversationId, string[] userIds);
     Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds);
+    Task UpdateConversationLastSeenAt(long conversationId, string userId, DateTime seenAt);
 }

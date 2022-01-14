@@ -1,4 +1,5 @@
 ﻿using EasyTalker.Database.Entities;
+using EasyTalker.Database.Store;
 using EasyTalker.Database.Views;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     public DbSet<MessageDb> Messages { get; set; }
     public DbSet<UserConversationDb> UsersConversations { get; set; }
     public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
+    public DbSet<FileDb> Files { get; set; }
     
     public DbSet<ConversationInfosView> ConversationInfosView { get; set; }
 

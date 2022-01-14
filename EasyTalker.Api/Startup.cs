@@ -15,6 +15,13 @@ using EasyTalker.Database.Extensions;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using EasyTalker.Core.Configuration;
+using EasyTalker.Core.Files;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.FileProviders;
 
 namespace EasyTalker.Api;
 
@@ -29,6 +36,11 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddOptions<PathsOptions>()
+            .Configure<IConfiguration>(
+                (o, c) => c.GetSection(PathsOptions.SectionName).Bind(o));
+        
+        services.AddControllersWithViews();
         services.AddCors(x => x.AddDefaultPolicy(new CorsPolicyBuilder()
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -46,15 +58,37 @@ public class Startup
         services.AddTransient<EventHandlerCollector>();
         services.AddTransient<IEventHandler, ConversationsEventHandler>();
         services.AddTransient<IEventHandler, UsersEventHandler>();
-        
+
         services.AddSignalR();
         services.AddControllers().AddControllersAsServices();
 
         services.AddTransient<IWebUiNotifier, WebUiNotifier>();
         services.AddDatabase(_configuration);
+        services.AddTransient<FilePersistenceManager>();
+
         services.AddEasyTalkerAuthentication();
         services.AddSwagger();
         services.AddCors();
+        
+        // services.Configure<FormOptions>(o =>  // currently all set to max, configure it to your needs!
+        // {
+        //     o.ValueLengthLimit = int.MaxValue;
+        //     o.MultipartBodyLengthLimit = long.MaxValue; // <-- !!! long.MaxValue
+        //     o.MultipartBoundaryLengthLimit = int.MaxValue;
+        //     o.MultipartHeadersCountLimit = int.MaxValue;
+        //     o.MultipartHeadersLengthLimit = int.MaxValue;
+        // });
+        
+        // services.AddSpaStaticFiles(configuration =>
+        // {
+        //     configuration.RootPath = "ClientApp/build";
+        // });
+        
+        // services.Configure<StaticFileOptions>(options =>
+        // {
+        //     options.FileProvider = new PhysicalFileProvider("I://Dev//UploadedFiles//");
+        //     options.RequestPath = "/static";
+        // });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventHandlerCollector eventHandlerCollector)
@@ -67,6 +101,18 @@ public class Startup
         }
 
         app.UseCors();
+        // app.UseStaticFiles(new StaticFileOptions
+        // {
+        //     RequestPath = "/static",
+        //     FileProvider = new PhysicalFileProvider(@"I:\Dev\UploadedFiles\"),
+        // });
+
+        // app.UseStaticFiles(new StaticFileOptions
+        // {
+        //     RequestPath = string.Empty,  // default behavior: static files from "/" (root)
+        //     FileProvider = new PhysicalFileProvider(env.WebRootPath),
+        // });
+        //app.UseSpaStaticFiles();
         app.UseRouting();
 
         app.UseAuthentication();
@@ -84,15 +130,25 @@ public class Startup
         });
         
         eventHandlerCollector.RegisterHandlers();
-        
-        app.UseSpa(spa =>
-        {
-            spa.Options.SourcePath = "ClientApp";
-
-            if (env.IsDevelopment())
-            {
-                spa.UseReactDevelopmentServer(npmScript: "start");
-            }
-        });
+               
+        // app.UseSpa(spa =>
+        // {
+        //     spa.Options.SourcePath = "ClientApp";
+        //
+        //     // if (env.IsDevelopment())
+        //     // {
+        //     //     spa.UseReactDevelopmentServer(npmScript: "start");
+        //     // }
+        // });
+        //
+        // app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
+        // {
+        //     app.Run(async (context) =>
+        //     {
+        //         context.Response.ContentType = "text/html";
+        //         context.Response.Headers[HeaderNames.CacheControl] = "no-store, no-cache, must-revalidate";
+        //         await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
+        //     });
+        // });
     }
 }
