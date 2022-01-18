@@ -23,7 +23,9 @@ public class FilesController : Controller
 
     //[Route("upload")]
     [HttpPost]
-    [DisableRequestSizeLimit]
+    [DisableRequestSizeLimit,
+     RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, 
+         ValueLengthLimit = int.MaxValue)]
     //[RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
     public async Task<ApiResponse<FileDto>> UploadFile([FromForm] UploadFileDto uploadFileDto)
     {

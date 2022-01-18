@@ -24,10 +24,18 @@ public class FileStore : IFileStore
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
 
+        if (await IsFileExist(dbContext, uploadFileDto))
+            throw new Exception("Uploading file is already exist in this conversation");
+        
         var savedFile = await dbContext.Files.AddAsync(new FileDb(ownerId, uploadFileDto));
         await dbContext.SaveChangesAsync();
         
         return savedFile.Entity.ToFileDto();
+    }
+
+    private async Task<bool> IsFileExist(EasyTalkerContext dbContext, UploadFileDto uploadFileDto)
+    {
+        return await dbContext.Files.AnyAsync(x => x.ExternalId == uploadFileDto.ExternalId && x.FileName == uploadFileDto.File.FileName);
     }
 
     public async Task<FileDto[]> GetFilesInfoByExternalIds(string[] externalIds)

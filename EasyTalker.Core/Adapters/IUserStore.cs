@@ -10,4 +10,5 @@ public interface IUserStore
     Task<UserDto[]> GetAll();
 
     Task UpdateUserConnectionStatus(string userId, bool isOnline);
+    Task SetAllUsersAsOffline();
 }

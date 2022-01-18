@@ -77,4 +77,15 @@ public class UserStore : IUserStore
             await dbContext.SaveChangesAsync();
         }
     }
+
+    public async Task SetAllUsersAsOffline()
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var users = await dbContext.Users.ToListAsync();
+        users.ForEach(u => u.IsOnline = false);
+
+        await dbContext.SaveChangesAsync();
+    }
 }

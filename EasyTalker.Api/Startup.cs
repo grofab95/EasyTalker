@@ -22,6 +22,7 @@ using EasyTalker.Core.Configuration;
 using EasyTalker.Core.Files;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 
 namespace EasyTalker.Api;
 
@@ -59,7 +60,7 @@ public class Startup
         services.AddTransient<IEventHandler, ConversationsEventHandler>();
         services.AddTransient<IEventHandler, UsersEventHandler>();
 
-        services.AddSignalR();
+        //services.AddSignalR();
         services.AddControllers().AddControllersAsServices();
 
         services.AddTransient<IWebUiNotifier, WebUiNotifier>();
@@ -91,7 +92,11 @@ public class Startup
         // });
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EventHandlerCollector eventHandlerCollector)
+    public void Configure(IApplicationBuilder app,
+        IWebHostEnvironment env,
+        IUserStore userStore,
+        EventHandlerCollector eventHandlerCollector,
+        IOptions<PathsOptions> pathOptions)
     {
         if (env.IsDevelopment())
         {
@@ -101,11 +106,11 @@ public class Startup
         }
 
         app.UseCors();
-        // app.UseStaticFiles(new StaticFileOptions
-        // {
-        //     RequestPath = "/static",
-        //     FileProvider = new PhysicalFileProvider(@"I:\Dev\UploadedFiles\"),
-        // });
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            RequestPath = "/static",
+            FileProvider = new PhysicalFileProvider(pathOptions.Value.UploadFilesPath)
+        });
 
         // app.UseStaticFiles(new StaticFileOptions
         // {
@@ -150,5 +155,7 @@ public class Startup
         //         await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
         //     });
         // });
+
+        userStore.SetAllUsersAsOffline().Wait();
     }
 }
