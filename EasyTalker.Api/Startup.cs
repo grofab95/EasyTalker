@@ -80,10 +80,10 @@ public class Startup
         //     o.MultipartHeadersLengthLimit = int.MaxValue;
         // });
         
-        // services.AddSpaStaticFiles(configuration =>
-        // {
-        //     configuration.RootPath = "ClientApp/build";
-        // });
+        services.AddSpaStaticFiles(configuration =>
+        {
+            configuration.RootPath = "ClientApp/build";
+        });
         
         // services.Configure<StaticFileOptions>(options =>
         // {
@@ -136,15 +136,15 @@ public class Startup
         
         eventHandlerCollector.RegisterHandlers();
                
-        // app.UseSpa(spa =>
-        // {
-        //     spa.Options.SourcePath = "ClientApp";
-        //
-        //     // if (env.IsDevelopment())
-        //     // {
-        //     //     spa.UseReactDevelopmentServer(npmScript: "start");
-        //     // }
-        // });
+        app.UseSpa(spa =>
+        {
+           // spa.Options.SourcePath = "ClientApp/build";
+        
+            // if (env.IsDevelopment())
+            // {
+            //     spa.UseReactDevelopmentServer(npmScript: "start");
+            // }
+        });
         //
         // app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
         // {
