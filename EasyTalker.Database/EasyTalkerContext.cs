@@ -16,23 +16,23 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     
     public DbSet<ConversationInfosView> ConversationInfosView { get; set; }
 
-    public EasyTalkerContext()
-    {
-                
-    }
+    // public EasyTalkerContext()
+    // {
+    //             
+    // }
         
     public EasyTalkerContext(DbContextOptions<EasyTalkerContext> options) : base(options)
     {
             
     }
         
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder
-            .UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker;User Id=sa; Password=Q1w2e3;");
-        
-        optionsBuilder.EnableSensitiveDataLogging();
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     // optionsBuilder
+    //     //     .UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker;User Id=sa; Password=Q1w2e3;");
+    //     
+    //     optionsBuilder.EnableSensitiveDataLogging();
+    // }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
