@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
 using EasyTalker.Core.Dto.Conversation;
+using EasyTalker.Core.Dto.Message;
+using EasyTalker.Database.Entities;
 using EasyTalker.Database.Views;
 
 namespace EasyTalker.Database.Extensions;
 
 public static class ViewsExtesnions
 {
-    public static ConversationDto ToConversationDto(this ConversationInfosView view)
+    public static ConversationDto ToConversationDto(this ConversationInfosView view, MessageDto lastMessage, DateTime lastSeenAt)
     {
         var participants = view.ConversationParticipantsString
             .Split('|')
@@ -19,8 +21,10 @@ public static class ViewsExtesnions
             Id = view.ConversationId,
             Title = view.Title,
             CreatorId = view.CreatorId,
-            LastMessageAt = view.LastMessageAt ?? view.CreatedAt,
-            Participants = participants
+            LastSeenAt = lastSeenAt,
+            //LastMessageAt = view.LastMessageAt ?? view.CreatedAt,
+            Participants = participants,
+            LastMessage = lastMessage
         };
     }
 

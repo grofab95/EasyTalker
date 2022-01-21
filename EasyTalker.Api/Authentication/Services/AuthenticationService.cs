@@ -14,7 +14,6 @@ using EasyTalker.Database;
 using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Api.Authentication.Services;
@@ -33,23 +32,13 @@ public class AuthenticationService : IAuthenticationService
         RoleManager<IdentityRole> roleManager, 
         IServiceScopeFactory serviceScopeFactory,
         ITokenHandler tokenHandler, 
-        IMapper mapper,
-        EasyTalkerContext context)
+        IMapper mapper)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _serviceScopeFactory = serviceScopeFactory;
         _tokenHandler = tokenHandler;
         _mapper = mapper;
-
-        try
-        {
-            context.Database.Migrate();
-        }
-        catch (Exception e)
-        {
-            
-        }
     }
 
     public async Task<AuthenticationResultDto> Authenticate(string username, string password, string ipAddress)

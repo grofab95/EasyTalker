@@ -29,52 +29,17 @@ public class ConversationStore : IConversationStore
         _mapper = mapper;
     }
     
-    public async Task<ConversationDto[]> GetUserConversations(string userId)
+    public async Task<ConversationDto[]> GetUserConversations(string loggedUserId)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
         
         var conversationsIds = await dbContext.UsersConversations
-            .Where(x => x.UserId == userId)
+            .Where(x => x.UserId == loggedUserId)
             .Select(x => x.ConversationId)
             .ToArrayAsync();
 
-        return await GetConversations(dbContext, conversationsIds);
-
-        // var usersConversations = await dbContext.UsersConversations
-        //     .Where(x => x.UserId == userId)
-        //     //.Select(x => x.ConversationId)
-        //     .ToArrayAsync();
-        //
-        // var conversationsIds = usersConversations.Select(x => x.ConversationId).ToArray();
-        // var conversationsDb = await dbContext.Conversations
-        //     .Where(x => conversationsIds.Contains(x.Id))
-        //     .ToArrayAsync();
-        //
-        // var conversationsUsers = await dbContext.UsersConversations
-        //     .Where(x => conversationsIds.Contains(x.ConversationId))
-        //     .ToArrayAsync();
-        //
-        // var conversations = _mapper.Map<ConversationDto[]>(conversationsDb);
-        // var joined = conversations
-        //     .Join(conversationsUsers, x => x.Id, x => x.ConversationId, (conversation, conversationUser) => new
-        //     {
-        //         conversation,
-        //         conversationUser
-        //     })
-        //     .GroupBy(x => x.conversation.Id)
-        //     .ToArray();
-        //
-        // foreach (var group in joined)
-        // {
-        //     var participants = group
-        //         .Select(x => new ConversationParticipantDto(x.conversationUser.UserId.ToString(), x.conversationUser.HasAccess))
-        //         .ToArray();
-        //
-        //     group.First().conversation.Participants = participants;
-        // }
-        //
-        // return conversations;
+        return await GetConversations(dbContext, conversationsIds, loggedUserId);
     }
 
     public async Task<MessageDto[]> GetMessages(long conversationId)
@@ -146,14 +111,13 @@ public class ConversationStore : IConversationStore
         await dbContext.SaveChangesAsync();
 
         var conversation = _mapper.Map<ConversationDto>(conversationDb);
-        conversation.LastMessageAt = conversationDb.CreatedAt;
+        //conversation.LastMessageAt = conversationDb.CreatedAt;
 
         conversation.CreatorId = conversationCreateDto.CreatorId;
         var conversationParticipants = new List<ConversationParticipantDto>
         {
             new(conversation.CreatorId, true)
         };
-        
         
         conversationParticipants.AddRange(conversationCreateDto.ParticipantsId.Select(x => new ConversationParticipantDto(x, true)));
 
@@ -162,7 +126,7 @@ public class ConversationStore : IConversationStore
         return conversation;
     }
     
-    public async Task<ConversationDto> AddParticipant(long conversationId, string[] userIds)
+    public async Task<ConversationDto> AddParticipant(long conversationId, string[] userIds, string loggedUserId)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
@@ -184,10 +148,10 @@ public class ConversationStore : IConversationStore
         await dbContext.UsersConversations.AddRangeAsync(newUserConversations);
         await dbContext.SaveChangesAsync();
         
-        return await GetConversation(dbContext, conversationId);
+        return await GetConversation(dbContext, conversationId, loggedUserId);
     }
 
-    public async Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds)
+    public async Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds, string loggedUserId)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
@@ -199,33 +163,65 @@ public class ConversationStore : IConversationStore
         userConversationsDb.ForEach(x => x.HasAccess = false);
         await dbContext.SaveChangesAsync();
 
-        return await GetConversation(dbContext, conversationId);
+        return await GetConversation(dbContext, conversationId, loggedUserId);
     }
 
-    private async Task<ConversationDto> GetConversation(EasyTalkerContext dbContext, long conversationId)
+    private async Task<ConversationDto> GetConversation(EasyTalkerContext dbContext, long conversationId, string loggedUserId)
     {
-        return (await GetConversations(dbContext, new[] {conversationId}))?.SingleOrDefault();
+        return (await GetConversations(dbContext, new[] {conversationId}, loggedUserId))?.SingleOrDefault();
     }
     
-    private async Task<ConversationDto[]> GetConversations(EasyTalkerContext dbContext, long[] conversationsIds)
+    private async Task<ConversationDto[]> GetConversations(EasyTalkerContext dbContext, long[] conversationsIds, string loggedUserId)
     {
         var conversationsInfos = await dbContext.ConversationInfosView
             .Where(x => conversationsIds.Contains(x.ConversationId))
             .ToArrayAsync();
 
-        return conversationsInfos.Select(x => x.ToConversationDto()).ToArray();
+        var messagesIds = conversationsInfos.Select(x => x.LastMessageId).Distinct().ToArray();
+        var lastMessages = await dbContext.Messages
+            .Where(x => messagesIds.Contains(x.Id))
+            .Select(x => new MessageDto
+            {   
+                Id = x.Id,
+                ConversationId = x.ConversationId,
+                Text = x.Text,
+                Status = x.Status,
+                CreatedAt = x.CreatedAt,
+                Sender = new UserDto
+                {
+                    Id = x.SenderId
+                }
+            })
+            .ToArrayAsync();
+
+        var lastSeenAtList = await dbContext.UsersConversations
+            .Where(x => x.UserId == loggedUserId && conversationsIds.Contains(x.ConversationId))
+            .Select(x => new {x.ConversationId, x.LastSeenAt})
+            .ToArrayAsync();
+        
+        return conversationsInfos
+            .Join(lastMessages, x => x.ConversationId, x => x.ConversationId, (conversationInfo, lastMessage) => new { conversationInfo, lastMessage })
+            .Join(lastSeenAtList, x => x.conversationInfo.ConversationId, x => x.ConversationId, (a, b) => new { a,b })
+            .Select(x => x.a.conversationInfo.ToConversationDto(x.a.lastMessage, x.b.LastSeenAt))
+            .ToArray();
     }
 
-    public async Task UpdateConversationLastSeenAt(long conversationId, string userId, DateTime seenAt)
+    public async Task<ConversationLastSeenDto> UpdateConversationLastSeenAt(long conversationId, string loggedUserId)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
 
         var userConversation = await dbContext.UsersConversations
-            .FirstOrDefaultAsync(x => x.ConversationId == conversationId && x.UserId == userId)
+            .FirstOrDefaultAsync(x => x.ConversationId == conversationId && x.UserId == loggedUserId)
                                ?? throw new Exception($"Conversation with id {conversationId} not exist");
 
-        userConversation.LastSeenAt = seenAt;
+        userConversation.LastSeenAt = DateTime.Now;
         await dbContext.SaveChangesAsync();
+
+        return new ConversationLastSeenDto
+        {
+            ConversationId = conversationId,
+            LastSeenAt = userConversation.LastSeenAt
+        };
     }
 }

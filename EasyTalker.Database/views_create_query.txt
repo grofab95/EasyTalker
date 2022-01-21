@@ -1,18 +1,18 @@
--- dbo.ConversationInfosView source
-
 CREATE VIEW [dbo].[ConversationInfosView]
 AS
-with ConversationInfos as (
-      select uc.ConversationId ,STRING_AGG(uc.UserId + ':' + str(uc.HasAccess), '|') as ConversationParticipants 
-      from UsersConversations uc 
-      group by uc.ConversationId 
-)
-
-select
-      c.Id as ConversationId, 
-      c.Title, 
-      c.CreatorId,
-      c.CreatedAt,
-      (select max(createdAt) from messages m where m.ConversationId = c.Id) as LastMessageAt,
-      (select ConversationParticipants from ConversationInfos where ConversationId = c.Id) as ConversationParticipantsString
-from Conversations c;
+WITH ConversationInfos AS (SELECT        ConversationId, STRING_AGG(UserId + ':' + STR(HasAccess), '|') AS ConversationParticipants
+                                                              FROM            dbo.UsersConversations AS uc
+                                                              GROUP BY ConversationId)
+    SELECT        Id AS ConversationId, Title, CreatorId, CreatedAt,
+                                  (SELECT        MAX(CreatedAt) AS Expr1
+                                    FROM            dbo.Messages AS m
+                                    WHERE        (ConversationId = c.Id)) AS LastMessageAt,
+                                  (SELECT        ConversationParticipants
+                                    FROM            ConversationInfos AS ConversationInfos_1
+                                    WHERE        (ConversationId = c.Id)) AS ConversationParticipantsString,
+                                  (SELECT        TOP (1) Id
+                                    FROM            dbo.Messages
+                                    WHERE        (ConversationId = c.Id)
+                                    ORDER BY CreatedAt DESC) AS LastMessageId
+     FROM            dbo.Conversations AS c
+GO

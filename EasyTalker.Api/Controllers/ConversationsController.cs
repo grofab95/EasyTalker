@@ -100,7 +100,7 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            var conversation = await _conversationStore.AddParticipant(conversationId, usersId);
+            var conversation = await _conversationStore.AddParticipant(conversationId, usersId, GetLoggedUserId);
             
             _messageHub.Publish(new ConversationUpdated(conversation));
             
@@ -119,7 +119,7 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            var conversation = await _conversationStore.RemoveParticipant(conversationId, participantsIds);
+            var conversation = await _conversationStore.RemoveParticipant(conversationId, participantsIds, GetLoggedUserId);
             
             _messageHub.Publish(new ConversationUpdated(conversation));
             
@@ -133,19 +133,19 @@ public class ConversationsController : ControllerBase
 
     [Route("{conversationId:long}")]
     [HttpPatch]
-    public async Task<ApiResponse> UpdateConversationLastSeenAt([FromRoute] long conversationId, [FromBody] DateTime seenAt)
+    public async Task<ApiResponse<ConversationLastSeenDto>> UpdateConversationLastSeenAt([FromRoute] long conversationId)
     {
         try
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+            var conversationLastSeenDto = await _conversationStore.UpdateConversationLastSeenAt(conversationId, GetLoggedUserId);
             
-            await _conversationStore.UpdateConversationLastSeenAt(conversationId, userId, seenAt);
-            
-            return ApiResponse.Success();
+            return ApiResponse<ConversationLastSeenDto>.Success(conversationLastSeenDto);
         }
         catch (Exception ex)
         {
-            return ApiResponse.Failure(ex);
+            return ApiResponse<ConversationLastSeenDto>.Failure(ex);
         }
     }
+    
+    private string GetLoggedUserId =>  HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
 }
