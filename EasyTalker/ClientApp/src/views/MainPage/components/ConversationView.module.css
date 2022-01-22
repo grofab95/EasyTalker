@@ -1,0 +1,26 @@
+.conversationView {
+    height: calc(100vh - 178px);
+    overflow: auto;
+    padding: 15px;
+    border: 0;
+    /*p-3 border-0 rounded-3*/
+}
+
+.conversationView::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 30%);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.conversationView::-webkit-scrollbar
+{
+    width: 6px;
+    background-color: #F5F5F5;
+}
+
+.conversationView::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}

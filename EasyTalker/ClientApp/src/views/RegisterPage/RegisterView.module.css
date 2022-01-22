@@ -1,0 +1,10 @@
+﻿.formBody {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: grid;
+    place-items: center;
+}
+
+.formRow {
+    max-width: 400px;
+}

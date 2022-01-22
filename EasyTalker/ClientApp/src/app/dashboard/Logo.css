@@ -1,0 +1,25 @@
+﻿.LogoTxt {
+    font-size: 3rem;
+}
+
+.LogoTxt.nav {
+    font-size: 1.5rem;
+}
+
+.LogoTxt:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background-color: lightblue;
+    border-radius: 50%;
+    font-weight: 700;
+    margin-right: 3px;
+    color: white;
+}
+
+.LogoTxt.nav:first-child {
+    width: 35px;
+    height: 35px;
+}

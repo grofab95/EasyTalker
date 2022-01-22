@@ -1,0 +1,40 @@
+ body {
+     font-size: 14px;
+     color: #4c5258;
+     letter-spacing: 0.5pt;
+     background-color: #f7f7ff;
+     font-family: 'Roboto', sans-serif;
+}
+ 
+ a {
+     text-decoration: none;
+}
+ 
+ .wrapper {
+     width: 100%;
+     position: relative;
+}
+ 
+ .page-wrapper {
+     height: 100%;
+     margin-top: 50px;
+     margin-bottom: 30px;
+     margin-left: 0;
+}
+ 
+ .page-content {
+     padding: 1.5rem;
+}
+ 
+ .page-footer {
+     background: #ffffff;
+     left: 0px;
+     right: 0;
+     bottom: 0;
+     position: fixed;
+     text-align: center;
+     padding: 7px;
+     font-size: 14px;
+     border-top: 1px solid #e4e4e4;
+     z-index: 3;
+ }
