@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker", "EasyTalker\EasyTalker.csproj", "{DEAFCB04-548C-48B0-9581-804E49140626}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Authentication", "EasyTalker.Authentication\EasyTalker.Authentication.csproj", "{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{DEAFCB04-548C-48B0-9581-804E49140626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEAFCB04-548C-48B0-9581-804E49140626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEAFCB04-548C-48B0-9581-804E49140626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

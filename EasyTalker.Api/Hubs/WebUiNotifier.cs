@@ -15,12 +15,8 @@ public class WebUiNotifier : IWebUiNotifier
         _hubContext = hubContext;
     }
 
-    public void ConversationCreated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync("ConversationCreated", conversation);
-    
-    public void ConversationUpdated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync("ConversationUpdated", conversation);
-
-    public void MessageCreated(MessageDto message) => _hubContext.Clients.All.SendAsync("MessageCreated", message);
-    //public void MessageCreated(MessageDto message) => _hubContext.Clients.Group(message.ConversationId.ToString()).SendAsync("MessageCreated", message);
-
-    public void UserRegistered(UserDto user) => _hubContext.Clients.All.SendAsync("UserRegistered", user);
+    public void ConversationCreated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync(nameof(ConversationCreated), conversation);
+    public void ConversationUpdated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync(nameof(ConversationUpdated), conversation);
+    public void MessageCreated(MessageDto message) => _hubContext.Clients.All.SendAsync(nameof(MessageCreated), message);
+    public void UserRegistered(UserDto user) => _hubContext.Clients.All.SendAsync(nameof(UserRegistered), user);
 }

@@ -11,8 +11,7 @@ public static class ServiceExtensions
 {
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetValue<string>("Database:ConnectionString");
-        
+        var connectionString = configuration.GetConnectionString("Database");
         services.AddDbContext<EasyTalkerContext>(o => o.UseSqlServer(connectionString));
         services.AddAutoMapper(typeof(AutoMapperProfile));
         services.AddTransient<IUserStore, UserStore>();

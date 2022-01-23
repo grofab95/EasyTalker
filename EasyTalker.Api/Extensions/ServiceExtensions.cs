@@ -1,99 +1,28 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using EasyTalker.Api.Authentication.Handlers;
-using EasyTalker.Api.Authentication.Services;
+using Easy.MessageHub;
+using EasyTalker.Api.Hubs;
+using EasyTalker.Core.Adapters;
+using EasyTalker.Core.Configuration;
+using EasyTalker.Core.EventHandlers;
+using EasyTalker.Core.Events;
+using EasyTalker.Core.Files;
 using EasyTalker.Database;
 using EasyTalker.Database.Entities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using TokenHandler = EasyTalker.Api.Authentication.Handlers.TokenHandler;
 
 namespace EasyTalker.Api.Extensions;
 
 public static class ServiceExtensions
-{
-    public static void AddEasyTalkerAuthentication(this IServiceCollection services)
-    {
-        services.AddIdentity<UserDb, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 2;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-            })
-            .AddEntityFrameworkStores<EasyTalkerContext>()
-            .AddDefaultTokenProviders();
-
-        services.AddScoped<ITokenHandler, TokenHandler>();
-        services.AddScoped<IAuthenticationService, AuthenticationService>();
-
-        services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
-                    ValidAudience = Constants.Authentication.JwtBearer.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String("ZGZnaGRmZ2VkeWVydHlSRGhkZnUzZTQ2NTM0NjVnNDM1djY0NWJ2d3ZiZHh2")),
-                    ClockSkew = TimeSpan.FromMinutes(30)
-                };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Query["access_token"];
-
-                        var path = context.HttpContext.Request.Path;
-
-                        if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/uiHub") || path.StartsWithSegments("/terminalHub")))
-                        {
-                            context.Token = accessToken;
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            });
-            
-        services.AddAuthorization(options =>
-        {
-            // foreach (var permission in Permissions.All)
-            // {
-            //     options.AddPolicy(permission, policyBuilder =>
-            //     {
-            //         policyBuilder.RequireAuthenticatedUser();
-            //         policyBuilder.RequireClaim(ApplicationClaimTypes.Permission, permission);
-            //     });
-            // }
-            //
-            // options.AddPolicy(Permissions.GetTermialsList, policyBuilder =>
-            // {
-            //     policyBuilder.RequireAssertion(context =>
-            //         context.User.HasClaim(c => c.Value is Permissions.ViewTerminalList or Permissions.AddTerminal or Permissions.EditTerminal or Permissions.EditGroup or Permissions.EditShop));
-            // });
-            //
-            // options.AddPolicy(Permissions.GetGroupsList, policyBuilder =>
-            // {
-            //     policyBuilder.RequireAssertion(context =>
-            //         context.User.HasClaim(c => c.Value is Permissions.ViewGroupList or Permissions.AddGroup or Permissions.EditGroup or Permissions.ViewTerminalList or Permissions.EditTerminal));
-            // });
-        });
-    }
-        
+{  
     public static void AddSwagger(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
@@ -131,5 +60,42 @@ public static class ServiceExtensions
                 }
             });
         });
+    }
+
+    public static void AddAppOptions(this IServiceCollection services)
+    {
+        services.AddOptions<PathsOptions>()
+            .Configure<IConfiguration>(
+                (o, c) => c.GetSection(PathsOptions.SectionName).Bind(o));
+    }
+
+    public static void AddAppCors(this IServiceCollection services)
+    {
+        services.AddCors(x => x.AddDefaultPolicy(new CorsPolicyBuilder()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .SetIsOriginAllowed(_ => true)
+            .Build()));
+    }
+
+    public static void AddSignalRCommunication(this IServiceCollection services)
+    {
+        services.AddSignalR()
+            .AddJsonProtocol(options =>
+            {
+                options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+        
+        services.AddSingleton<IMessageHub, MessageHub>();
+        services.AddTransient<EventHandlerCollector>();
+        services.AddTransient<IEventHandler, ConversationsEventHandler>();
+        services.AddTransient<IEventHandler, UsersEventHandler>();
+        services.AddTransient<IWebUiNotifier, WebUiNotifier>();
+    }
+
+    public static void AddFilePersistenceManager(this IServiceCollection services)
+    {
+        services.AddTransient<FilePersistenceManager>();
     }
 }

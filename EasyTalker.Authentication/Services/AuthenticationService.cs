@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Threading.Tasks;
 using AutoMapper;
-using EasyTalker.Api.Authentication.Handlers;
-using EasyTalker.Api.Dto;
+using EasyTalker.Authentication.Handlers;
+using EasyTalker.Core.Dto;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Database;
 using EasyTalker.Database.Entities;
@@ -16,7 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EasyTalker.Api.Authentication.Services;
+namespace EasyTalker.Authentication.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
@@ -51,13 +47,9 @@ public class AuthenticationService : IAuthenticationService
             
         var accessToken = await GetAccessToken(user);
         var refreshToken = GetRefreshToken();
-
         user.RefreshTokens ??= new List<RefreshTokenDb>();
-            
         user.RefreshTokens.Add(refreshToken);
-            
         await _userManager.UpdateAsync(user);
-
         return new AuthenticationResultDto(_mapper.Map<UserDto>(user), accessToken, refreshToken.Token);
     }
 
@@ -80,9 +72,7 @@ public class AuthenticationService : IAuthenticationService
         user.RefreshTokens.Remove(refreshToken);
         dbContext.Update(user);
         await dbContext.SaveChangesAsync();
-
         var jwtToken = await GetAccessToken(user);
-
         return new AuthenticationResultDto(_mapper.Map<UserDto>(user), jwtToken, newRefreshToken.Token);
     }
 
@@ -92,7 +82,7 @@ public class AuthenticationService : IAuthenticationService
             .GetRequiredService<EasyTalkerContext>();
         
         var user = await dbContext.Users
-                      //.Include(x => x.RefreshTokens)
+                      .Include(x => x.RefreshTokens)
                       .SingleOrDefaultAsync(x => x.RefreshTokens.Any(y => y.Token == token))
                   ?? throw new Exception("Invalid token");
         
@@ -101,7 +91,6 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception("Invalid token");
         
         refreshToken.RevokedAt = DateTime.Now;
-
         dbContext.Update(user);
         await dbContext.SaveChangesAsync();
     }
@@ -131,22 +120,18 @@ public class AuthenticationService : IAuthenticationService
         claims.AddRange(userPermissions.Select(x => new Claim(PermissionClaim, x.Value)));
 
         var currentDateTime = DateTime.Now;
-            
         return await _tokenHandler.GenerateAccessToken(
             claims,
             currentDateTime,
-            currentDateTime.AddMinutes(30) // to options
+            currentDateTime.AddMinutes(30) // to appsettings
         );
     }
 
     public RefreshTokenDb GetRefreshToken()
     {
         var randomBytes = new byte[64];
-
-        using var rngCrypto = new RNGCryptoServiceProvider();
-            
+        using var rngCrypto = RandomNumberGenerator.Create();
         rngCrypto.GetBytes(randomBytes);
-
         return new RefreshTokenDb
         {
             Token = Convert.ToBase64String(randomBytes),

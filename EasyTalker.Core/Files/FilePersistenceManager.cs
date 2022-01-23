@@ -23,7 +23,6 @@ public class FilePersistenceManager
     public async Task<FileDto> UploadFile(string ownerId, UploadFileDto uploadFileDto)
     {
         var fileDto = await _fileStore.SaveFileInfo(ownerId, uploadFileDto);
-
         await SaveOnDisc(uploadFileDto.File, fileDto);
         return await SetUploadedStatus(fileDto.DbId);
     }
@@ -36,6 +35,9 @@ public class FilePersistenceManager
     private async Task SaveOnDisc(IFormFile file, FileDto fileDto)
     {
         var directoryPath = GetDirectoryPath(fileDto);
+        if (string.IsNullOrEmpty(directoryPath))
+            throw new DirectoryNotFoundException();
+        
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
         

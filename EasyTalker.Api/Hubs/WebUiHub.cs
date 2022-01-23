@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Events;
@@ -22,15 +21,12 @@ public class WebUiHub : Hub
     public override Task OnConnectedAsync()
     {
         Log.Information("Connected: ConnectionId={ConnectionId}", Context.ConnectionId);
-
         var userId = Context.UserIdentifier;
         if (userId != null)
             Groups.AddToGroupAsync(Context.ConnectionId, userId);
 
         _userStore.UpdateUserConnectionStatus(userId, true);
-        
         Clients.Others.SendAsync("UserConnectionStatusChanged", new UserConnectionStatusChanged(userId, true));
-        
         return base.OnConnectedAsync();
     }
     
@@ -43,9 +39,7 @@ public class WebUiHub : Hub
             Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);
 
         _userStore.UpdateUserConnectionStatus(userId, false);
-        
         Clients.Others.SendAsync("UserConnectionStatusChanged", new UserConnectionStatusChanged(userId, false));
-        
         return base.OnDisconnectedAsync(exception);
     }
 }

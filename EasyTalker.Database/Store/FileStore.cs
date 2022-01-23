@@ -29,7 +29,6 @@ public class FileStore : IFileStore
         
         var savedFile = await dbContext.Files.AddAsync(new FileDb(ownerId, uploadFileDto));
         await dbContext.SaveChangesAsync();
-        
         return savedFile.Entity.ToFileDto();
     }
 
@@ -59,7 +58,6 @@ public class FileStore : IFileStore
 
         fileDb.FileStatus = fileStatus;
         await dbContext.SaveChangesAsync();
-        
         return fileDb.ToFileDto();
     }
 }

@@ -81,12 +81,12 @@ public class ConversationStore : IConversationStore
         if (string.IsNullOrEmpty(conversationCreateDto.CreatorId))
             throw new Exception("Creator is required");
 
-        if (!conversationCreateDto.ParticipantsId?.Any() ?? false)
-            throw new Exception("At least one participant is required");
-        
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
-       
+        
+        if (await dbContext.Conversations.AnyAsync() && (!conversationCreateDto.ParticipantsId?.Any() ?? false))
+            throw new Exception("At least one participant is required");
+        
         var conversationDb = new ConversationDb
         {
             CreatorId = conversationCreateDto.CreatorId,
@@ -96,23 +96,14 @@ public class ConversationStore : IConversationStore
         await dbContext.Conversations.AddAsync(conversationDb);
         await dbContext.SaveChangesAsync();
 
-        // var messageDb = _mapper.Map<MessageDb>(conversationCreateDto.Message);
-        //
-        // await dbContext.Messages.AddAsync(messageDb);
-
         var userConversations = conversationCreateDto.ParticipantsId
             .Select(x => new UserConversationDb(x, conversationDb.Id))
             .ToList();
         
         userConversations.Add(new UserConversationDb(conversationCreateDto.CreatorId, conversationDb.Id));
-        
         await dbContext.UsersConversations.AddRangeAsync(userConversations);
-        
         await dbContext.SaveChangesAsync();
-
         var conversation = _mapper.Map<ConversationDto>(conversationDb);
-        //conversation.LastMessageAt = conversationDb.CreatedAt;
-
         conversation.CreatorId = conversationCreateDto.CreatorId;
         var conversationParticipants = new List<ConversationParticipantDto>
         {
@@ -120,7 +111,6 @@ public class ConversationStore : IConversationStore
         };
         
         conversationParticipants.AddRange(conversationCreateDto.ParticipantsId.Select(x => new ConversationParticipantDto(x, true)));
-
         conversation.Participants = conversationParticipants.ToArray();
         
         return conversation;
@@ -137,9 +127,6 @@ public class ConversationStore : IConversationStore
 
         var existing = userConversationsDb.GetSame(userIds, x => x.UserId, x => x).ToList();
         existing.ForEach(x => x.HasAccess = true);
-
-        //dbContext.UpdateRange(existing);
-        
         var newUserConversations = userIds
             .GetUniques(userConversationsDb, x => x, x => x.UserId)
             .Select(x => new UserConversationDb(x, conversationId))
@@ -147,7 +134,6 @@ public class ConversationStore : IConversationStore
         
         await dbContext.UsersConversations.AddRangeAsync(newUserConversations);
         await dbContext.SaveChangesAsync();
-        
         return await GetConversation(dbContext, conversationId, loggedUserId);
     }
 
@@ -162,7 +148,6 @@ public class ConversationStore : IConversationStore
         
         userConversationsDb.ForEach(x => x.HasAccess = false);
         await dbContext.SaveChangesAsync();
-
         return await GetConversation(dbContext, conversationId, loggedUserId);
     }
 
@@ -177,7 +162,10 @@ public class ConversationStore : IConversationStore
             .Where(x => conversationsIds.Contains(x.ConversationId))
             .ToArrayAsync();
 
-        var messagesIds = conversationsInfos.Select(x => x.LastMessageId).Distinct().ToArray();
+        var messagesIds = conversationsInfos
+            .Where(x => x.LastMessageAt != null)
+            .Select(x => x.LastMessageId).Distinct().ToArray();
+        
         var lastMessages = await dbContext.Messages
             .Where(x => messagesIds.Contains(x.Id))
             .Select(x => new MessageDto
@@ -199,11 +187,18 @@ public class ConversationStore : IConversationStore
             .Select(x => new {x.ConversationId, x.LastSeenAt})
             .ToArrayAsync();
         
-        return conversationsInfos
-            .Join(lastMessages, x => x.ConversationId, x => x.ConversationId, (conversationInfo, lastMessage) => new { conversationInfo, lastMessage })
-            .Join(lastSeenAtList, x => x.conversationInfo.ConversationId, x => x.ConversationId, (a, b) => new { a,b })
-            .Select(x => x.a.conversationInfo.ToConversationDto(x.a.lastMessage, x.b.LastSeenAt))
+        var conversations =  conversationsInfos
+            .Join(lastSeenAtList, x => x.ConversationId, x => x.ConversationId, (a, b) => new { a, b })
+            .Select(x => x.a.ToConversationDto(x.b.LastSeenAt))
             .ToArray();
+
+        conversations
+            .Join(lastMessages, x => x.Id, x => x.ConversationId,
+                (conversation, lastMessage) => new {conversation, lastMessage})
+            .ToList()
+            .ForEach(x => x.conversation.LastMessage = x.lastMessage);
+        
+        return conversations;
     }
 
     public async Task<ConversationLastSeenDto> UpdateConversationLastSeenAt(long conversationId, string loggedUserId)
@@ -217,7 +212,6 @@ public class ConversationStore : IConversationStore
 
         userConversation.LastSeenAt = DateTime.Now;
         await dbContext.SaveChangesAsync();
-
         return new ConversationLastSeenDto
         {
             ConversationId = conversationId,

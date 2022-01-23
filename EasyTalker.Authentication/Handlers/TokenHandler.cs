@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 
-namespace EasyTalker.Api.Authentication.Handlers;
+namespace EasyTalker.Authentication.Handlers;
 
 public class TokenHandler : ITokenHandler
 {
@@ -37,7 +34,7 @@ public class TokenHandler : ITokenHandler
             )));
     }
 
-    public ClaimsPrincipal ValidateToken(string token, bool validateLifetime)
+    public ClaimsPrincipal? ValidateToken(string token, bool validateLifetime)
     {
         var validationParameters = new TokenValidationParameters
         {
@@ -45,10 +42,8 @@ public class TokenHandler : ITokenHandler
             ValidateAudience = true,
             ValidateLifetime = validateLifetime,
             ValidateIssuerSigningKey = true,
-
             ValidIssuer = Constants.Authentication.JwtBearer.Issuer,
             ValidAudience = Constants.Authentication.JwtBearer.Audience,
-
             IssuerSigningKey = _symmetricSecurityKey,
             RoleClaimType = ClaimTypes.Role
         };
@@ -66,13 +61,9 @@ public class TokenHandler : ITokenHandler
     public Task<string> GenerateRefreshToken()
     {
         var randomBytes = new byte[64];
-
-        using var rngCrypto = new RNGCryptoServiceProvider();
-            
+        using var rngCrypto = RandomNumberGenerator.Create();
         rngCrypto.GetBytes(randomBytes);
-
         var randomValue = Convert.ToBase64String(randomBytes);
-
         return Task.FromResult(randomValue);
     }
 }

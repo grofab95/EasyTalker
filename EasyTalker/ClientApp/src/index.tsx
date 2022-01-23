@@ -15,28 +15,27 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './store/configureStore'
 import { createBrowserHistory } from 'history'
-import { HashRouter , Redirect, Route, Router } from 'react-router-dom'
+import { BrowserRouter, Redirect, Route, Router } from 'react-router-dom'
 import dashboard from './app/dashboard'
 import { LoginView } from './views/LoginPage'
-import RegisterView from './views/RegisterPage/RegisterView'
 
 const history = createBrowserHistory()
+// const baseUrl = document.getElementsByTagName('base')[0]?.getAttribute('href')
 
 ReactDOM.render(
     <Provider store={store}>
-        <HashRouter basename='/'>
+        <BrowserRouter basename='/'>
             <React.StrictMode>
-                <ReactNotification />
+                <ReactNotification/>
                 <Router history={history}>
-                    <Route exact path="/" render={() => (<Redirect to="/app/dashboard/" />)} />
-                    <Route exact path="/app" render={() => (<Redirect to="/app/dashboard/" />)} />
-                    
-                    <Route path="/login" component={LoginView} />
-                    <Route path="/register" component={RegisterView} />
-                    <Route path="/app/dashboard" component={dashboard} />
+                    {/*<Route exact path="/" render={() => (<Redirect to="/app/dashboard/"/>)}/>*/}
+                    {/*<Route exact path="/app" render={() => (<Redirect to="/app/dashboard/"/>)}/>*/}
+
+                    <Route path="/" component={dashboard}/>
+                    <Route path="/login" component={LoginView}/>
                 </Router>
             </React.StrictMode>
-        </HashRouter>
+        </BrowserRouter>
     </Provider>,
     document.getElementById('root')
 )

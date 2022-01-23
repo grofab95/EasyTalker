@@ -9,7 +9,6 @@ public class ConversationDto
     public string Title { get; set; }
     public string CreatorId { get; set; }
     public DateTime LastSeenAt { get; set; }
-    //public DateTime LastMessageAt { get; set; }
     public MessageDto LastMessage { get; set; }
     public ConversationParticipantDto[] Participants { get; set; }
 }

@@ -1,14 +1,13 @@
 ﻿using EasyTalker.Api;
-using EasyTalker.Infrastructure.Logger;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using EasyTalker.Api.Extensions;
 using Serilog;
 
-Log.Logger = LoggerFactory.Create();
-        
-CreateHostBuilder(args).Build().Run();
+Log.Logger = EasyTalker.Infrastructure.Logger.LoggerFactory.Create();
 
-IHostBuilder CreateHostBuilder(string[] args) =>
-    Host.CreateDefaultBuilder(args)
-        .UseSerilog()
-        .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
+Startup.ConfigureServices(builder.Services);
+builder
+    .Build()
+    .ConfigureService()
+    .Run();

@@ -5,6 +5,8 @@ import { userSessionCallbacks } from './userSession/hubEvents'
 import { conversationCallbacks } from './conversations/hubEvents'
 import { userCallbacks } from './users/hubEvents'
 
+const signalR = `${process.env.REACT_APP_API_URL}/uiHub`
+
 export const connection = new HubConnectionBuilder()
     .configureLogging(LogLevel.Debug)
     .withUrl(hubUrl, {

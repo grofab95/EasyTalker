@@ -4,12 +4,9 @@ using Easy.MessageHub;
 using EasyTalker.Api.Models;
 using EasyTalker.Api.Requests;
 using EasyTalker.Core.Adapters;
-using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Events;
-using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTalker.Api.Controllers;
@@ -38,15 +35,6 @@ public class UsersController : ControllerBase
         try
         {
             var user = await _userStore.RegisterUser(request.Username, request.Email, request.Password);
-            
-            // _messageHub.Publish(new MessageChanged(new MessageDto
-            // {
-            //     Id = 55,
-            //     Sender = user,
-            //     Text = "From register",
-            //     CreatedAt = DateTime.Now
-            // }));
-            
             _messageHub.Publish(new UserRegistered(user));
             
             return ApiResponse<UserDto>.Success(user);
@@ -62,8 +50,8 @@ public class UsersController : ControllerBase
     {
         try
         {
-            var result = await _userStore.GetById(userId);
-            return ApiResponse<UserDto>.Success(result);
+            var user = await _userStore.GetById(userId);
+            return ApiResponse<UserDto>.Success(user);
         }
         catch (Exception ex)
         {

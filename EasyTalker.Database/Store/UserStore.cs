@@ -84,10 +84,8 @@ public class UserStore : IUserStore
             .GetRequiredService<EasyTalkerContext>();
         
         await dbContext.Database.MigrateAsync();
-
         var users = await dbContext.Users.ToListAsync();
         users.ForEach(u => u.IsOnline = false);
-
         await dbContext.SaveChangesAsync();
     }
 }

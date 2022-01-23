@@ -1,6 +1,4 @@
-﻿using EasyTalker.Core.Dto.Message;
-
-namespace EasyTalker.Core.Dto.Conversation;
+﻿namespace EasyTalker.Core.Dto.Conversation;
 
 public class ConversationCreateDto
 {

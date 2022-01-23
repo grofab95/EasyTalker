@@ -12,7 +12,11 @@ import Logo from '../../app/dashboard/Logo'
 import { registerUser } from '../../store/users/api'
 import RegisterUser from '../../interfaces/Users/RegisterUser'
 
-const RegisterView: React.FC = () => {
+interface Props {
+    onSuccessfulRegister: () => void
+}
+
+const RegisterView: React.FC<Props> = (props) => {
     const dispatch = useDispatch()
     const anyBusy = useSelector((state: ApplicationState) => state.user.isBusy)
     // const token = useSelector((state: ApplicationState) => state.userSession.currentToken)
@@ -52,7 +56,7 @@ const RegisterView: React.FC = () => {
                         email: values.email,
                         password: values.password
                     } as RegisterUser,
-                    onSuccessfulResponse: () => history.replace('/')               
+                    onSuccessfulResponse: props.onSuccessfulRegister              
                 }))
         }
     })

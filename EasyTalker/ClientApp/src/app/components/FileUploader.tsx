@@ -31,7 +31,7 @@ const FileUploader: React.FC<{ externalId: string }> = props => {
         
         dispatch(uploadFile({
             file: selectedFile,
-            uploadId: uploadId,
+            uploadId: currentUploadId,
             externalId: props.externalId,
             onUploadProgress: onUploadProgress,
             onUploadResponse: onSuccessfulUpload

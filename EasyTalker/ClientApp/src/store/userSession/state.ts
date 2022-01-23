@@ -4,6 +4,8 @@ import { getUser, login, logout } from './api'
 import { AuthenticationResult } from '../../interfaces/AuthTokens'
 import { errorNotification, successNotification } from '../../utils/notificationFactory'
 import User from '../../interfaces/Users/User'
+import { BrowserRouter } from 'react-router-dom'
+import ApiResponseWithoutData from '../../interfaces/ApiResponseWithoutData'
 
 export interface UserSessionState {
     currentUser: User,
@@ -43,6 +45,7 @@ const userSessionSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(login.fulfilled, (state, action: PayloadAction<AuthenticationResult>) => {
+                console.log('login.fulfilled')
                 state.currentUser = action.payload.user
                 state.currentToken = action.payload.accessToken
                 saveTokens({ accessToken: action.payload.accessToken, refreshToken: action.payload.refreshToken })
@@ -58,19 +61,22 @@ const userSessionSlice = createSlice({
             .addCase(login.pending, (state) => {
                 state.isBusy = true
             })
-            .addCase(logout.fulfilled, (state) => {
-                state.isBusy = true
+            .addCase(logout.fulfilled, (state, action: PayloadAction<ApiResponseWithoutData>) => {
+                console.log('logout.fulfilled')
                 deleteTokens()
+                //window.location.href = "/";
                 window.location.reload()
             })
             .addCase(logout.pending, (state) => {
+                console.log('logout.pending')
                 deleteTokens()
-                state.isBusy = false
-                window.location.reload()
+                //window.location.href = "/";
+                window.location.reload()                         
             })
             .addCase(logout.rejected, (state) => {
+                console.log('logout.rejected')
                 deleteTokens()
-                state.isBusy = false
+                //window.location.href = "/";
                 window.location.reload()
             })
             .addCase(getUser.fulfilled, (state, action: PayloadAction<User>) => {

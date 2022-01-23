@@ -34,9 +34,7 @@ public class ConversationsController : ControllerBase
         try
         {
             var conversation = await _conversationStore.Add(conversationCreateDto);
-            
             _messageHub.Publish(new ConversationCreated(conversation));
-            
             return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
@@ -66,9 +64,7 @@ public class ConversationsController : ControllerBase
         try
         {
             var createdMessage = await _messageStore.Add(messageCreateDto);
-            
             _messageHub.Publish(new MessageCreated(createdMessage));
-
             return ApiResponse<MessageDto>.Success(createdMessage);
         }
         catch (Exception ex)
@@ -84,7 +80,6 @@ public class ConversationsController : ControllerBase
         try
         {
             var messages = await _conversationStore.GetMessages(conversationId);
-            
             return ApiResponse<MessageDto[]>.Success(messages);
         }
         catch (Exception ex)
@@ -101,9 +96,7 @@ public class ConversationsController : ControllerBase
         try
         {
             var conversation = await _conversationStore.AddParticipant(conversationId, usersId, GetLoggedUserId);
-            
             _messageHub.Publish(new ConversationUpdated(conversation));
-            
             return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
@@ -120,9 +113,7 @@ public class ConversationsController : ControllerBase
         try
         {
             var conversation = await _conversationStore.RemoveParticipant(conversationId, participantsIds, GetLoggedUserId);
-            
             _messageHub.Publish(new ConversationUpdated(conversation));
-            
             return ApiResponse<ConversationDto>.Success(conversation);
         }
         catch (Exception ex)
@@ -138,7 +129,6 @@ public class ConversationsController : ControllerBase
         try
         {
             var conversationLastSeenDto = await _conversationStore.UpdateConversationLastSeenAt(conversationId, GetLoggedUserId);
-            
             return ApiResponse<ConversationLastSeenDto>.Success(conversationLastSeenDto);
         }
         catch (Exception ex)

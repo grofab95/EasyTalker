@@ -1,5 +1,5 @@
 ﻿using EasyTalker.Core.Dto.User;
 
-namespace EasyTalker.Api.Dto;
+namespace EasyTalker.Core.Dto;
 
 public record AuthenticationResultDto(UserDto User, string AccessToken, string RefreshToken);

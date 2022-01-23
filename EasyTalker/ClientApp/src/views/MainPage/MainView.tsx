@@ -27,9 +27,15 @@ const MainView: React.FC = () => {
         updateLastSeenAt(id)
     }
 
-    const updateLastSeenAt = (id?: number) => {        
+    const updateLastSeenAt = (id?: number) => {                
+        const conversationId = id ?? selectedConversationId
+        const conversation = conversations.find(x => x.id === conversationId)
+        
+        if (conversation && conversation.lastMessage?.createdAt < conversation.lastSeenAt)
+            return
+        
         dispatch(updateLatSeenAt({
-            conversationId: id ?? selectedConversationId
+            conversationId: conversationId
         }))
     }
     

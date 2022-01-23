@@ -1,8 +1,10 @@
-﻿using EasyTalker.Database.Entities;
-using EasyTalker.Database.Store;
+﻿using System.IO;
+using EasyTalker.Database.Entities;
 using EasyTalker.Database.Views;
+using EasyTalker.Infrastructure.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace EasyTalker.Database;
 
@@ -13,26 +15,34 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     public DbSet<UserConversationDb> UsersConversations { get; set; }
     public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
     public DbSet<FileDb> Files { get; set; }
-    
     public DbSet<ConversationInfosView> ConversationInfosView { get; set; }
 
-    // public EasyTalkerContext()
-    // {
-    //             
-    // }
+    public EasyTalkerContext()
+    {
+                
+    }
         
     public EasyTalkerContext(DbContextOptions<EasyTalkerContext> options) : base(options)
     {
             
     }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (optionsBuilder.IsConfigured) 
+            return;
+
+        var appDirectory =
+            Path.Combine(new DirectoryInfo(Directory.GetCurrentDirectory())?.Parent?.FullName ?? "", "EasyTalker");
         
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     // optionsBuilder
-    //     //     .UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker;User Id=sa; Password=Q1w2e3;");
-    //     
-    //     optionsBuilder.EnableSensitiveDataLogging();
-    // }
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(appDirectory)
+            .AddJsonFile(Application.AppSettingsFile)
+            .Build();
+        
+        var connectionString = configuration.GetConnectionString("Database");
+        optionsBuilder.UseSqlServer(connectionString);
+    }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,8 +53,7 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
             x.HasNoKey();
             x.ToView("ConversationInfosView"); 
         });
-
         
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EasyTalkerContext).Assembly); // Here UseConfiguration is any IEntityTypeConfiguration
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EasyTalkerContext).Assembly); 
     }
 }

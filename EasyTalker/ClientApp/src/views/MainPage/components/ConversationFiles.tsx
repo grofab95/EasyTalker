@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ApplicationState } from '../../../store'
 import { getFiles } from '../../../store/files/api'
 import { FileInfo } from '../../../interfaces/Files/FileInfo'
+import { apiUrl } from '../../../store/config'
 
 const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     
@@ -16,7 +17,7 @@ const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     }, [dispatch])
     
     const getFileUrl = (file: FileInfo) => {
-        return `http://localhost:5000/static/${file.externalId}/${file.fileName}`
+        return `${apiUrl}/static/${file.externalId}/${file.fileName}`
     }
 
     return <>

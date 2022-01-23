@@ -28,12 +28,9 @@ public class MessageStore : IMessageStore
             .GetRequiredService<EasyTalkerContext>();
 
         var mappedMessage = _mapper.Map<MessageDb>(messageCreateDto);
-        
         var messageDb = await dbContext.Messages.AddAsync(mappedMessage);
         await dbContext.SaveChangesAsync();
-
         var sender = await _userManager.FindByIdAsync(messageDb.Entity.SenderId);
-        
         return new MessageDto
         {
             Id = messageDb.Entity.Id,

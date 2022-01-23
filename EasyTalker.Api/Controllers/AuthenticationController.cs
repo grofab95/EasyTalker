@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using EasyTalker.Api.Authentication.Services;
-using EasyTalker.Api.Dto;
 using EasyTalker.Api.Models;
 using EasyTalker.Api.Requests;
+using EasyTalker.Authentication.Services;
+using EasyTalker.Core.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyTalker.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
@@ -30,7 +31,6 @@ public class AuthenticationController : ControllerBase
         try
         {
             var result = await _authenticationService.Authenticate(request.Username, request.Password, GetRequestIpAddress());
-            
             return ApiResponse<AuthenticationResultDto>.Success(result);
         }
         catch (Exception ex)
@@ -45,7 +45,6 @@ public class AuthenticationController : ControllerBase
         try
         {
             var result = await _authenticationService.RefreshToken(request.RefreshToken);
-            
             return ApiResponse<AuthenticationResultDto>.Success(result);
         }
         catch (Exception ex)
@@ -60,7 +59,6 @@ public class AuthenticationController : ControllerBase
         try
         {
             await _authenticationService.RevokeToken(request.RefreshToken);
-            
             return ApiResponse.Success();
         }
         catch (Exception ex)

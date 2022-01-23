@@ -23,7 +23,7 @@ const LoginView: React.FC = () => {
         
     React.useEffect(() => {
         if (token !== '') {
-            history.replace('/app')
+            history.replace('/')
         }
     }, [history, token])
 
@@ -66,7 +66,7 @@ const LoginView: React.FC = () => {
                 </Modal.Title>
             </Modal.Header>            
             <Modal.Body>
-                <RegisterView />
+                <RegisterView onSuccessfulRegister={() => setShowRegisterModal(false)} />
             </Modal.Body>
             <Modal.Footer />
         </Modal>

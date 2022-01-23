@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EasyTalker.Authentication\EasyTalker.Authentication.csproj" />
     <ProjectReference Include="..\EasyTalker.Core\EasyTalker.Core.csproj" />
     <ProjectReference Include="..\EasyTalker.Database\EasyTalker.Database.csproj" />
     <ProjectReference Include="..\EasyTalker.Infrastructure\EasyTalker.Infrastructure.csproj" />
@@ -15,6 +16,7 @@
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="Easy.MessageHub" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />

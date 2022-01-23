@@ -290,6 +290,9 @@ namespace EasyTalker.Database.Migrations
                     b.Property<DateTime?>("LastMessageAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("LastMessageId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 

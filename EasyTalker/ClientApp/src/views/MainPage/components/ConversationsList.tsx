@@ -22,7 +22,11 @@ const ConversationsList: React.FC<Props> = (props) => {
 
     const [selectedId, setSelectedId] = useState<number>(0)
         
-    const isSeen = (conversation: Conversation) => {           
+    const isSeen = (conversation: Conversation) => {      
+        if (conversation.lastMessage === null) {
+            return false
+        }
+        
        return conversation.lastMessage.sender.id === getLoggedUserId() || conversation.lastMessage?.createdAt < conversation.lastSeenAt
     }
     

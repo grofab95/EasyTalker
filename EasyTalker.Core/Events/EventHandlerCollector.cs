@@ -2,7 +2,7 @@
 using Easy.MessageHub;
 using EasyTalker.Core.EventHandlers;
 
-namespace EasyTalker.Core.Utils;
+namespace EasyTalker.Core.Events;
 
 public class EventHandlerCollector
 {
