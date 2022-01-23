@@ -402,3 +402,4 @@ FodyWeavers.xsd
 
 EasyTalker/ClientApp/.idea
 EasyTalker/ClientApp/node_modules
+EasyTalker/ClientApp/build
