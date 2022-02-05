@@ -11,7 +11,7 @@ const Dashboard: React.FC<RouteComponentProps> = props => {
     React.useEffect(() => {
         ensureNonExpiredTokens()
     }, [])
-    let { path, url } = useRouteMatch();
+    const { path, url } = useRouteMatch();
     return <AuthenticationHoc>
         <Layout>
             <Route exact path={`${path}/`} component={MainView} />
