@@ -12,7 +12,7 @@ const ConversationSettings: React.FC<{ conversation: Conversation, users: User[]
     const [showRemoveParticipant, setShowRemoveParticipant] = useState<boolean>(false)
     
     return <>
-        <Modal show={showAddParticipant} onHide={() => setShowAddParticipant(false)} centered>
+        <Modal show={showAddParticipant} onHide={() => setShowAddParticipant(false)} centered backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>
                     Add participants
@@ -24,7 +24,7 @@ const ConversationSettings: React.FC<{ conversation: Conversation, users: User[]
             <Modal.Footer/>
         </Modal>
 
-        <Modal show={showRemoveParticipant} onHide={() => setShowRemoveParticipant(false)} centered>
+        <Modal show={showRemoveParticipant} onHide={() => setShowRemoveParticipant(false)} centered backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>
                     Remove participants

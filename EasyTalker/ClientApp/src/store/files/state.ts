@@ -1,8 +1,7 @@
 ﻿import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { getFiles, uploadFile } from './api'
 import { FileInfo } from '../../interfaces/Files/FileInfo'
-import { errorNotification, successNotification } from '../../utils/notificationFactory'
-import { act } from 'react-dom/test-utils'
+import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
 
 interface ExternalIdFiles {
     externalId: string,

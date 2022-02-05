@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using EasyTalker.Core;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
+using EasyTalker.Core.Exceptions;
 using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,9 @@ public class UserStore : IUserStore
         if (await _userManager.Users.AnyAsync(x => x.Email == email))
             throw new Exception($"Email {email} already exists.");
 
+        var passwordValidator = _userManager.PasswordValidators.SingleOrDefault()
+                                ?? throw new Exception("Missing password validator");
+
         var userDb = new UserDb
         {
             IsActive = true,
@@ -40,6 +45,8 @@ public class UserStore : IUserStore
             Email = email
         };
 
+        await ValidatePassword(userDb, password);
+        
         var result = await _userManager.CreateAsync(userDb, password);
         if (!result.Succeeded)
             throw new Exception(string.Join(';', result.Errors.Select(x => x.Description)));
@@ -83,9 +90,33 @@ public class UserStore : IUserStore
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
             .GetRequiredService<EasyTalkerContext>();
         
-        await dbContext.Database.MigrateAsync();
         var users = await dbContext.Users.ToListAsync();
         users.ForEach(u => u.IsOnline = false);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<string[]> ChangePassword(string userId, string currentPassword, string newPassword)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var user = await _userManager.FindByIdAsync(userId)
+                   ?? throw new Exception($"User with id {userId} not found");
+
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        return IdentityErrors.GetErrors(result);
+    }
+
+    private async Task ValidatePassword(UserDb userDb, string password)
+    {
+        var passwordValidator = _userManager.PasswordValidators.SingleOrDefault()
+                                ?? throw new Exception("Missing password validator");
+        
+        var validatorResult = await passwordValidator.ValidateAsync(_userManager, userDb, password);
+        if (validatorResult.Succeeded)
+            return;
+            
+        var errors = IdentityErrors.GetErrors(validatorResult);
+        throw new PasswordValidatorException(errors);
     }
 }

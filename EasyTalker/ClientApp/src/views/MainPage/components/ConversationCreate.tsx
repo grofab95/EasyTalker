@@ -21,21 +21,6 @@ const ConversationCreate: React.FC<Props> = (props) => {
     const [selectedUsers, setSelectedUsers] = useState<User[]>([])
     const dispatch = useDispatch()
 
-    // const handleUserSelect = (user: User) => {
-    //     const selectedUserId = selectedUsers.findIndex(x => x.id === user.id)
-    //     if (selectedUserId === -1) {
-    //         setSelectedUsers((selectedUsers) => [
-    //             ...selectedUsers,
-    //             user,
-    //         ])
-    //     } else {
-    //         const arr = selectedUsers
-    //         arr.splice(selectedUserId, 1)
-    //
-    //         setSelectedUsers(arr)
-    //     }
-    // }
-
     const create = () => {
         dispatch(createConversation({
             newConversation: {
@@ -46,8 +31,6 @@ const ConversationCreate: React.FC<Props> = (props) => {
             onSuccess: props.onCreate
         }))
     }
-
-    console.log(title)
 
     React.useEffect(() => {
         dispatch(getUsers({}))
@@ -62,8 +45,6 @@ const ConversationCreate: React.FC<Props> = (props) => {
         <p style={{textAlign: 'center'}}><b>Participants</b></p>
         <div>
             <UsersSelection users={users} onSelectionChanged={(u) => setSelectedUsers(u)} />
-            {/*{users && users.map((u, i) => <p key={i}>{u.userName} <input type='checkbox'*/}
-            {/*                                                             onChange={((e) => handleUserSelect(u))}/></p>)}*/}
         </div>
         <hr/>
         <div style={{textAlign: 'right'}}>

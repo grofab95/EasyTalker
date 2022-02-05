@@ -1,5 +1,4 @@
 ﻿import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { errorNotification, successNotification } from '../../utils/notificationFactory'
 import Conversation from '../../interfaces/Conversations/Conversation'
 import {
     addMessage,
@@ -11,7 +10,7 @@ import {
 } from './api'
 import Message from '../../interfaces/Messages/Message'
 import ConversationLastSeen from '../../interfaces/Conversations/ConversationLastSeen'
-import conversationView from '../../views/MainPage/components/ConversationView'
+import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
 
 interface ConversationMessages {
     conversationId: number,

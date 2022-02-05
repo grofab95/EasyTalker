@@ -1,9 +1,14 @@
 ﻿import { createSlice, current, PayloadAction } from '@reduxjs/toolkit'
-import { errorNotification, infoNotification, successNotification } from '../../utils/notificationFactory'
-import { getUsers, registerUser } from './api'
+import { changePassword, getUsers, registerUser } from './api'
 import User from '../../interfaces/Users/User'
 import { getLoggedUserId } from '../../utils/authUtils'
 import UserConnectionStatus from '../../interfaces/Users/UserConnectionStatus'
+import {
+    errorNotification,
+    errorNotificationFromMany,
+    infoNotification,
+    successNotification
+} from '../../utils/notifications/notificationFactory'
 
 export interface UserState {
     isBusy: boolean
@@ -48,7 +53,17 @@ const userSlice = createSlice({
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.isBusy = false
-                errorNotification((action.payload as any).error ?? 'Server Error')
+                const error = (action.payload as any).error
+                const errors = (action.payload as any).errors
+                
+                if (error === null && errors === null) {
+                    errorNotification('Server Error')
+
+                } else {
+                    error && errorNotification(error)
+                    errors && errorNotificationFromMany(errors)
+                }
+                
             })
             .addCase(registerUser.pending, (state) => {
                 state.isBusy = true
@@ -69,6 +84,26 @@ const userSlice = createSlice({
             .addCase(getUsers.rejected, (state, action) => {
                 errorNotification((action.payload as any).error ?? 'Server Error')
                 state.isBusy = false
+            })
+            .addCase(changePassword.pending, (state) => {
+                state.isBusy = true
+            })
+            .addCase(changePassword.fulfilled, (state) => {
+                state.isBusy = false
+                successNotification(`Password changed successfully`)
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.isBusy = false
+                const error = (action.payload as any).error
+                const errors = (action.payload as any).errors
+
+                if (error === null && errors === null) {
+                    errorNotification('Server Error')
+                } else {
+                    error && errorNotification(error)
+                    errors && errorNotificationFromMany(errors)
+                }
+
             })
     }
 })

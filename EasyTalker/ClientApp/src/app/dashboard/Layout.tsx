@@ -6,9 +6,6 @@ import Header from './Header'
 
 const Layout: React.FC = props => {
     const anyBusy = useSelector((state: ApplicationState) => state.user.isBusy || state.file.isBusy)
-    //const anyBusy = useSelector((state: ApplicationState) => state.userSession.isBusy || state.user.isBusy)
-    //const accountDeactivated = false
-    //const dispatch = useDispatch()
     
     return <>
         <div className="wrapper">
@@ -17,7 +14,7 @@ const Layout: React.FC = props => {
                     <h2>Please Wait</h2>
                     <Spinner animation="border" variant="primary" />
                 </Modal.Body>
-            </Modal>      
+            </Modal> 
             <Header />
             <div className="page-wrapper">
                 <div className="page-content">

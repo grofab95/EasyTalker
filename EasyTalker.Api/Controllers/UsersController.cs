@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Easy.MessageHub;
 using EasyTalker.Api.Models;
@@ -6,6 +7,8 @@ using EasyTalker.Api.Requests;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Events;
+using EasyTalker.Core.Exceptions;
+using EasyTalker.Database.Store;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,21 +30,25 @@ public class UsersController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ApiResponse<UserDto>> Register([FromBody] RegisterRequest request)
+    public async Task<ApiResponse<RegisterResponse>> Register([FromBody] RegisterRequest request)
     {
         if (!ModelState.IsValid)
-            return ApiResponse<UserDto>.Failure(string.Empty);
+            return ApiResponse<RegisterResponse>.Failure(string.Empty);
 
         try
         {
             var user = await _userStore.RegisterUser(request.Username, request.Email, request.Password);
             _messageHub.Publish(new UserRegistered(user));
-            
-            return ApiResponse<UserDto>.Success(user);
+
+            return ApiResponse<RegisterResponse>.Success(new RegisterResponse(user));
+        }
+        catch (PasswordValidatorException ex)
+        {
+            return ApiResponse<RegisterResponse>.Failure(ex.Errors);
         }
         catch (Exception ex)
         {
-            return ApiResponse<UserDto>.Failure(ex);
+            return ApiResponse<RegisterResponse>.Failure(ex);
         }
     }
     
@@ -70,6 +77,27 @@ public class UsersController : ControllerBase
         catch (Exception ex)
         {
             return ApiResponse<UserDto[]>.Failure(ex);
+        }
+    }
+
+    [HttpPost]
+    [Route("{userId}/change-password")]
+    public async Task<ApiResponse> ChangePassword([FromRoute] string userId, 
+        [FromBody] ChangePasswordRequest request)
+    {
+        try
+        {
+            var errors = await _userStore.ChangePassword(userId, request.CurrentPassword, request.NewPassword);
+            if (errors?.Any() ?? false)
+            {
+                return ApiResponse.Failure(errors);
+            }
+            
+            return ApiResponse.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Failure(ex);
         }
     }
 }

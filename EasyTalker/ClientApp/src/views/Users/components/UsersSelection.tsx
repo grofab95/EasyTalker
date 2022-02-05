@@ -13,7 +13,8 @@ const UsersSelection: React.FC<Props> = props => {
     if (!props.users) {
         return <>No users</>
     }
-    
+
+    const [users, setUsers] = useState<User[]>(props.users)
     const handleUserSelection = (user: User, isSelected: boolean) => {
         const currentSelectedUsers = selectedUsers
         if (isSelected) {
@@ -26,13 +27,21 @@ const UsersSelection: React.FC<Props> = props => {
         setSelectedUsers(currentSelectedUsers)        
         props.onSelectionChanged(selectedUsers)
     }
+    
+    const onSearchedTextChanged = (text: string) => {
+        const filteredUsers = text
+            ? props.users.filter(u => u.userName.includes(text))
+            : props.users
+        
+        setUsers(filteredUsers)
+    }
 
     return <>
-        <input placeholder='Search'/>
-        <div>
-            {props.users.map((u, i) => <p key={i}>{u.userName} <input type='checkbox'
-                                                                         onChange={((e) => handleUserSelection(u, e.target.checked))}/></p>)}
-        </div>
+        <input placeholder='Search' onChange={e => onSearchedTextChanged(e.target.value)} />
+        <ul>
+            {users.map((u, i) => <li><p key={i}>{u.userName} <input type='checkbox'
+                                                                         onChange={((e) => handleUserSelection(u, e.target.checked))}/></p> </li>)}
+        </ul>
     </>
 }
 export default UsersSelection

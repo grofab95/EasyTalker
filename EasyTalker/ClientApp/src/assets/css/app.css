@@ -11,19 +11,16 @@
 }
  
  .wrapper {
-     width: 100%;
      position: relative;
 }
  
  .page-wrapper {
      height: 100%;
-     margin-top: 50px;
-     margin-bottom: 30px;
      margin-left: 0;
 }
  
  .page-content {
-     padding: 1.5rem;
+     padding: 1rem 2.5rem 0 2.5rem
 }
  
  .page-footer {

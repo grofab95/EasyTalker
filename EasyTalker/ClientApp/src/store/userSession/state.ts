@@ -2,10 +2,9 @@
 import { deleteTokens, saveTokens } from '../../utils/authUtils'
 import { getUser, login, logout } from './api'
 import { AuthenticationResult } from '../../interfaces/AuthTokens'
-import { errorNotification, successNotification } from '../../utils/notificationFactory'
 import User from '../../interfaces/Users/User'
-import { BrowserRouter } from 'react-router-dom'
 import ApiResponseWithoutData from '../../interfaces/ApiResponseWithoutData'
+import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
 
 export interface UserSessionState {
     currentUser: User,
@@ -32,8 +31,6 @@ const userSessionSlice = createSlice({
     initialState: getDefaultState(),
     reducers: {
         currentUserChanged(state, action: PayloadAction<User>) {
-            //const user = action.payload
-
             state.showUserChangedPopup = true
             state.currentUser = action.payload
         },

@@ -40,7 +40,7 @@ const MainView: React.FC = () => {
     }
     
     return <>
-        <Modal show={showNewConversationModal} onHide={() => setNewConversationModal(false)} centered>
+        <Modal show={showNewConversationModal} onHide={() => setNewConversationModal(false)} centered backdrop="static"> 
             <Modal.Header closeButton>
                 <Modal.Title>
                     New conversation

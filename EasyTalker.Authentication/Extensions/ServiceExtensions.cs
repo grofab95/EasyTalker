@@ -1,9 +1,11 @@
 ﻿using EasyTalker.Authentication.Handlers;
+using EasyTalker.Authentication.Options;
 using EasyTalker.Authentication.Services;
 using EasyTalker.Database;
 using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,18 +13,20 @@ namespace EasyTalker.Authentication.Extensions;
 
 public static class ServiceExtensions
 {
-    public static void AddAppAuthentication(this IServiceCollection services)
+    public static void AddAppAuthentication(this IServiceCollection services, IConfigurationRoot configuration)
     {
-        services.AddIdentity<UserDb, IdentityRole>(options => // add to appsettings
+        var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
+        
+        services.AddIdentity<UserDb, IdentityRole>(options => 
             {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 2;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = authenticationOption.Password.RequiredLength;
+                options.Password.RequireDigit = authenticationOption.Password.RequireDigit;
+                options.Password.RequireLowercase = authenticationOption.Password.RequireLowercase;
+                options.Password.RequireUppercase = authenticationOption.Password.RequireUppercase;
+                options.Password.RequireNonAlphanumeric = authenticationOption.Password.RequireNonAlphanumeric;
             })
             .AddEntityFrameworkStores<EasyTalkerContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders(); 
 
         services.AddScoped<ITokenHandler, Handlers.TokenHandler>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

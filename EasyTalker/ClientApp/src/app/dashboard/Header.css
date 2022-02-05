@@ -1,21 +1,5 @@
-﻿.topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: #ffffff;
-    border-bottom: 1px solid #f0f0f0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+﻿.navbar {
     padding: 1rem;
-}
-
-.topbar .navbar {
-    width: 100%;
-    height: 60px;
-    padding-left: 30px;
-    padding-right: 30px;
+    background: #ffffff;
+    border-bottom: 1px solid #e4e4e4;
 }

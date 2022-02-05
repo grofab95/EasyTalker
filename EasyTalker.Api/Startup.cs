@@ -12,11 +12,13 @@ public static class Startup
 {
     public static void ConfigureServices(IServiceCollection services)
     {
+        var configuration = GetConfiguration();
+        
         services.AddAppOptions();
         services.AddAppCors();
         services.AddSignalRCommunication();
-        services.AddDatabase(GetConfiguration());
-        services.AddAppAuthentication();
+        services.AddDatabase(configuration);
+        services.AddAppAuthentication(configuration);
         services.AddSwagger();
         services.AddCors();
         services.AddFilePersistenceManager();

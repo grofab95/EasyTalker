@@ -1,11 +1,13 @@
 ﻿import { ReactNotificationOptions, store } from 'react-notifications-component'
+import * as React from 'react'
+import MultiErrorWrapper from './MultiErrorWrapper'
 
 type NotificationTypes = 'success' | 'danger' | 'info' | 'default' | 'warning'
 
-const createNotification = (title: string, message: string, type: NotificationTypes): ReactNotificationOptions => {
+const createNotification = (title: string, message: string | React.FunctionComponent | null, type: NotificationTypes, content: React.ComponentClass | React.FunctionComponent | React.ReactNode | undefined = undefined): ReactNotificationOptions => {
     return {
         title: title,
-        message: message,
+        message: message ?? content,
         type: type,
         insert: 'top',
         container: 'top-right',
@@ -17,6 +19,10 @@ const createNotification = (title: string, message: string, type: NotificationTy
             showIcon: true
         }
     }
+}
+
+export const errorNotificationFromMany = (messages: string[]) => {
+    store.addNotification(createNotification('Error', null, 'danger', MultiErrorWrapper({ messages: messages })))
 }
 
 export const errorNotification = (message: string) => {
