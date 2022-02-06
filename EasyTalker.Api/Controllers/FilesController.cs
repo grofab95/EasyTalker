@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Easy.MessageHub;
 using EasyTalker.Api.Extensions;
 using EasyTalker.Api.Models;
 using EasyTalker.Core.Dto.File;
+using EasyTalker.Core.Events;
 using EasyTalker.Core.Files;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +17,12 @@ namespace EasyTalker.Api.Controllers;
 public class FilesController : Controller
 {
     private readonly FilePersistenceManager _filePersistenceManager;
+    private readonly IMessageHub _messageHub;
 
-    public FilesController(FilePersistenceManager filePersistenceManager)
+    public FilesController(FilePersistenceManager filePersistenceManager, IMessageHub messageHub)
     {
         _filePersistenceManager = filePersistenceManager;
+        _messageHub = messageHub;
     }
 
     [HttpPost]
@@ -29,6 +33,7 @@ public class FilesController : Controller
         try
         {
             var fileDto = await _filePersistenceManager.UploadFile(User.GetId(), uploadFileDto);
+            _messageHub.Publish(new FileUploaded(fileDto));
             return ApiResponse<FileDto>.Success(fileDto);
         }
         catch (Exception ex)

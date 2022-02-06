@@ -8,10 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ApplicationState } from '../../store'
 import { updateLatSeenAt } from '../../store/conversations/api'
 import ConversationInfo from './components/ConversationInfo'
+import { FileType } from '../../interfaces/Files/FileType'
 
 const MainView: React.FC = () => {
 
-    const conversations = useSelector((state: ApplicationState) => state.conversation.conversationList)        
+    const conversations = useSelector((state: ApplicationState) => state.conversation.conversationList)
+    const files = useSelector((state: ApplicationState) => state.file.files)
     const dispatch = useDispatch()
     const [showNewConversationModal, setNewConversationModal] = useState(false)
     const [selectedConversationId, setSelectedConversationId] = useState<number>(0)
@@ -22,7 +24,6 @@ const MainView: React.FC = () => {
     }
     
     const onConversationSelected = (id: number) => {
-        console.log(`onConversationSelected id=${id}`)
         setSelectedConversationId(id)
         updateLastSeenAt(id)
     }
@@ -30,8 +31,20 @@ const MainView: React.FC = () => {
     const updateLastSeenAt = (id?: number) => {                
         const conversationId = id ?? selectedConversationId
         const conversation = conversations.find(x => x.id === conversationId)
+        if (!conversation)
+            return
         
-        if (conversation && conversation.lastMessage?.createdAt < conversation.lastSeenAt)
+        const lastImage = [...files]
+            .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+            .find(f => f.externalId === conversation.id.toString() && f.fileType === FileType.Image)
+
+        let lastMessageDate = conversation.lastMessage?.createdAt
+        
+        if (lastImage && lastImage.createdAt > lastMessageDate) {
+            lastMessageDate = lastImage.createdAt
+        }
+        
+        if (lastMessageDate < conversation.lastSeenAt)
             return
         
         dispatch(updateLatSeenAt({

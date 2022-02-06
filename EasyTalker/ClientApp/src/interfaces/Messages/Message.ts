@@ -3,8 +3,8 @@
 export default interface Message {
     id: number,
     conversationId: number,
-    sender: User,
+    sender: User | undefined,
     text: string,
-    status: string,
-    createdAt: Date
+    createdAt: Date,
+    isImage: boolean
 }

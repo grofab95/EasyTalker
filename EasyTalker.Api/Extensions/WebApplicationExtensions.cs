@@ -2,6 +2,7 @@
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Configuration;
 using EasyTalker.Core.Events;
+using EasyTalker.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -43,6 +44,9 @@ public static class WebApplicationExtensions
         using var scope = app.Services.CreateScope();
         var userStore = scope.ServiceProvider.GetService<IUserStore>();
         userStore?.SetAllUsersAsOffline()?.Wait();
+
+        var databaseInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
+        databaseInitializer?.Initialize().Wait();
         
         return app;
     }

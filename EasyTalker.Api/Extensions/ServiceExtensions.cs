@@ -91,6 +91,7 @@ public static class ServiceExtensions
         services.AddTransient<EventHandlerCollector>();
         services.AddTransient<IEventHandler, ConversationsEventHandler>();
         services.AddTransient<IEventHandler, UsersEventHandler>();
+        services.AddTransient<IEventHandler, FilesEventHandler>();
         services.AddTransient<IWebUiNotifier, WebUiNotifier>();
     }
 

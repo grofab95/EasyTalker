@@ -1,6 +1,7 @@
 ﻿using System;
 using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,15 +13,17 @@ public class FileDb : EntityDb
     public string FileName { get; set; }
     public string OwnerId { get; set; }
     public FileStatus FileStatus { get; set; }
+    public FileType FileType { get; set; }
 
     protected FileDb()
     { }
     
-    public FileDb(string ownerId, UploadFileDto uploadFileDto)
+    public FileDb(string ownerId, UploadFileDto uploadFileDto, FileType fileType)
     {
         ExternalId = uploadFileDto.ExternalId;
         FileName = uploadFileDto.File.FileName;
         OwnerId = ownerId;
+        FileType = fileType;
     }
 }
 
@@ -43,6 +46,12 @@ public class FileDbConfiguration : IEntityTypeConfiguration<FileDb>
             .HasConversion(
                 v => v.ToString(), 
                 v => (FileStatus) Enum.Parse(typeof(FileStatus), v));
+        
+        builder
+            .Property(x => x.FileType)
+            .HasConversion(
+                v => v.ToString(), 
+                v => (FileType) Enum.Parse(typeof(FileType), v));
     }
 }
 
@@ -54,8 +63,11 @@ public static class FileDbExtensions
         {
             DbId = fileDb.Id,
             ExternalId = fileDb.ExternalId,
+            OwnerId = fileDb.OwnerId,
             FileName = fileDb.FileName,
-            FileStatus = fileDb.FileStatus
+            FileStatus = fileDb.FileStatus,
+            FileType = fileDb.FileType,
+            CreatedAt = fileDb.CreatedAt
         };
     }
 }

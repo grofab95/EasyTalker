@@ -1,5 +1,6 @@
 ﻿using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.Conversation;
+using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
 using Microsoft.AspNetCore.SignalR;
@@ -19,4 +20,5 @@ public class WebUiNotifier : IWebUiNotifier
     public void ConversationUpdated(ConversationDto conversation) => _hubContext.Clients.All.SendAsync(nameof(ConversationUpdated), conversation);
     public void MessageCreated(MessageDto message) => _hubContext.Clients.All.SendAsync(nameof(MessageCreated), message);
     public void UserRegistered(UserDto user) => _hubContext.Clients.All.SendAsync(nameof(UserRegistered), user);
+    public void FileUploaded(FileDto file) => _hubContext.Clients.All.SendAsync(nameof(FileUploaded), file);
 }

@@ -5,6 +5,8 @@ using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Enums;
 using EasyTalker.Database.Entities;
+using EasyTalker.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,8 +28,8 @@ public class FileStore : IFileStore
 
         if (await IsFileExist(dbContext, uploadFileDto))
             throw new Exception("Uploading file is already exist in this conversation");
-        
-        var savedFile = await dbContext.Files.AddAsync(new FileDb(ownerId, uploadFileDto));
+        var fileType = DetermineFileType(uploadFileDto.File);
+        var savedFile = await dbContext.Files.AddAsync(new FileDb(ownerId, uploadFileDto, fileType));
         await dbContext.SaveChangesAsync();
         return savedFile.Entity.ToFileDto();
     }
@@ -59,5 +61,15 @@ public class FileStore : IFileStore
         fileDb.FileStatus = fileStatus;
         await dbContext.SaveChangesAsync();
         return fileDb.ToFileDto();
+    }
+
+    private FileType DetermineFileType(IFormFile file)
+    {
+        var imagesExtensions = new[] {"jpg", "jpeg", "gif", "png", "bmp"};
+        var extension = file.GetExtension()?.Replace(".", string.Empty);
+
+        return imagesExtensions.Contains(extension?.ToLower().Trim())
+            ? FileType.Image
+            : FileType.Other;
     }
 }

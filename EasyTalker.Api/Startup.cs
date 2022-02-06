@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.Json.Serialization;
 using EasyTalker.Api.Extensions;
 using EasyTalker.Authentication.Extensions;
 using EasyTalker.Database.Extensions;
@@ -22,7 +23,10 @@ public static class Startup
         services.AddSwagger();
         services.AddCors();
         services.AddFilePersistenceManager();
-        services.AddControllers().AddControllersAsServices();
+        services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        }).AddControllersAsServices();
     }
 
     private static IConfigurationRoot GetConfiguration()

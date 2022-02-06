@@ -3,13 +3,17 @@ import Message from '../../../interfaces/Messages/Message'
 import { getLoggedUserId } from '../../../utils/authUtils'
 import { formatDate } from '../../../utils/unitFormaters'
 
-const SingleMessage: React.FC<Message> = props => {
+const SingleMessage: React.FC<Message> = message => {
     
-    const textAlign = props.sender.id === getLoggedUserId() ? 'right' : 'left'
-       
-    return <div style={{textAlign: textAlign}}>
-        <p className="mb-0"><b>{props.sender.userName} ({formatDate(props.createdAt, "DD.MM.YYYY HH:mm")}):</b></p>
-        <p>{props.text}</p>
+    if (message.sender === undefined) {
+        return <p><b>Undefined Sender.</b></p>
+    }
+    
+    const textAlign = message.sender.id === getLoggedUserId() ? 'right' : 'left'
+          
+    return <div style={{textAlign: textAlign}}>        
+        <p className="mb-0"><b>{message.sender.userName} ({formatDate(message.createdAt, "DD.MM.YYYY HH:mm")}):</b></p>
+        {message.isImage ? <img style={{maxWidth: '30%'}} src={message.text} alt="image" /> : <p>{message.text}</p>}
     </div>
 }
 export default SingleMessage

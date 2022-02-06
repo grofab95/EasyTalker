@@ -4,6 +4,7 @@ import { getAccessToken } from '../utils/authUtils'
 import { userSessionCallbacks } from './userSession/hubEvents'
 import { conversationCallbacks } from './conversations/hubEvents'
 import { userCallbacks } from './users/hubEvents'
+import { fileCallbacks } from './files/hubEvents'
 
 const signalR = `${process.env.REACT_APP_API_URL}/uiHub`
 
@@ -31,6 +32,6 @@ const callbacksCombine = (callbacks: Map<string, Callback<any, any>>[]) => {
     return combined
 }
 
-const callbacks = callbacksCombine([conversationCallbacks, userCallbacks])
+const callbacks = callbacksCombine([conversationCallbacks, userCallbacks, fileCallbacks])
 
 export const signalrMiddleware = signalMiddleware({callbacks, connection, shouldConnectionStartImmediately: false})

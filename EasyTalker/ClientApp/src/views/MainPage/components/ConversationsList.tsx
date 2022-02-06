@@ -1,9 +1,11 @@
 ﻿import React, { useState } from 'react'
 import Conversation from '../../../interfaces/Conversations/Conversation'
 import styles from '../../MainPage/components/ConversationsList.module.css'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ApplicationState } from '../../../store'
 import { getLoggedUserId } from '../../../utils/authUtils'
+import { FileType } from '../../../interfaces/Files/FileType'
+import { getFiles } from '../../../store/files/api'
 
 interface Props {
     conversationIdSelected: (id: number) => void
@@ -12,6 +14,8 @@ interface Props {
 const ConversationsList: React.FC<Props> = (props) => {
 
     const conversations = useSelector((state: ApplicationState) => state.conversation.conversationList)
+    const files = useSelector((state: ApplicationState) => state.file.files)
+    const dispatch = useDispatch()
     
     React.useEffect(() => {
         const firstConversationId = [...conversations]?.sort((a, b) => (a.lastMessage?.createdAt > b.lastMessage?.createdAt ? -1 : 1))[0]?.id
@@ -19,15 +23,23 @@ const ConversationsList: React.FC<Props> = (props) => {
             onConversationSelected(firstConversationId)
         }
     })
-
+    
     const [selectedId, setSelectedId] = useState<number>(0)
         
     const isSeen = (conversation: Conversation) => {      
         if (conversation.lastMessage === null) {
+            return false            
+        }
+
+        const lastImage = [...files]
+            .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+            .find(f => f.externalId === conversation.id.toString() && f.fileType === FileType.Image)
+        
+        if (lastImage && lastImage.createdAt >= conversation.lastSeenAt) {
             return false
         }
         
-       return conversation.lastMessage.sender.id === getLoggedUserId() || conversation.lastMessage?.createdAt < conversation.lastSeenAt
+       return conversation.lastMessage?.sender?.id === getLoggedUserId() || conversation.lastMessage?.createdAt < conversation.lastSeenAt
     }
     
     const onConversationSelected = (id: number) => {

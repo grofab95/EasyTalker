@@ -18,5 +18,6 @@ public static class ServiceExtensions
         services.AddTransient<IConversationStore, ConversationStore>();
         services.AddTransient<IMessageStore, MessageStore>();
         services.AddTransient<IFileStore, FileStore>();
+        services.AddTransient<DatabaseInitializer>();
     }
 }

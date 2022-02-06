@@ -2,6 +2,8 @@
 import { getFiles, uploadFile } from './api'
 import { FileInfo } from '../../interfaces/Files/FileInfo'
 import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
+import User from '../../interfaces/Users/User'
+import { getLoggedUserId } from '../../utils/authUtils'
 
 interface ExternalIdFiles {
     externalId: string,
@@ -24,7 +26,14 @@ const getDefaultState = () => {
 const fileSlice = createSlice({
     name: 'file',
     initialState: getDefaultState(),
-    reducers: {},
+    reducers: {
+        fileUploaded(state, action: PayloadAction<FileInfo>) {
+            const index = state.files?.findIndex(x => x.dbId === action.payload.dbId)
+            if (index === -1 && action.payload.ownerId !== getLoggedUserId()) {
+                state.files?.push(action.payload)
+            }
+        }        
+    },
     extraReducers: builder => {
         builder
             .addCase(uploadFile.pending, (state) => {
