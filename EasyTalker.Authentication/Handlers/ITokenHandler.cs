@@ -6,5 +6,5 @@ public interface ITokenHandler
 {
     Task<string> GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset notBefore, DateTimeOffset expiresAt);
     Task<string> GenerateRefreshToken();
-    ClaimsPrincipal? ValidateToken(string token, bool validateLifetime);
+    ClaimsPrincipal ValidateToken(string token, bool validateLifetime);
 }

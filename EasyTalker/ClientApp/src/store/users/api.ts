@@ -5,6 +5,7 @@ import RegisterUser from '../../interfaces/Users/RegisterUser'
 import User from '../../interfaces/Users/User'
 import ChangePasswordFactors from '../../interfaces/Users/ChangePasswordFactors'
 import ApiResponseWithoutData from '../../interfaces/ApiResponseWithoutData'
+import RegisterResponse from "../../interfaces/Users/RegisterResponse";
 
 const apiUrls = {
     register: () => 'users/register',
@@ -15,7 +16,7 @@ const apiUrls = {
 export const registerUser = createAsyncThunk('user/register', async (payload: { registeredUser: RegisterUser, onSuccessfulResponse: () => void }, thunkApi) => {
     try {
         console.log('registerUser')
-        const response = await apiClient.post<ApiResponse<User>>(apiUrls.register(), payload.registeredUser)
+        const response = await apiClient.post<ApiResponse<RegisterResponse>>(apiUrls.register(), payload.registeredUser)
         
         if (!response.data.isSuccess) {
             return thunkApi.rejectWithValue({ error: response.data.error, errors: response.data.errors })

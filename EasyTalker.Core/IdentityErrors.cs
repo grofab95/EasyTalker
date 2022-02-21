@@ -32,7 +32,7 @@ public static class IdentityErrors
         ["PasswordRequiresUpper"] = "Password requires upper"
     };
 
-    public static string[]? GetErrors(IdentityResult identityResult)
+    public static string[] GetErrors(IdentityResult identityResult)
     {
         if (identityResult.Succeeded || identityResult.Errors == null)
             return null;

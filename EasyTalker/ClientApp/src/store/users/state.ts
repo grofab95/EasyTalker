@@ -9,6 +9,7 @@ import {
     infoNotification,
     successNotification
 } from '../../utils/notifications/notificationFactory'
+import RegisterResponse from "../../interfaces/Users/RegisterResponse";
 
 export interface UserState {
     isBusy: boolean
@@ -46,10 +47,11 @@ const userSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
-                state.isBusy = false
-                state.userList.push(action.payload)
-                successNotification(`Account for ${action.payload.userName} created successfully`)
+            .addCase(registerUser.fulfilled, (state, action: PayloadAction<RegisterResponse>) => {
+                state.isBusy = false                
+                const user = action.payload.user
+                state.userList.push(user)                                
+                successNotification(`Account for ${user.userName} created successfully`)
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.isBusy = false
@@ -62,8 +64,7 @@ const userSlice = createSlice({
                 } else {
                     error && errorNotification(error)
                     errors && errorNotificationFromMany(errors)
-                }
-                
+                }                
             })
             .addCase(registerUser.pending, (state) => {
                 state.isBusy = true

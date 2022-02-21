@@ -34,7 +34,7 @@ public class TokenHandler : ITokenHandler
             )));
     }
 
-    public ClaimsPrincipal? ValidateToken(string token, bool validateLifetime)
+    public ClaimsPrincipal ValidateToken(string token, bool validateLifetime)
     {
         var validationParameters = new TokenValidationParameters
         {

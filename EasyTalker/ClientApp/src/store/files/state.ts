@@ -50,11 +50,11 @@ const fileSlice = createSlice({
                 state.isBusy = false
             })
             .addCase(getFiles.pending, (state) => {
-                state.isBusy = true
+                //state.isBusy = true
             })
             .addCase(getFiles.rejected, (state, action) => {
                 //errorNotification((action.payload as any).error ?? 'Server Error')
-                state.isBusy = false
+                //state.isBusy = false
             })
             .addCase(getFiles.fulfilled, (state, action: PayloadAction<FileInfo[]>) => {
                 //successNotification(`File ${action.payload.fileName} has been successfully uploaded`)
@@ -64,7 +64,7 @@ const fileSlice = createSlice({
                 
                 state.files.push(...newFiles)
                 
-                state.isBusy = false
+                //state.isBusy = false
             })
     }
 })

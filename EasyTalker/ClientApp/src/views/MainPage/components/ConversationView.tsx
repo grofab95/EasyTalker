@@ -57,15 +57,11 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
         }
     }, [messages, files])
     
-    if (!conversation || !messages) {
+    if (!conversation) {
         return <></>
     }
 
     const hasAccess = conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
-
-    if (allMessages === undefined) {
-        return <></>
-    }
     
     return <>
         <Card style={{borderRadius: '1rem', border: 0}}>

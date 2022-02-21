@@ -11,6 +11,10 @@ const MessageCreate: React.FC<{ conversationId: number }> = (props) => {
     const [text, setText] = useState('')
     
     const onSubmit = () => {
+        if (!text) {
+            return;
+        }
+        
         dispatch(addMessage({
             newMessage: {
                 senderId: getLoggedUserId(),

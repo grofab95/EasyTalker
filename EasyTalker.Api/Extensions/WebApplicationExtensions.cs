@@ -42,11 +42,12 @@ public static class WebApplicationExtensions
         eventHandlerCollector.RegisterHandlers();
         
         using var scope = app.Services.CreateScope();
-        var userStore = scope.ServiceProvider.GetService<IUserStore>();
-        userStore?.SetAllUsersAsOffline()?.Wait();
-
+        
         var databaseInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
         databaseInitializer?.Initialize().Wait();
+        
+        var userStore = scope.ServiceProvider.GetService<IUserStore>();
+        userStore?.SetAllUsersAsOffline()?.Wait();
         
         return app;
     }
