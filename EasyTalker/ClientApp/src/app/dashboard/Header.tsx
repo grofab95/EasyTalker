@@ -27,7 +27,7 @@ const Header: React.FC = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ChangePassword />
+                    <ChangePassword onSuccessful={() => setShowChangePasswordModal(false)} />
                 </Modal.Body>
                 <Modal.Footer/>
             </Modal>

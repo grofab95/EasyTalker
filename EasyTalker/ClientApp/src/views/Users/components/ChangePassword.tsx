@@ -10,7 +10,11 @@ import ChangePasswordFactors from '../../../interfaces/Users/ChangePasswordFacto
 import { Button, Col, Form } from 'react-bootstrap'
 import { logout } from '../../../store/userSession/api'
 
-const ChangePassword: React.FC = () => {
+interface Props {
+    onSuccessful: () => void
+}
+
+const ChangePassword: React.FC<Props> = (props) => {
     
     const dispatch = useDispatch()
     
@@ -40,7 +44,7 @@ const ChangePassword: React.FC = () => {
                     currentPassword: values.currentPassword,
                     newPassword: values.newPassword
                 } as ChangePasswordFactors,
-                onSuccessfulResponse: () => dispatch(logout())
+                onSuccessfulResponse: props.onSuccessful
             }))
         }
     })

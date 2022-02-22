@@ -73,20 +73,7 @@ const conversationSlice = createSlice({
             if (conversation !== undefined) {
                 conversation.lastMessage = message
             }
-            
-            // const conversation = state.conversationList.find(x => x.id == message.conversationId)
-            // if (conversation !== undefined) {
-            //     conversation.lastMessageAt = message.createdAt
-            // }
-            // console.log(state.selectedConversationId)
-            // if (message.conversationId === state.selectedConversationId) {
-            //     console.log('dupa')
-            //     updateLatSeenAt({
-            //             conversationId: message.conversationId,
-            //             seenAt: new Date(Date.now())
-            //         })
-            // }
-        }, //payload: { conversationId: number, seenAt: Date
+        }, 
         updateSelectedConversationId(state, action: PayloadAction<number>) {
             console.log(`updateSelectedConversationId id=${action.payload}`)
             state.selectedConversationId = action.payload

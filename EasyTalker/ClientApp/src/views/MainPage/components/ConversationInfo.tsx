@@ -23,6 +23,8 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
             .map(u => u.id)
     }
 
+    const hasAccess = conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
+
     return <Card className='border-0 rounded p-2' style={{marginBottom: '10px'}}>
         <h3>{conversation?.title} (ID: {conversation?.id})</h3>
         <hr/>
@@ -35,7 +37,7 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
                                                                                                        userId={id}/>)}
         </Row>
         <hr/>
-        <FileUploader externalId={props.conversationId.toString()}/>
+        {hasAccess ? <FileUploader externalId={props.conversationId.toString()} /> : <></>}
         <hr/>
         <ConversationFiles conversation={conversation}/>
     </Card>

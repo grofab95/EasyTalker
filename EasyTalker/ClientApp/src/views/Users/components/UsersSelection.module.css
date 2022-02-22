@@ -1,0 +1,4 @@
+.selectedUsers {
+    display: flex;
+    flex-wrap: wrap;
+}
