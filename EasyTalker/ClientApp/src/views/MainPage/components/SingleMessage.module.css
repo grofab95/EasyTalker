@@ -1,0 +1,4 @@
+.imageMessage {
+    display: flex;
+    flex-direction: column;    
+}

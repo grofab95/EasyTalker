@@ -3,8 +3,7 @@ import Conversation from '../../../interfaces/Conversations/Conversation'
 import { useDispatch, useSelector } from 'react-redux'
 import { ApplicationState } from '../../../store'
 import { getFiles } from '../../../store/files/api'
-import { FileInfo } from '../../../interfaces/Files/FileInfo'
-import { apiUrl } from '../../../store/config'
+import {getFileUrl} from "../../../utils/helpers/fileHelpers";
 
 const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     
@@ -16,10 +15,6 @@ const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
         dispatch(getFiles(props.conversation.id.toString()))
     }, [dispatch])
     
-    const getFileUrl = (file: FileInfo) => {
-        return `${apiUrl}/static/${file.externalId}/${file.fileName}`
-    }
-
     return <>
         {files && files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
     </>
