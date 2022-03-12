@@ -17,7 +17,7 @@ const SingleMessage: React.FC<Message> = message => {
     const imageMessage = () =>
         <div className={styles.imageMessage} style={{alignItems: imageAlign}}>
             <img style={{maxWidth: '30%'}} src={message.text} alt="image" />
-            <a href={message.text}>{message.text.split('/').slice(-1).pop()}</a>
+            <a href={message.text} target="_blank">{message.text.split('/').slice(-1).pop()}</a>
         </div>
           
     return <div style={{textAlign: textAlign}}>        
