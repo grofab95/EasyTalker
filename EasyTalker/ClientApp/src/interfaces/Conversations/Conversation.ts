@@ -1,5 +1,6 @@
 ﻿import ConversationParticipant from './ConversationParticipant'
 import Message from '../Messages/Message'
+import {ConversationStatus} from "./ConversationStatus";
 
 export default interface Conversation {
     creatorId: string,
@@ -7,5 +8,6 @@ export default interface Conversation {
     id: number,
     title: string,
     lastSeenAt: Date,
-    lastMessage: Message
+    lastMessage: Message,
+    status: ConversationStatus
 }

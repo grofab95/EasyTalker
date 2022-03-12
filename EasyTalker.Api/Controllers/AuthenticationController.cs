@@ -22,7 +22,8 @@ public class AuthenticationController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("login")]
+    [HttpPost]
+    [Route("login")]
     public async Task<ApiResponse<AuthenticationResultDto>> Login([FromBody] LoginRequest request)
     {
         if (!ModelState.IsValid)
@@ -39,7 +40,8 @@ public class AuthenticationController : ControllerBase
         }
     }
     
-    [HttpPost("refresh-token")]
+    [HttpPost]
+    [Route("refresh-token")]
     public async Task<ApiResponse<AuthenticationResultDto>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         try
@@ -53,7 +55,8 @@ public class AuthenticationController : ControllerBase
         }
     }
     
-    [HttpPost("revoke-token")]
+    [HttpPost]
+    [Route("revoke-token")]
     public async Task<ApiResponse> RevokeToken([FromBody] RevokeTokenRequest request)
     {
         try

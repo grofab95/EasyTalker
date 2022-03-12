@@ -1,16 +1,17 @@
-﻿import React, { useState } from 'react'
-import { Card } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import { getMessages } from '../../../store/conversations/api'
+﻿import React, {useState} from 'react'
+import {Card} from 'react-bootstrap'
+import {useDispatch, useSelector} from 'react-redux'
+import {ApplicationState} from '../../../store'
+import {getMessages} from '../../../store/conversations/api'
 import SingleMessage from './SingleMessage'
 import MessageCreate from './MessageCreate'
-import { getLoggedUserId } from '../../../utils/authUtils'
+import {getLoggedUserId} from '../../../utils/authUtils'
 import styles from '../../MainPage/components/ConversationView.module.css'
-import { FileType } from '../../../interfaces/Files/FileType'
+import {FileType} from '../../../interfaces/Files/FileType'
 import Message from '../../../interfaces/Messages/Message'
-import { FileInfo } from '../../../interfaces/Files/FileInfo'
-import { apiUrl } from '../../../store/config'
+import {FileInfo} from '../../../interfaces/Files/FileInfo'
+import {apiUrl} from '../../../store/config'
+import {ConversationStatus} from "../../../interfaces/Conversations/ConversationStatus";
 
 const ConversationView: React.FC<{ conversationId: number }> = props => {
 
@@ -61,7 +62,7 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
         return <></>
     }
 
-    const hasAccess = conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
+    const hasAccess = conversation.status === ConversationStatus.Open && conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
     
     return <>
         <Card style={{borderRadius: '1rem', border: 0}}>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EasyTalker.Core.Dto.Conversation;
+using EasyTalker.Core.Enums;
 using EasyTalker.Database.Views;
 
 namespace EasyTalker.Database.Extensions;
@@ -18,6 +19,7 @@ public static class ViewsExtensions
         {
             Id = view.ConversationId,
             Title = view.Title,
+            Status = Enum.Parse<ConversationStatus>(view.Status),
             CreatorId = view.CreatorId,
             LastSeenAt = lastSeenAt,
             Participants = participants

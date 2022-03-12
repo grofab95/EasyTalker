@@ -6,6 +6,7 @@ using EasyTalker.Api.Models;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
+using EasyTalker.Core.Enums;
 using EasyTalker.Core.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,8 +58,8 @@ public class ConversationsController : ControllerBase
         }
     }
     
-    [Route("messages")]
     [HttpPost]
+    [Route("messages")]
     public async Task<ApiResponse<MessageDto>> AddMessage([FromBody] MessageCreateDto messageCreateDto)
     {
         try
@@ -73,8 +74,8 @@ public class ConversationsController : ControllerBase
         }
     }
     
-    [Route("{conversationId:long}/messages")]
     [HttpGet]
+    [Route("{conversationId:long}/messages")]
     public async Task<ApiResponse<MessageDto[]>> GetMessages([FromRoute] long conversationId)
     {
         try
@@ -87,9 +88,9 @@ public class ConversationsController : ControllerBase
             return ApiResponse<MessageDto[]>.Failure(ex);
         }
     }
-
-    [Route("{conversationId:long}/participants/add")]
+    
     [HttpPut]
+    [Route("{conversationId:long}/participants/add")]
     public async Task<ApiResponse<ConversationDto>> AddParticipants([FromRoute] long conversationId,
         [FromBody] string[] usersId)
     {
@@ -105,8 +106,8 @@ public class ConversationsController : ControllerBase
         }
     }
     
-    [Route("{conversationId:long}/participants/remove")]
     [HttpPut]
+    [Route("{conversationId:long}/participants/remove")]
     public async Task<ApiResponse<ConversationDto>> RemoveParticipants([FromRoute] long conversationId,
         [FromBody] string[] participantsIds)
     {
@@ -122,8 +123,8 @@ public class ConversationsController : ControllerBase
         }
     }
 
-    [Route("{conversationId:long}")]
     [HttpPatch]
+    [Route("{conversationId:long}")]
     public async Task<ApiResponse<ConversationLastSeenDto>> UpdateConversationLastSeenAt([FromRoute] long conversationId)
     {
         try
@@ -134,6 +135,23 @@ public class ConversationsController : ControllerBase
         catch (Exception ex)
         {
             return ApiResponse<ConversationLastSeenDto>.Failure(ex);
+        }
+    }
+    
+    [HttpPut]
+    [Route("{conversationId:long}/update-status")]
+    public async Task<ApiResponse> UpdateConversationStatus([FromRoute] long conversationId, [FromBody] ConversationStatus status)
+    {
+        try
+        {
+            var conversation = await _conversationStore.UpdateConversationStatus(conversationId, status, GetLoggedUserId);
+            _messageHub.Publish(new ConversationUpdated(conversation));
+            
+            return ApiResponse.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Failure(ex);
         }
     }
     

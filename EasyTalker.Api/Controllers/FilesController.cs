@@ -42,8 +42,8 @@ public class FilesController : Controller
         }
     }
 
-    [Route("external-id/{externalId}")]
     [HttpGet]
+    [Route("external-id/{externalId}")]
     public async Task<ApiResponse<FileDto[]>> GetFiles([FromRoute] string externalId)
     {
         try

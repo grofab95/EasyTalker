@@ -7,6 +7,7 @@ using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
+using EasyTalker.Core.Enums;
 using EasyTalker.Database.Entities;
 using EasyTalker.Database.Extensions;
 using EasyTalker.Infrastructure.Extensions;
@@ -151,6 +152,38 @@ public class ConversationStore : IConversationStore
         return await GetConversation(dbContext, conversationId, loggedUserId);
     }
 
+    public async Task<ConversationLastSeenDto> UpdateConversationLastSeenAt(long conversationId, string loggedUserId)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var userConversation = await dbContext.UsersConversations
+            .FirstOrDefaultAsync(x => x.ConversationId == conversationId && x.UserId == loggedUserId)
+                               ?? throw new Exception($"Conversation with id {conversationId} not exist");
+
+        userConversation.LastSeenAt = DateTime.Now;
+        await dbContext.SaveChangesAsync();
+        return new ConversationLastSeenDto
+        {
+            ConversationId = conversationId,
+            LastSeenAt = userConversation.LastSeenAt
+        };
+    }
+
+    public async Task<ConversationDto> UpdateConversationStatus(long conversationId, ConversationStatus status, string loggedUserId)
+    {
+        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
+            .GetRequiredService<EasyTalkerContext>();
+
+        var conversation = await dbContext.Conversations.FindAsync(conversationId)
+                           ?? throw new Exception($"Conversation with id {conversationId} not exist");
+
+        conversation.Status = status;
+        await dbContext.SaveChangesAsync();
+
+        return await GetConversation(dbContext, conversationId, loggedUserId);
+    }
+    
     private async Task<ConversationDto> GetConversation(EasyTalkerContext dbContext, long conversationId, string loggedUserId)
     {
         return (await GetConversations(dbContext, new[] {conversationId}, loggedUserId))?.SingleOrDefault();
@@ -199,23 +232,5 @@ public class ConversationStore : IConversationStore
             .ForEach(x => x.conversation.LastMessage = x.lastMessage);
         
         return conversations;
-    }
-
-    public async Task<ConversationLastSeenDto> UpdateConversationLastSeenAt(long conversationId, string loggedUserId)
-    {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-
-        var userConversation = await dbContext.UsersConversations
-            .FirstOrDefaultAsync(x => x.ConversationId == conversationId && x.UserId == loggedUserId)
-                               ?? throw new Exception($"Conversation with id {conversationId} not exist");
-
-        userConversation.LastSeenAt = DateTime.Now;
-        await dbContext.SaveChangesAsync();
-        return new ConversationLastSeenDto
-        {
-            ConversationId = conversationId,
-            LastSeenAt = userConversation.LastSeenAt
-        };
     }
 }

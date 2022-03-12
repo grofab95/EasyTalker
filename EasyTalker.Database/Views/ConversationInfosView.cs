@@ -9,6 +9,7 @@ public class ConversationInfosView
     public string CreatorId { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastMessageAt { get; set; }
+    public string Status { get; set; }
     public long? LastMessageId { get; set; }
     public string ConversationParticipantsString { get; set; }
 }

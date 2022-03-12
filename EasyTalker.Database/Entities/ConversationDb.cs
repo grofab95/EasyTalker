@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EasyTalker.Core.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EasyTalker.Database.Entities;
@@ -7,6 +8,7 @@ public class ConversationDb : EntityDb
 {
     public string CreatorId { get; set; }
     public string Title { get; set; }
+    public ConversationStatus Status { get; set; }
 }
 
 public class ConversationDbConfiguration : IEntityTypeConfiguration<ConversationDb>
@@ -20,5 +22,9 @@ public class ConversationDbConfiguration : IEntityTypeConfiguration<Conversation
         builder
             .HasIndex(x => new {x.CreatorId, x.Title})
             .IsUnique();
+        
+        builder
+            .Property(x => x.Status)
+            .HasConversion<string>();
     }
 }
