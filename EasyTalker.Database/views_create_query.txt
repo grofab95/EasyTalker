@@ -1,6 +1,6 @@
 CREATE VIEW [dbo].[ConversationInfosView]
 AS
-WITH ConversationInfos AS (SELECT        ConversationId, STRING_AGG(UserId + ':' + STR(HasAccess), '|') AS ConversationParticipants
+WITH ConversationInfos AS (SELECT        ConversationId, STRING_AGG(UserId + ':' + AccessStatus, '|') AS ConversationParticipants
                                                               FROM            dbo.UsersConversations AS uc
                                                               GROUP BY ConversationId)
     SELECT        Id AS ConversationId, Title, Status, CreatorId, CreatedAt,
@@ -14,5 +14,4 @@ WITH ConversationInfos AS (SELECT        ConversationId, STRING_AGG(UserId + ':'
                                     FROM            dbo.Messages
                                     WHERE        (ConversationId = c.Id)
                                     ORDER BY CreatedAt DESC) AS LastMessageId
-     FROM            dbo.Conversations AS c
-GO
+     FROM            dbo.Conversations AS c;

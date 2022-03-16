@@ -1,5 +1,6 @@
 ﻿using System;
 using EasyTalker.Core.Enums;
+using EasyTalker.Database.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,7 +21,7 @@ public class MessageDbConfiguration : IEntityTypeConfiguration<MessageDb>
     {
         builder
             .Property(b => b.CreatedAt )
-            .HasDefaultValueSql("getdate()");
+            .HasDefaultValueSql(SqlCommands.GetDate);
         
         builder
             .Property(x => x.Status)

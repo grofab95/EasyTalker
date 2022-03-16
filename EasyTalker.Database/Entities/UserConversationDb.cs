@@ -1,4 +1,6 @@
 ﻿using System;
+using EasyTalker.Core.Enums;
+using EasyTalker.Database.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,14 +10,14 @@ public class UserConversationDb : EntityDb
 {
     public string UserId { get; set; }
     public long ConversationId { get; set; }
-    public bool HasAccess { get; set; }
+    public ConversationAccessStatus AccessStatus { get; set; }
     public DateTime LastSeenAt { get; set; }
 
     public UserConversationDb(string userId, long conversationId)
     {
         UserId = userId;
         ConversationId = conversationId;
-        HasAccess = true;
+        AccessStatus = ConversationAccessStatus.ReadAndWrite;
     }
 }
 
@@ -25,8 +27,14 @@ public class UserConversationDbConfiguration : IEntityTypeConfiguration<UserConv
     {
         builder
             .Property(b => b.CreatedAt )
-            .HasDefaultValueSql("getdate()");
+            .HasDefaultValueSql(SqlCommands.GetDate);
 
         builder.HasIndex(x => new {x.ConversationId, x.UserId}).IsUnique();
+        
+        builder
+            .Property(x => x.AccessStatus)
+            .HasConversion(
+                v => v.ToString(), 
+                v => (ConversationAccessStatus) Enum.Parse(typeof(ConversationAccessStatus), v));
     }
 }

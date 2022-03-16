@@ -1,4 +1,6 @@
-﻿export default interface ConversationParticipant {
+﻿import {ConversationAccessStatus} from "./ConversationAccessStatus";
+
+export default interface ConversationParticipant {
     id: string,
-    hasAccess: boolean
+    accessStatus: ConversationAccessStatus
 }

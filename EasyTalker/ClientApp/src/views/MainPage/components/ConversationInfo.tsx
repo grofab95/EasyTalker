@@ -1,12 +1,14 @@
 ﻿import React from 'react'
-import { Card, Row } from 'react-bootstrap'
+import {Card, Row} from 'react-bootstrap'
 import UserConnectionStatusIndicator from '../../../app/components/UserConnectionStatusIndicator'
-import { useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
+import {useSelector} from 'react-redux'
+import {ApplicationState} from '../../../store'
 import ConversationFiles from './ConversationFiles'
 import FileUploader from '../../../app/components/FileUploader'
-import { getLoggedUserId } from '../../../utils/authUtils'
+import {getLoggedUserId} from '../../../utils/authUtils'
 import ConversationSettings from './ConversationSettings'
+import {getAccessStatus} from "../../../utils/helpers/conversationHelpers";
+import {ConversationAccessStatus} from "../../../interfaces/Conversations/ConversationAccessStatus";
 
 const ConversationInfo: React.FC<{ conversationId: number }> = props => {
 
@@ -19,11 +21,9 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
 
     const getParticipantsId = () => {
         return conversation?.participants
-            .filter(u => users.some(x => x.id === u.id) && u.hasAccess)
+            .filter(u => users.some(x => x.id === u.id))
             .map(u => u.id)
     }
-
-    const hasAccess = conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
 
     return <Card className='border-0 rounded p-2' style={{marginBottom: '10px'}}>
         <h3>{conversation?.title} (ID: {conversation?.id})</h3>
@@ -37,7 +37,7 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
                                                                                                        userId={id}/>)}
         </Row>
         <hr/>
-        {hasAccess ? <FileUploader externalId={props.conversationId.toString()} /> : <></>}
+        {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite ? <FileUploader externalId={props.conversationId.toString()} /> : <></>}
         <hr/>
         <ConversationFiles conversation={conversation}/>
     </Card>

@@ -1,4 +1,5 @@
 ﻿using EasyTalker.Core.Enums;
+using EasyTalker.Database.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -17,7 +18,7 @@ public class ConversationDbConfiguration : IEntityTypeConfiguration<Conversation
     {
         builder
             .Property(b => b.CreatedAt )
-            .HasDefaultValueSql("getdate()");
+            .HasDefaultValueSql(SqlCommands.GetDate);
 
         builder
             .HasIndex(x => new {x.CreatorId, x.Title})

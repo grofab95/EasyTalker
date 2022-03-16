@@ -1,3 +1,5 @@
-﻿namespace EasyTalker.Core.Dto.Conversation;
+﻿using EasyTalker.Core.Enums;
 
-public record ConversationParticipantDto(string Id, bool HasAccess);
+namespace EasyTalker.Core.Dto.Conversation;
+
+public record ConversationParticipantDto(string Id, ConversationAccessStatus AccessStatus);

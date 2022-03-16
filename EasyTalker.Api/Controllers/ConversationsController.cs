@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Easy.MessageHub;
@@ -49,7 +50,7 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            var conversations = await _conversationStore.GetUserConversations(userId);
+            var conversations = await _conversationStore.GetLoggedUserConversations(userId);
             return ApiResponse<ConversationDto[]>.Success(conversations);
         }
         catch (Exception ex)
@@ -91,31 +92,13 @@ public class ConversationsController : ControllerBase
     
     [HttpPut]
     [Route("{conversationId:long}/participants/add")]
-    public async Task<ApiResponse<ConversationDto>> AddParticipants([FromRoute] long conversationId,
-        [FromBody] string[] usersId)
+    public async Task<ApiResponse<ConversationDto>> AddUserToConversation([FromRoute] long conversationId, [FromBody] string[] userIds)
     {
         try
         {
-            var conversation = await _conversationStore.AddParticipant(conversationId, usersId, GetLoggedUserId);
-            _messageHub.Publish(new ConversationUpdated(conversation));
-            return ApiResponse<ConversationDto>.Success(conversation);
-        }
-        catch (Exception ex)
-        {
-            return ApiResponse<ConversationDto>.Failure(ex);
-        }
-    }
-    
-    [HttpPut]
-    [Route("{conversationId:long}/participants/remove")]
-    public async Task<ApiResponse<ConversationDto>> RemoveParticipants([FromRoute] long conversationId,
-        [FromBody] string[] participantsIds)
-    {
-        try
-        {
-            var conversation = await _conversationStore.RemoveParticipant(conversationId, participantsIds, GetLoggedUserId);
-            _messageHub.Publish(new ConversationUpdated(conversation));
-            return ApiResponse<ConversationDto>.Success(conversation);
+            await _conversationStore.AddUsersToConversation(conversationId, userIds);
+            var updatedConversation = await NotifyConversationUpdated(conversationId);
+            return ApiResponse<ConversationDto>.Success(updatedConversation);
         }
         catch (Exception ex)
         {
@@ -129,7 +112,7 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            var conversationLastSeenDto = await _conversationStore.UpdateConversationLastSeenAt(conversationId, GetLoggedUserId);
+            var conversationLastSeenDto = await _conversationStore.UpdateLoggedUserConversationLastSeenAt(conversationId, LoggedUserId);
             return ApiResponse<ConversationLastSeenDto>.Success(conversationLastSeenDto);
         }
         catch (Exception ex)
@@ -144,8 +127,8 @@ public class ConversationsController : ControllerBase
     {
         try
         {
-            var conversation = await _conversationStore.UpdateConversationStatus(conversationId, status, GetLoggedUserId);
-            _messageHub.Publish(new ConversationUpdated(conversation));
+            await _conversationStore.UpdateConversationStatus(conversationId, status);
+            await NotifyConversationUpdated(conversationId);
             
             return ApiResponse.Success();
         }
@@ -154,6 +137,14 @@ public class ConversationsController : ControllerBase
             return ApiResponse.Failure(ex);
         }
     }
+
+    private async Task<ConversationDto> NotifyConversationUpdated(long conversationsId)
+    {
+        var conversation = (await _conversationStore.GetConversations(new []{ conversationsId }, LoggedUserId)).First();
+        
+        _messageHub.Publish(new ConversationUpdated(conversation));
+        return conversation;
+    }
     
-    private string GetLoggedUserId =>  HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value; 
+    private string LoggedUserId => HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }

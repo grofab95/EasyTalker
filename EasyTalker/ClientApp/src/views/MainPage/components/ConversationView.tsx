@@ -5,13 +5,13 @@ import {ApplicationState} from '../../../store'
 import {getMessages} from '../../../store/conversations/api'
 import SingleMessage from './SingleMessage'
 import MessageCreate from './MessageCreate'
-import {getLoggedUserId} from '../../../utils/authUtils'
 import styles from '../../MainPage/components/ConversationView.module.css'
 import {FileType} from '../../../interfaces/Files/FileType'
 import Message from '../../../interfaces/Messages/Message'
 import {FileInfo} from '../../../interfaces/Files/FileInfo'
 import {apiUrl} from '../../../store/config'
-import {ConversationStatus} from "../../../interfaces/Conversations/ConversationStatus";
+import {getAccessStatus} from "../../../utils/helpers/conversationHelpers";
+import {ConversationAccessStatus} from "../../../interfaces/Conversations/ConversationAccessStatus";
 
 const ConversationView: React.FC<{ conversationId: number }> = props => {
 
@@ -50,28 +50,28 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
         const imageMessages = files
             .filter(f => f.externalId === props.conversationId.toString() && f.fileType === FileType.Image)
             .map(x => toMessage(x))
-        
+
         if (messages && imageMessages) {
             setAllMessages([...messages, ...imageMessages])
         } else {
             setAllMessages(messages)
         }
     }, [messages, files])
-    
+
     if (!conversation) {
         return <></>
     }
 
-    const hasAccess = conversation.status === ConversationStatus.Open && conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
-    
     return <>
         <Card style={{borderRadius: '1rem', border: 0}}>
             <div className={styles.conversationView}>
-                {allMessages && allMessages.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1)).map((m, i) => <SingleMessage key={i} {...m} />)}
+                {allMessages && allMessages.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1)).map((m, i) =>
+                    <SingleMessage key={i} {...m} />)}
             </div>
-            
-            {hasAccess && <MessageCreate conversationId={props.conversationId}/>}
-        </Card>        
+
+            {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
+                <MessageCreate conversationId={props.conversationId}/>}
+        </Card>
     </>
 }
 export default ConversationView
