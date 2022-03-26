@@ -1,17 +1,17 @@
 ﻿import React, {useState} from 'react'
 import {Card} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
-import {ApplicationState} from '../../../store'
-import {getMessages} from '../../../store/conversations/api'
-import SingleMessage from './SingleMessage'
-import MessageCreate from './MessageCreate'
-import styles from '../../MainPage/components/ConversationView.module.css'
-import {FileType} from '../../../interfaces/Files/FileType'
-import Message from '../../../interfaces/Messages/Message'
-import {FileInfo} from '../../../interfaces/Files/FileInfo'
-import {apiUrl} from '../../../store/config'
-import {getAccessStatus} from "../../../utils/helpers/conversationHelpers";
-import {ConversationAccessStatus} from "../../../interfaces/Conversations/ConversationAccessStatus";
+import styles from '../Conversations/ConversationsList.module.css'
+import {ApplicationState} from "../../../../store";
+import {FileInfo} from "../../../../interfaces/Files/FileInfo";
+import {apiUrl} from "../../../../store/config";
+import {getMessages} from "../../../../store/conversations/api";
+import {FileType} from "../../../../interfaces/Files/FileType";
+import SingleMessage from "../Messages/SingleMessage";
+import {ConversationAccessStatus} from "../../../../interfaces/Conversations/ConversationAccessStatus";
+import {getAccessStatus} from "../../../../utils/helpers/conversationHelpers";
+import MessageCreate from "../Messages/MessageCreate";
+import Message from "../../../../interfaces/Messages/Message";
 
 const ConversationView: React.FC<{ conversationId: number }> = props => {
 

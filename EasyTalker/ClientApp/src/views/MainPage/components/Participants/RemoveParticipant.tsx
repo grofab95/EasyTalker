@@ -1,11 +1,5 @@
 ﻿import React, { useState } from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import UsersSelection from '../../Users/components/UsersSelection'
-import Button from 'react-bootstrap/Button'
-import { removeParticipants } from '../../../store/conversations/api'
-import { getLoggedUserId } from '../../../utils/authUtils'
+import Conversation from "../../../../interfaces/Conversations/Conversation";
 
 const RemoveParticipant: React.FC<{ conversation: Conversation, onUpdated: () => void }> = props => {
     return <></>

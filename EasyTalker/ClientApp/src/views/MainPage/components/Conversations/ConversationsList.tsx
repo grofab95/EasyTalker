@@ -1,11 +1,10 @@
 ﻿import React, { useState } from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import styles from '../../MainPage/components/ConversationsList.module.css'
+import styles from '../Conversations/ConversationsList.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import { getLoggedUserId } from '../../../utils/authUtils'
-import { FileType } from '../../../interfaces/Files/FileType'
-import { getFiles } from '../../../store/files/api'
+import {ApplicationState} from "../../../../store";
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import {FileType} from "../../../../interfaces/Files/FileType";
+import {getLoggedUserId} from "../../../../utils/authUtils";
 
 interface Props {
     conversationIdSelected: (id: number) => void

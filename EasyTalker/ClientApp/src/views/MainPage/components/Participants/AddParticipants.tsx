@@ -1,11 +1,11 @@
 ﻿import React, {useState} from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
 import {useDispatch, useSelector} from 'react-redux'
-import {ApplicationState} from '../../../store'
-import UsersSelection from '../../Users/components/UsersSelection'
-import {addParticipants} from '../../../store/conversations/api'
-import User from '../../../interfaces/Users/User'
 import Button from 'react-bootstrap/Button'
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import {ApplicationState} from "../../../../store";
+import User from "../../../../interfaces/Users/User";
+import UsersSelection from "../../../Users/components/UsersSelection";
+import {addParticipants} from "../../../../store/conversations/api";
 
 const AddParticipants: React.FC<{ conversation: Conversation, onUpdated: () => void }> = props => {
     const newUsers = useSelector((state: ApplicationState) => state.user.userList)

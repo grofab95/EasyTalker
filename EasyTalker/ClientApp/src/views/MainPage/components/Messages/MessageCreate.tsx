@@ -1,9 +1,9 @@
 ﻿import React, { useState } from 'react'
 import { Col, FormControl, InputGroup, Row } from 'react-bootstrap'
 import { useDispatch } from 'react-redux'
-import { addMessage } from '../../../store/conversations/api'
-import NewMessage from '../../../interfaces/Messages/NewMessage'
-import { getLoggedUserId } from '../../../utils/authUtils'
+import {addMessage} from "../../../../store/conversations/api";
+import {getLoggedUserId} from "../../../../utils/authUtils";
+import NewMessage from "../../../../interfaces/Messages/NewMessage";
 
 const MessageCreate: React.FC<{ conversationId: number }> = (props) => {
     const dispatch = useDispatch()
@@ -32,8 +32,8 @@ const MessageCreate: React.FC<{ conversationId: number }> = (props) => {
                 onKeyDown={(e) => e.key === 'Enter' ? onSubmit() : ''}
                 onChange={e => setText(e.target.value)}
                 value={text}
-                placeholder="Napisz coś..."
-                aria-label="Napisz coś..."
+                placeholder="Enter message..."
+                aria-label="Enter message..."
                 aria-describedby="basic-addon2"
             />
         </InputGroup>

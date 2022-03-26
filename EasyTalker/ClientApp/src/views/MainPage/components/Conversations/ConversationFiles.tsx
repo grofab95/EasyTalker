@@ -1,9 +1,10 @@
-﻿import React from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import { getFiles } from '../../../store/files/api'
-import {getFileUrl} from "../../../utils/helpers/fileHelpers";
+﻿import React from "react";
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import {ApplicationState} from "../../../../store";
+import {useDispatch, useSelector} from "react-redux";
+import {getFiles} from "../../../../store/files/api";
+import {getFileUrl} from "../../../../utils/helpers/fileHelpers";
+
 
 const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     

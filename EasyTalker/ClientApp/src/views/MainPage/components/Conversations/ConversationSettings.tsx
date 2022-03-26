@@ -1,13 +1,13 @@
 ﻿import React, {useState} from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import User from '../../../interfaces/Users/User'
 import {Modal} from 'react-bootstrap'
-import AddParticipants from './AddParticipants'
-import RemoveParticipant from './RemoveParticipant'
 import Button from 'react-bootstrap/Button'
-import {ConversationStatus} from "../../../interfaces/Conversations/ConversationStatus";
-import {updateConversationStatus} from "../../../utils/apiCalls";
-import {errorNotification, successNotification} from "../../../utils/notifications/notificationFactory";
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import User from "../../../../interfaces/Users/User";
+import {ConversationStatus} from "../../../../interfaces/Conversations/ConversationStatus";
+import {updateConversationStatus} from "../../../../utils/apiCalls";
+import {errorNotification, successNotification} from "../../../../utils/notifications/notificationFactory";
+import AddParticipants from "../Participants/AddParticipants";
+import RemoveParticipant from "../Participants/RemoveParticipant";
 
 const ConversationSettings: React.FC<{ conversation: Conversation, users: User[] }> = props => {
 
