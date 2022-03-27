@@ -105,6 +105,23 @@ public class ConversationsController : ControllerBase
             return ApiResponse<ConversationDto>.Failure(ex);
         }
     }
+    
+    [HttpPut]
+    [Route("{conversationId:long}/participants/{participantId}/update-access-status")]
+    public async Task<ApiResponse> UpdateUserConversationAccessStatus([FromRoute] long conversationId, [FromRoute] string participantId, [FromBody] ConversationAccessStatus conversationAccessStatus)
+    {
+        try
+        {
+            await _conversationStore.UpdateUserConversationAccessStatus(conversationId, participantId, conversationAccessStatus);
+            await NotifyConversationUpdated(conversationId);
+            
+            return ApiResponse.Success();
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse.Failure(ex);
+        }
+    }
 
     [HttpPatch]
     [Route("{conversationId:long}")]

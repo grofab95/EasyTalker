@@ -1,7 +1,7 @@
 ﻿import React, {useState} from 'react'
 import {Card} from 'react-bootstrap'
 import {useDispatch, useSelector} from 'react-redux'
-import styles from '../Conversations/ConversationsList.module.css'
+import styles from '../Conversations/ConversationView.module.css'
 import {ApplicationState} from "../../../../store";
 import {FileInfo} from "../../../../interfaces/Files/FileInfo";
 import {apiUrl} from "../../../../store/config";

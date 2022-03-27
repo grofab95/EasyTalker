@@ -27,18 +27,25 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
 
     return <Card className='border-0 rounded p-2' style={{marginBottom: '10px'}}>
         <h3>{conversation?.title} (ID: {conversation?.id})</h3>
-        <hr/>
+       
         {conversation.creatorId === getLoggedUserId() &&
-            <ConversationSettings conversation={conversation} users={users}/>
+            <>
+                <hr/>
+                <ConversationSettings conversation={conversation} users={users}/>
+            </>
         }
         <hr/>
         <Row>
             <h5>Participants:</h5> {getParticipantsId()?.map((id, i) => <UserConnectionStatusIndicator key={i}
                                                                                                        userId={id}/>)}
         </Row>
-        <hr/>
-        {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite ? <FileUploader externalId={props.conversationId.toString()} /> : <></>}
-        <hr/>
+        {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
+            <>
+                <hr/>
+                <FileUploader externalId={props.conversationId.toString()} />
+            </>
+        }
+       
         <ConversationFiles conversation={conversation}/>
     </Card>
 }
