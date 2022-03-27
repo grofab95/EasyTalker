@@ -181,6 +181,10 @@ namespace EasyTalker.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<string>("AccessStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long>("ConversationId")
                         .HasColumnType("bigint");
 
@@ -188,9 +192,6 @@ namespace EasyTalker.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
-
-                    b.Property<bool>("HasAccess")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastSeenAt")
                         .HasColumnType("datetime2");
@@ -300,6 +301,9 @@ namespace EasyTalker.Database.Migrations
 
                     b.Property<long?>("LastMessageId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");

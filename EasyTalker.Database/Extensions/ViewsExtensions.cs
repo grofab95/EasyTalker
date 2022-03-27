@@ -30,7 +30,7 @@ public static class ViewsExtensions
     {
         var split = joinedString.Split(':');
         var participantId = split[0].Trim();
-        var hasAccess = split[1].Trim() == "1";
-        return new ConversationParticipantDto(participantId, hasAccess);
+        var accessStatus = Enum.Parse<ConversationAccessStatus>(split[1]);
+        return new ConversationParticipantDto(participantId, accessStatus);
     }
 }

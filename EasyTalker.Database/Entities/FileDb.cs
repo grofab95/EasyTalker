@@ -1,7 +1,7 @@
 ﻿using System;
 using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Enums;
-using Microsoft.AspNetCore.Http;
+using EasyTalker.Database.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,7 +33,7 @@ public class FileDbConfiguration : IEntityTypeConfiguration<FileDb>
     {
         builder
             .Property(b => b.CreatedAt )
-            .HasDefaultValueSql("getdate()");
+            .HasDefaultValueSql(SqlCommands.GetDate);
 
         builder
             .HasIndex(x => new {x.ExternalId, x.FileName})

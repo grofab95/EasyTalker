@@ -1,13 +1,13 @@
 ﻿import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import { getUsers } from '../../../store/users/api'
-import User from '../../../interfaces/Users/User'
 import Button from 'react-bootstrap/Button'
-import { createConversation } from '../../../store/conversations/api'
-import NewConversation from '../../../interfaces/Conversations/NewConversation'
-import { getLoggedUserId } from '../../../utils/authUtils'
-import UsersSelection from '../../Users/components/UsersSelection'
+import {ApplicationState} from "../../../../store";
+import {getLoggedUserId} from "../../../../utils/authUtils";
+import User from "../../../../interfaces/Users/User";
+import {createConversation} from "../../../../store/conversations/api";
+import NewConversation from "../../../../interfaces/Conversations/NewConversation";
+import {getUsers} from "../../../../store/users/api";
+import UsersSelection from "../../../Users/components/UsersSelection";
 
 interface Props {
     onCreate: () => void

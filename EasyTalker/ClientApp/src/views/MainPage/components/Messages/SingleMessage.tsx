@@ -1,8 +1,8 @@
 ﻿import React from 'react'
-import Message from '../../../interfaces/Messages/Message'
-import { getLoggedUserId } from '../../../utils/authUtils'
-import { formatDate } from '../../../utils/unitFormaters'
-import styles from '../../MainPage/components/SingleMessage.module.css'
+import styles from '../Messages/SingleMessage.module.css'
+import Message from "../../../../interfaces/Messages/Message";
+import {getLoggedUserId} from "../../../../utils/authUtils";
+import {formatDate} from "../../../../utils/unitFormaters";
 
 const SingleMessage: React.FC<Message> = message => {
     

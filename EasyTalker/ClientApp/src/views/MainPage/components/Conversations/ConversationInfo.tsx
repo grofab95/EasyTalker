@@ -1,12 +1,14 @@
 ﻿import React from 'react'
-import { Card, Row } from 'react-bootstrap'
-import UserConnectionStatusIndicator from '../../../app/components/UserConnectionStatusIndicator'
-import { useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
+import {Card, Row} from 'react-bootstrap'
+import {useSelector} from 'react-redux'
 import ConversationFiles from './ConversationFiles'
-import FileUploader from '../../../app/components/FileUploader'
-import { getLoggedUserId } from '../../../utils/authUtils'
 import ConversationSettings from './ConversationSettings'
+import {ApplicationState} from "../../../../store";
+import {getLoggedUserId} from "../../../../utils/authUtils";
+import UserConnectionStatusIndicator from "../../../../app/components/UserConnectionStatusIndicator";
+import {ConversationAccessStatus} from "../../../../interfaces/Conversations/ConversationAccessStatus";
+import FileUploader from "../../../../app/components/FileUploader";
+import {getAccessStatus} from "../../../../utils/helpers/conversationHelpers";
 
 const ConversationInfo: React.FC<{ conversationId: number }> = props => {
 
@@ -19,26 +21,31 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
 
     const getParticipantsId = () => {
         return conversation?.participants
-            .filter(u => users.some(x => x.id === u.id) && u.hasAccess)
+            .filter(u => users.some(x => x.id === u.id))
             .map(u => u.id)
     }
 
-    const hasAccess = conversation.participants.find(x => x.id === getLoggedUserId())?.hasAccess
-
     return <Card className='border-0 rounded p-2' style={{marginBottom: '10px'}}>
         <h3>{conversation?.title} (ID: {conversation?.id})</h3>
-        <hr/>
+       
         {conversation.creatorId === getLoggedUserId() &&
-            <ConversationSettings conversation={conversation} users={users}/>
+            <>
+                <hr/>
+                <ConversationSettings conversation={conversation} users={users}/>
+            </>
         }
         <hr/>
         <Row>
             <h5>Participants:</h5> {getParticipantsId()?.map((id, i) => <UserConnectionStatusIndicator key={i}
                                                                                                        userId={id}/>)}
         </Row>
-        <hr/>
-        {hasAccess ? <FileUploader externalId={props.conversationId.toString()} /> : <></>}
-        <hr/>
+        {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
+            <>
+                <hr/>
+                <FileUploader externalId={props.conversationId.toString()} />
+            </>
+        }
+       
         <ConversationFiles conversation={conversation}/>
     </Card>
 }

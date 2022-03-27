@@ -1,18 +1,18 @@
 ﻿import React, {useState} from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import User from '../../../interfaces/Users/User'
 import {Modal} from 'react-bootstrap'
-import AddParticipants from './AddParticipants'
-import RemoveParticipant from './RemoveParticipant'
 import Button from 'react-bootstrap/Button'
-import {ConversationStatus} from "../../../interfaces/Conversations/ConversationStatus";
-import {updateConversationStatus} from "../../../utils/apiCalls";
-import {errorNotification, successNotification} from "../../../utils/notifications/notificationFactory";
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import User from "../../../../interfaces/Users/User";
+import {ConversationStatus} from "../../../../interfaces/Conversations/ConversationStatus";
+import {updateConversationStatus} from "../../../../utils/apiCalls";
+import {errorNotification, successNotification} from "../../../../utils/notifications/notificationFactory";
+import AddParticipants from "../Participants/AddParticipants";
+import ParticipantsManagement from "../Participants/ParticipantsManagement";
 
 const ConversationSettings: React.FC<{ conversation: Conversation, users: User[] }> = props => {
 
     const [showAddParticipant, setShowAddParticipant] = useState<boolean>(false)
-    const [showRemoveParticipant, setShowRemoveParticipant] = useState<boolean>(false)
+    const [showParticipantsManagement, setShowParticipantsManagement] = useState<boolean>(false)
     
     const updateStatus = async (status: ConversationStatus) => {
         const response = await updateConversationStatus({ conversationId: props.conversation.id, status: status })
@@ -36,21 +36,21 @@ const ConversationSettings: React.FC<{ conversation: Conversation, users: User[]
             <Modal.Footer/>
         </Modal>
 
-        <Modal show={showRemoveParticipant} onHide={() => setShowRemoveParticipant(false)} centered backdrop="static">
+        <Modal show={showParticipantsManagement} onHide={() => setShowParticipantsManagement(false)} centered backdrop="static">
             <Modal.Header closeButton>
                 <Modal.Title>
-                    Remove participants
+                    Participants managing
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <RemoveParticipant conversation={props.conversation} onUpdated={() => setShowRemoveParticipant(false)} />
+                <ParticipantsManagement conversation={props.conversation} onUpdated={() => setShowParticipantsManagement(false)} />
             </Modal.Body>
             <Modal.Footer/>
         </Modal>
         
         <div className="btn-group" role="group" aria-label="Basic example">
-            <Button size="sm" className="btn btn-secondary" onClick={() => setShowAddParticipant(true)} >Add participant</Button>
-            <Button size="sm" className="btn btn-secondary" onClick={() => setShowRemoveParticipant(true)}>Remove participant</Button>
+            <Button size="sm" className="btn btn-secondary" onClick={() => setShowAddParticipant(true)}>Add participant</Button>
+            <Button size="sm" className="btn primary" onClick={() => setShowParticipantsManagement(true)}>Participants managing</Button>
             {props.conversation.status === ConversationStatus.Open 
                 ? <Button size="sm" onClick={async () => await updateStatus(ConversationStatus.Closed)} className="btn btn-danger">Close conversation</Button> 
                 : <Button size="sm" onClick={async () => await updateStatus(ConversationStatus.Open)} className="btn btn-success">Open conversation</Button>}

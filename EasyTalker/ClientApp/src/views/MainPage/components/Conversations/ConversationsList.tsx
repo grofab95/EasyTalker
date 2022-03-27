@@ -1,11 +1,11 @@
-﻿import React, { useState } from 'react'
-import Conversation from '../../../interfaces/Conversations/Conversation'
-import styles from '../../MainPage/components/ConversationsList.module.css'
-import { useDispatch, useSelector } from 'react-redux'
-import { ApplicationState } from '../../../store'
-import { getLoggedUserId } from '../../../utils/authUtils'
-import { FileType } from '../../../interfaces/Files/FileType'
-import { getFiles } from '../../../store/files/api'
+﻿import React, {useState} from 'react'
+import styles from '../Conversations/ConversationsList.module.css'
+import {useDispatch, useSelector} from 'react-redux'
+import {ApplicationState} from "../../../../store";
+import Conversation from "../../../../interfaces/Conversations/Conversation";
+import {FileType} from "../../../../interfaces/Files/FileType";
+import {getLoggedUserId} from "../../../../utils/authUtils";
+import {ConversationAccessStatus} from "../../../../interfaces/Conversations/ConversationAccessStatus";
 
 interface Props {
     conversationIdSelected: (id: number) => void
@@ -23,6 +23,15 @@ const ConversationsList: React.FC<Props> = (props) => {
             onConversationSelected(firstConversationId)
         }
     })
+    
+    React.useEffect(() => {
+        if (!isConversationVisible(selectedId)) {
+            const firstVisibleConversation = conversations.filter(c => isConversationVisible(c.id))[0]
+            if (firstVisibleConversation) {
+                onConversationSelected(firstVisibleConversation.id)
+            }
+        }
+    }, [conversations])
     
     const [selectedId, setSelectedId] = useState<number>(0)
         
@@ -42,6 +51,11 @@ const ConversationsList: React.FC<Props> = (props) => {
        return conversation.lastMessage?.sender?.id === getLoggedUserId() || conversation.lastMessage?.createdAt < conversation.lastSeenAt
     }
     
+    const isConversationVisible = (conversationId: number) => {
+        return conversations
+            .find(c => c.id === conversationId)?.participants?.find(p => p.id === getLoggedUserId())?.accessStatus !== ConversationAccessStatus.Hidden
+    }
+    
     const onConversationSelected = (id: number) => {
         document.title = `EasyTalker - ${conversations.find(x => x.id === id)?.title}`
         setSelectedId(id)  
@@ -50,6 +64,7 @@ const ConversationsList: React.FC<Props> = (props) => {
         
     return <ul className={styles.conversationsList}> 
         {conversations && [...conversations]
+            .filter(c => isConversationVisible(c.id))
             .sort((a, b) => (a.lastMessage?.createdAt > b.lastMessage?.createdAt ? -1 : 1))
             .map((c, i) =>
                 <li key={i} className={`${selectedId === c.id ? styles.active : ''} ${isSeen(c) ? '' : styles.newMessage}`} onClick={e => onConversationSelected(c.id)}>

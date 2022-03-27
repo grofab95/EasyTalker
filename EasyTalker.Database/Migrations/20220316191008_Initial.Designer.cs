@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTalker.Database.Migrations
 {
     [DbContext(typeof(EasyTalkerContext))]
-    [Migration("20220205210650_AddFileTypeconversionToEnum")]
-    partial class AddFileTypeconversionToEnum
+    [Migration("20220316191008_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,10 @@ namespace EasyTalker.Database.Migrations
 
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(450)");
@@ -179,6 +183,10 @@ namespace EasyTalker.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
+                    b.Property<string>("AccessStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long>("ConversationId")
                         .HasColumnType("bigint");
 
@@ -186,9 +194,6 @@ namespace EasyTalker.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
-
-                    b.Property<bool>("HasAccess")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LastSeenAt")
                         .HasColumnType("datetime2");
@@ -298,6 +303,9 @@ namespace EasyTalker.Database.Migrations
 
                     b.Property<long?>("LastMessageId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");

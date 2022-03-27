@@ -1,0 +1,13 @@
+﻿.participantDetailRow {
+    align-items: center;
+    width: 100%;
+}
+
+.participantUsernameCol {
+    font-size: 1rem;
+    margin-left: 5px;
+}
+
+.participantAccessStatusSelect {
+    font-size: 1rem;
+}

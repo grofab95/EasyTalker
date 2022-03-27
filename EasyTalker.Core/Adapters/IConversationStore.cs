@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EasyTalker.Core.Dto.Conversation;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Enums;
@@ -8,10 +9,11 @@ namespace EasyTalker.Core.Adapters;
 public interface IConversationStore
 {
     Task<ConversationDto> Add(ConversationCreateDto conversationCreateDto);
-    Task<ConversationDto[]> GetUserConversations(string loggedUserId);
+    Task<ConversationDto[]> GetLoggedUserConversations(string loggedUserId);
     Task<MessageDto[]> GetMessages(long conversationId);
-    Task<ConversationDto> AddParticipant(long conversationId, string[] userIds, string loggedUserId);
-    Task<ConversationDto> RemoveParticipant(long conversationId, string[] participantsIds, string loggedUserId);
-    Task<ConversationLastSeenDto> UpdateConversationLastSeenAt(long conversationId, string loggedUserId);
-    Task<ConversationDto> UpdateConversationStatus(long conversationId, ConversationStatus status, string loggedUserId);
+    Task AddUsersToConversation(long conversationId, IEnumerable<string> userIds);
+    Task UpdateUserConversationAccessStatus(long conversationId, string userId, ConversationAccessStatus accessStatus);
+    Task<ConversationLastSeenDto> UpdateLoggedUserConversationLastSeenAt(long conversationId, string loggedUserId);
+    Task UpdateConversationStatus(long conversationId, ConversationStatus status);
+    Task<ConversationDto[]> GetConversations(long[] conversationsIds, string loggedUserId);
 }
