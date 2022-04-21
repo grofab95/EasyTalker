@@ -1,4 +1,5 @@
 ﻿.participantsList {
     max-height: 400px;
     overflow: auto;
+    overflow: overlay;
 }

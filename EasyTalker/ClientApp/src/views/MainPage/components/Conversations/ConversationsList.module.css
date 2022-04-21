@@ -2,7 +2,7 @@
     list-style: none;
     padding-left: 0;
     padding-right: 5px;
-    height: calc(100vh - 185px);
+    max-height: calc(100vh - 175px);
     overflow: auto;
 }
 

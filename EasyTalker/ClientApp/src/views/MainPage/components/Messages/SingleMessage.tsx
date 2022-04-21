@@ -12,7 +12,7 @@ const SingleMessage: React.FC<Message> = message => {
     
     const isSenderLeggedUser = message.sender.id === getLoggedUserId()    
     const textAlign = isSenderLeggedUser ? 'right' : 'left'    
-    const imageAlign = isSenderLeggedUser ? 'flex-start' : 'flex-end'
+    const imageAlign = isSenderLeggedUser ? 'flex-end' : 'flex-start'
 
     const imageMessage = () =>
         <div className={styles.imageMessage} style={{alignItems: imageAlign}}>
