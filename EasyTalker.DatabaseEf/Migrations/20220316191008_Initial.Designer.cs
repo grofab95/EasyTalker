@@ -4,6 +4,7 @@ using EasyTalker.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EasyTalker.Database.Migrations
 {
     [DbContext(typeof(EasyTalkerContext))]
-    partial class EasyTalkerContextModelSnapshot : ModelSnapshot
+    [Migration("20220316191008_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +24,7 @@ namespace EasyTalker.Database.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.ConversationDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.ConversationDb", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,7 +59,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("Conversations");
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.FileDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.FileDb", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +102,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.MessageDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.MessageDb", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +136,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.RefreshTokenDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.RefreshTokenDb", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,7 +175,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.UserConversationDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.UserConversationDb", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -211,7 +213,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("UsersConversations");
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.UserDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.UserDb", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -282,7 +284,7 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Views.ConversationInfosView", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Views.ConversationInfosView", b =>
                 {
                     b.Property<long>("ConversationId")
                         .HasColumnType("bigint");
@@ -444,9 +446,9 @@ namespace EasyTalker.Database.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.RefreshTokenDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.RefreshTokenDb", b =>
                 {
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                    b.HasOne("EasyTalker.DatabaseEf.Entities.UserDb", null)
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserDbId");
                 });
@@ -462,7 +464,7 @@ namespace EasyTalker.Database.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                    b.HasOne("EasyTalker.DatabaseEf.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -471,7 +473,7 @@ namespace EasyTalker.Database.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                    b.HasOne("EasyTalker.DatabaseEf.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -486,7 +488,7 @@ namespace EasyTalker.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                    b.HasOne("EasyTalker.DatabaseEf.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -495,14 +497,14 @@ namespace EasyTalker.Database.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("EasyTalker.Database.Entities.UserDb", null)
+                    b.HasOne("EasyTalker.DatabaseEf.Entities.UserDb", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EasyTalker.Database.Entities.UserDb", b =>
+            modelBuilder.Entity("EasyTalker.DatabaseEf.Entities.UserDb", b =>
                 {
                     b.Navigation("RefreshTokens");
                 });
