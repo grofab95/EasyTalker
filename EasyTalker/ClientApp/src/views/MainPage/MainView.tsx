@@ -8,7 +8,7 @@ import ConversationCreate from "./components/Conversations/ConversationCreate";
 import Button from "react-bootstrap/Button";
 import ConversationsList from "./components/Conversations/ConversationsList";
 import ConversationView from "./components/Conversations/ConversationView";
-import ConversationInfo from "./components/Conversations/ConversationInfo";
+import ConversationInfo from "./components/Conversations/ConversationInfo/ConversationInfo";
 
 
 const MainView: React.FC = () => {
