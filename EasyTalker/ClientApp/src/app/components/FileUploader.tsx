@@ -59,7 +59,7 @@ const FileUploader: React.FC<{ externalId: string }> = props => {
             }
         </div>
         <div>
-            <section style={{height: "70px", border: "dotted" }}>
+            <section style={{height: "70px", border: "1px solid black", borderRadius: "10px"}}>
                 <div {...getRootProps({className: 'fileDrop h-100 w-100'})}>
                     <div>
                         <input {...getInputProps()} />

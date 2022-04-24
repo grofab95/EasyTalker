@@ -10,10 +10,9 @@ const ParticipantsList: React.FC<Props> = props => {
        
     return <>   
         <div className={styles.participantsList}>
-            <Row>
-                {props.participantsIds?.map((id, i) => <UserConnectionStatusIndicator key={i}
-                                                                                                                userId={id}/>)}        
-            </Row>
+            <ul>
+                {props.participantsIds?.map((id, i) => <UserConnectionStatusIndicator key={i} userId={id}/>)}  
+            </ul>
         </div>
     </>
 }
