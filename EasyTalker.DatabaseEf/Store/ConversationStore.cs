@@ -49,25 +49,25 @@ public class ConversationStore : IConversationStore
             .ToArrayAsync();
 
         var sendersIds = messages.Select(x => x.SenderId).Distinct().ToArray();
-        var senders = await dbContext.Users
-            .Where(x => sendersIds.Contains(x.Id))
-            .ToArrayAsync();
+        // var senders = await dbContext.Users
+        //     .Where(x => sendersIds.Contains(x.Id))
+        //     .ToArrayAsync();
+        //
+        // var messagesDto = messages
+        //     .Join(senders, x => x.SenderId, x => x.Id, (message, sender) => new {message, sender})
+        //     .Select(x => new MessageDto
+        //     {
+        //         Id = x.message.Id,
+        //         ConversationId = x.message.ConversationId,
+        //         CreatedAt = x.message.CreatedAt,
+        //         Sender = _mapper.Map<UserDto>(x.sender),
+        //         Status = x.message.Status,
+        //         Text = x.message.Text
+        //     })
+        //     .OrderBy(x => x.CreatedAt)
+        //     .ToArray();
 
-        var messagesDto = messages
-            .Join(senders, x => x.SenderId, x => x.Id, (message, sender) => new {message, sender})
-            .Select(x => new MessageDto
-            {
-                Id = x.message.Id,
-                ConversationId = x.message.ConversationId,
-                CreatedAt = x.message.CreatedAt,
-                Sender = _mapper.Map<UserDto>(x.sender),
-                Status = x.message.Status,
-                Text = x.message.Text
-            })
-            .OrderBy(x => x.CreatedAt)
-            .ToArray();
-
-        return messagesDto;
+        return null;
     }
 
     public async Task<ConversationDto> Add(ConversationCreateDto conversationCreateDto)

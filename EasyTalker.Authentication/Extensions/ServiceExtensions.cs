@@ -1,10 +1,14 @@
-﻿using EasyTalker.Authentication.Handlers;
+﻿using EasyTalker.Authentication.Database;
+using EasyTalker.Authentication.Database.Entities;
+using EasyTalker.Authentication.Database.Mapper;
+using EasyTalker.Authentication.Database.Store;
+using EasyTalker.Authentication.Handlers;
 using EasyTalker.Authentication.Options;
 using EasyTalker.Authentication.Services;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
+using EasyTalker.Core.Adapters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +21,8 @@ public static class ServiceExtensions
     {
         var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
         
+        services.AddAutoMapper(typeof(AutoMapperProfile));
+        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker-Dapper;User Id=sa; Password=Q1w2e3Q1w2e3;"));
         services.AddIdentity<UserDb, IdentityRole>(options => 
             {
                 options.Password.RequiredLength = authenticationOption.Password.RequiredLength;
@@ -25,9 +31,9 @@ public static class ServiceExtensions
                 options.Password.RequireUppercase = authenticationOption.Password.RequireUppercase;
                 options.Password.RequireNonAlphanumeric = authenticationOption.Password.RequireNonAlphanumeric;
             })
-            .AddEntityFrameworkStores<EasyTalkerContext>()
+            .AddEntityFrameworkStores<EasyTalkerAuthenticationContext>()
             .AddDefaultTokenProviders(); 
-
+        
         services.AddScoped<ITokenHandler, Handlers.TokenHandler>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddAuthentication(x =>
@@ -64,5 +70,7 @@ public static class ServiceExtensions
                     }
                 };
             });
+        
+        services.AddTransient<IUserStore, UserStore>();
     }
 }

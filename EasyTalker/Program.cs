@@ -15,19 +15,19 @@ builder
     .Run();
 
 
-void FakeData()
-{
-    var users = Enumerable.Range(1, 20)
-        .Select(x => new UserDb
-        {
-            IsActive = true,
-            Email = Faker.Internet.Email(),
-            UserName = Faker.Internet.UserName() 
-        });
-
-   
-    var ctx = new EasyTalkerContext();
-    
-    ctx.Users.AddRange(users);
-    ctx.SaveChanges();
-}
+// void FakeData()
+// {
+//     var users = Enumerable.Range(1, 20)
+//         .Select(x => new UserDb
+//         {
+//             IsActive = true,
+//             Email = Faker.Internet.Email(),
+//             UserName = Faker.Internet.UserName() 
+//         });
+//
+//    
+//     var ctx = new EasyTalkerContext();
+//     
+//     ctx.Users.AddRange(users);
+//     ctx.SaveChanges();
+// }

@@ -10,9 +10,6 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<UserDto, UserDb>();
-        CreateMap<UserDb, UserDto>();
-        
         CreateMap<MessageDto, MessageDb>();
         CreateMap<MessageDb, MessageDto>();
         

@@ -13,13 +13,14 @@ public class MessageStore : IMessageStore
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IMapper _mapper;
-    private readonly UserManager<UserDb> _userManager;
+    //private readonly UserManager<UserDb> _userManager;
 
-    public MessageStore(IServiceScopeFactory serviceScopeFactory, IMapper mapper, UserManager<UserDb> userManager)
+    //public MessageStore(IServiceScopeFactory serviceScopeFactory, IMapper mapper, UserManager<UserDb> userManager)
+    public MessageStore(IServiceScopeFactory serviceScopeFactory, IMapper mapper)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _mapper = mapper;
-        _userManager = userManager;
+        //_userManager = userManager;
     }
 
     public async Task<MessageDto> Add(MessageCreateDto messageCreateDto)
@@ -30,7 +31,7 @@ public class MessageStore : IMessageStore
         var mappedMessage = _mapper.Map<MessageDb>(messageCreateDto);
         var messageDb = await dbContext.Messages.AddAsync(mappedMessage);
         await dbContext.SaveChangesAsync();
-        var sender = await _userManager.FindByIdAsync(messageDb.Entity.SenderId);
+        //var sender = await _userManager.FindByIdAsync(messageDb.Entity.SenderId);
         return new MessageDto
         {
             Id = messageDb.Entity.Id,
@@ -38,7 +39,7 @@ public class MessageStore : IMessageStore
             Status = messageDb.Entity.Status,
             Text = messageDb.Entity.Text,
             CreatedAt = messageDb.Entity.CreatedAt,
-            Sender = _mapper.Map<UserDto>(sender)
+            //Sender = _mapper.Map<UserDto>(sender)
         };
     }
 }

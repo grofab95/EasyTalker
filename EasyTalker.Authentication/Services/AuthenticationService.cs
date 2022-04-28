@@ -3,11 +3,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 using AutoMapper;
+using EasyTalker.Authentication.Database;
+using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Authentication.Handlers;
 using EasyTalker.Core.Dto;
 using EasyTalker.Core.Dto.User;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +56,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthenticationResultDto> RefreshToken(string token)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         var user = await dbContext.Users
                        //.Include(x => x.RefreshTokens)
@@ -79,7 +79,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task RevokeToken(string token)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
         
         var user = await dbContext.Users
                       .Include(x => x.RefreshTokens)

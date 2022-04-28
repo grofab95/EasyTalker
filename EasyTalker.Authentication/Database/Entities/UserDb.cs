@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
-namespace EasyTalker.Database.Entities;
+namespace EasyTalker.Authentication.Database.Entities;
 
 public class UserDb : IdentityUser
 {

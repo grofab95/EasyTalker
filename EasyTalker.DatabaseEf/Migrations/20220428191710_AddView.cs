@@ -4,7 +4,7 @@
 
 namespace EasyTalker.Database.Migrations
 {
-    public partial class AddConversationInfosView : Migration
+    public partial class AddView : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

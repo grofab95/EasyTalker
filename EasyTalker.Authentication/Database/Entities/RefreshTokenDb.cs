@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace EasyTalker.Database.Entities;
+namespace EasyTalker.Authentication.Database.Entities;
 
 public class RefreshTokenDb
 {

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Core;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Exceptions;
-using EasyTalker.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EasyTalker.Database.Store;
+namespace EasyTalker.Authentication.Database.Store;
 
 public class UserStore : IUserStore
 {
@@ -65,7 +62,7 @@ public class UserStore : IUserStore
     public async Task<UserDto[]> GetAll()
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         return await dbContext.Users
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
@@ -75,7 +72,7 @@ public class UserStore : IUserStore
     public async Task UpdateUserConnectionStatus(string userId, bool isOnline)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
         
         var user = await dbContext.Users.FindAsync(userId);
         if (user != null)
@@ -88,7 +85,7 @@ public class UserStore : IUserStore
     public async Task SetAllUsersAsOffline()
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
         
         var users = await dbContext.Users.ToListAsync();
         users.ForEach(u => u.IsOnline = false);
@@ -98,7 +95,7 @@ public class UserStore : IUserStore
     public async Task<string[]> ChangePassword(string userId, string currentPassword, string newPassword)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         var user = await _userManager.FindByIdAsync(userId)
                    ?? throw new Exception($"User with id {userId} not found");
