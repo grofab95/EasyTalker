@@ -2,6 +2,7 @@
 import {useSelector} from 'react-redux'
 import FileUploader from '../../../../../app/components/FileUploader'
 import { ConversationAccessStatus } from '../../../../../interfaces/Conversations/ConversationAccessStatus'
+import { ConversationStatus } from '../../../../../interfaces/Conversations/ConversationStatus'
 import { ApplicationState } from '../../../../../store'
 import { getLoggedUserId } from '../../../../../utils/authUtils'
 import { getAccessStatus } from '../../../../../utils/helpers/conversationHelpers'
@@ -40,13 +41,13 @@ const ConversationInfo: React.FC<{ conversationId: number }> = props => {
             <ParticipantsList participantsIds={getParticipantsId()} />
         </InfoCard>
 
-        {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
+        {conversation.status === ConversationStatus.Open && getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
             <InfoCard title='Upload file'>
                 <FileUploader externalId={props.conversationId.toString()} />
             </InfoCard>
         }
        
-       <InfoCard title='Files'>
+        <InfoCard title='Files'>
             <ConversationFiles conversation={conversation} />
         </InfoCard>
     </div>

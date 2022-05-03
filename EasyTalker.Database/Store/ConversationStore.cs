@@ -212,23 +212,24 @@ public class ConversationStore : IConversationStore
                  WHERE ConversationId IN @conversationsIds",
             new {conversationsIds});
 
-        var lastMessagesData = await _dbConnection.QueryAsync<LastMessageDto>(@"
+        var lastMessagesData = (await _dbConnection.QueryAsync<LastMessageDto>(@"
             SELECT m.ConversationId, m.Id, m.Text, m.CreatedAt, m.Status
             FROM messages m
             WHERE id IN (
 	            SELECT max(Id)
 	            FROM Messages
 	            GROUP BY ConversationId 
-            )");
+            )")).ToArray();
 
         var joinedData = (from conversation in conversations
             join userConversation in usersConversations on conversation.Id equals userConversation.ConversationId
-            join lastMessageData in lastMessagesData on conversation.Id equals lastMessageData.ConversationId
+            join lastMessageData in lastMessagesData on conversation.Id equals lastMessageData.ConversationId into lm
+            from lmd in lm.DefaultIfEmpty()
             select new
             {
                 Conversation = conversation, 
                 UserConversation = userConversation, 
-                LastMessageData = lastMessageData
+                LastMessageData = lmd
             }).ToArray();
         
         var result = joinedData
@@ -239,7 +240,7 @@ public class ConversationStore : IConversationStore
                 Status = x.First().Conversation.Status,
                 Title = x.First().Conversation.Title,
                 CreatorId = x.First().Conversation.CreatorId,
-                LastMessage = x.First().LastMessageData != null 
+                LastMessage = x.FirstOrDefault()?.LastMessageData != null
                 ?   new()
                     {
                         Id = x.First().LastMessageData.Id,

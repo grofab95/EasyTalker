@@ -20,9 +20,10 @@ public static class ServiceExtensions
     public static void AddAppAuthentication(this IServiceCollection services, IConfigurationRoot configuration)
     {
         var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
+        var connectionString = configuration.GetConnectionString("Database");
         
         services.AddAutoMapper(typeof(AutoMapperProfile));
-        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer("Server=localhost;Database=EasyTalker-Dapper;User Id=sa; Password=Q1w2e3Q1w2e3;"));
+        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer(connectionString));
         services.AddIdentity<UserDb, IdentityRole>(options => 
             {
                 options.Password.RequiredLength = authenticationOption.Password.RequiredLength;

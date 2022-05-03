@@ -16,8 +16,12 @@ const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
         dispatch(getFiles(props.conversation.id.toString()))
     }, [dispatch])
     
+    if (!files) {
+        return <p>No files</p>
+    }
+
     return <div className={styles.filesList}>
-        {files && files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
+        {files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
     </div>
 }
 export default ConversationFiles
