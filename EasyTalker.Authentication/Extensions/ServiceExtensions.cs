@@ -22,7 +22,7 @@ public static class ServiceExtensions
         var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
         
         services.AddAutoMapper(typeof(AutoMapperProfile));
-        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer("Server=DESKTOP-HV06FGL;Database=EasyTalker-Dapper;User Id=sa; Password=Q1w2e3Q1w2e3;"));
+        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer("Server=localhost;Database=EasyTalker-Dapper;User Id=sa; Password=Q1w2e3Q1w2e3;"));
         services.AddIdentity<UserDb, IdentityRole>(options => 
             {
                 options.Password.RequiredLength = authenticationOption.Password.RequiredLength;

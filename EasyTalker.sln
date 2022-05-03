@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyTalker.Api", "EasyTalke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyTalker.Core", "EasyTalker.Core\EasyTalker.Core.csproj", "{D8DA737C-7EE1-46B6-A3C8-A3114D791D66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.DatabaseEf", "EasyTalker.DatabaseEf\EasyTalker.DatabaseEf.csproj", "{7EF92DA8-DD32-4447-BF09-D6BE44029786}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Database", "EasyTalker.Database\EasyTalker.Database.csproj", "{7EF92DA8-DD32-4447-BF09-D6BE44029786}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Infrastructure", "EasyTalker.Infrastructure\EasyTalker.Infrastructure.csproj", "{5ADF0726-3FCA-4246-A883-448136C7B647}"
 EndProject
@@ -16,8 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Authentication", "EasyTalker.Authentication\EasyTalker.Authentication.csproj", "{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8F4DCB41-0983-4D77-A65E-9DBD82314E3C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyTalker.Database", "EasyTalker.Database\EasyTalker.Database.csproj", "{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +47,6 @@ Global
 		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C9FDDCC-9EA4-47A5-B2E0-461273D0B524}.Release|Any CPU.Build.0 = Release|Any CPU
-		{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +61,5 @@ Global
 		{D8DA737C-7EE1-46B6-A3C8-A3114D791D66} = {8F4DCB41-0983-4D77-A65E-9DBD82314E3C}
 		{5ADF0726-3FCA-4246-A883-448136C7B647} = {8F4DCB41-0983-4D77-A65E-9DBD82314E3C}
 		{7EF92DA8-DD32-4447-BF09-D6BE44029786} = {8F4DCB41-0983-4D77-A65E-9DBD82314E3C}
-		{513DF7AB-B4C5-46E6-A6E9-1948A1F7E531} = {8F4DCB41-0983-4D77-A65E-9DBD82314E3C}
 	EndGlobalSection
 EndGlobal

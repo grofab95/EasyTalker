@@ -43,8 +43,8 @@ public static class WebApplicationExtensions
         
         using var scope = app.Services.CreateScope();
         
-        var databaseInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
-        databaseInitializer?.Initialize().Wait();
+        // var databaseInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
+        // databaseInitializer?.Initialize().Wait();
         
         var userStore = scope.ServiceProvider.GetService<IUserStore>();
         userStore?.SetAllUsersAsOffline()?.Wait();

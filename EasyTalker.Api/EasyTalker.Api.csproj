@@ -8,7 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EasyTalker.Authentication\EasyTalker.Authentication.csproj" />
     <ProjectReference Include="..\EasyTalker.Core\EasyTalker.Core.csproj" />
-    <ProjectReference Include="..\EasyTalker.DatabaseEf\EasyTalker.DatabaseEf.csproj" />
+    <ProjectReference Include="..\EasyTalker.Database\EasyTalker.Database.csproj" />
     <ProjectReference Include="..\EasyTalker.Infrastructure\EasyTalker.Infrastructure.csproj" />
   </ItemGroup>
 

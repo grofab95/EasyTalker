@@ -1,17 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>EasyTalker.Database</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\EasyTalker.Core\EasyTalker.Core.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Dapper" Version="2.0.123" /> 
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.123" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyTalker.Core\EasyTalker.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Data.SqlClient">
+      <HintPath>..\EasyTalker\bin\Debug\net6.0\Microsoft.Data.SqlClient.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>
