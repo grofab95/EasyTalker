@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useState } from 'react'
+﻿import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import UploadProgressBar from './UploadProgressBar'
 import { convertBytesToReadableFileSize } from '../../utils/unitConverters'
@@ -6,7 +6,6 @@ import Button from 'react-bootstrap/Button'
 import { v4 as uuid } from 'uuid';
 import { useDispatch } from 'react-redux'
 import { uploadFile } from '../../store/files/api'
-import styles from './ConversationsList.module.css'
 
 const FileUploader: React.FC<{ externalId: string }> = props => {
     
@@ -20,7 +19,6 @@ const FileUploader: React.FC<{ externalId: string }> = props => {
     }, [])
     
     const {getRootProps, getInputProps} = useDropzone({onDrop: onDrop})
-    //const {getRootProps, getInputProps} = useDropzone({onDrop: onDrop, accept: '.txt'})
     
     const upload = async () => {
         if (selectedFile === undefined)
@@ -61,7 +59,7 @@ const FileUploader: React.FC<{ externalId: string }> = props => {
             }
         </div>
         <div>
-            <section style={{height: "100px", border: "dotted" }}>
+            <section style={{height: "70px", border: "1px solid black", borderRadius: "10px"}}>
                 <div {...getRootProps({className: 'fileDrop h-100 w-100'})}>
                     <div>
                         <input {...getInputProps()} />

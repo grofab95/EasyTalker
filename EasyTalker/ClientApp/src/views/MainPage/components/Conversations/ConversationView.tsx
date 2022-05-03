@@ -25,7 +25,6 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
     const [allMessages, setAllMessages] = useState<Message[] | undefined>(messages)
     const conversation = useSelector((state: ApplicationState) => state.conversation.conversationList).find(x => x.id === props.conversationId)
     const users = useSelector((state: ApplicationState) => state.user.userList)
-
     const dispatch = useDispatch()
 
     const toMessage = (file: FileInfo): Message => {
@@ -62,6 +61,12 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
         } else {
             setAllMessages(messages)
         }
+
+        const messageListDiv = document.getElementById("messageList")
+        if (messageListDiv) {
+            messageListDiv.scrollTop = messageListDiv.scrollHeight + 10
+        }
+
     }, [messages, files])
 
     if (!conversation) {
@@ -70,8 +75,8 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
 
     return <>
         <Card style={{borderRadius: '1rem', border: 0}}>
-            <div className={styles.conversationView}>
-                {allMessages && allMessages.sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1)).map((m, i) =>
+            <div id='messageList' className={styles.conversationView}>
+                {allMessages && allMessages.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)).map((m, i) =>
                     <SingleMessage key={i} {...m} />)}
             </div>
 

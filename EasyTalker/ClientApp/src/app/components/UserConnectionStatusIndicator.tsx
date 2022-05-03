@@ -18,8 +18,10 @@ const UserConnectionStatusIndicator: React.FC<{ userId: string }> = (props) => {
         return user.isOnline
     }
 
-    return <>
-        <span>{user.userName} <i className={isOnline(user) ? 'green-circle' : 'red-circle'}/></span>
-    </>
+    if (isOnline(user)) {
+        return <li style={{color: 'green', fontSize: 'large'}}>{user.userName}</li>
+    } else {
+        return <li style={{color: 'red', fontSize: 'large'}}>{user.userName}</li>
+    }
 }
 export default UserConnectionStatusIndicator

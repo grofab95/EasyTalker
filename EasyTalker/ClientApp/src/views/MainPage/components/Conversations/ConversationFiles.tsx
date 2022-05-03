@@ -4,7 +4,7 @@ import {ApplicationState} from "../../../../store";
 import {useDispatch, useSelector} from "react-redux";
 import {getFiles} from "../../../../store/files/api";
 import {getFileUrl} from "../../../../utils/helpers/fileHelpers";
-
+import styles from '../Conversations/ConversationFiles.module.css'
 
 const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     
@@ -16,8 +16,8 @@ const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
         dispatch(getFiles(props.conversation.id.toString()))
     }, [dispatch])
     
-    return <>
+    return <div className={styles.filesList}>
         {files && files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
-    </>
+    </div>
 }
 export default ConversationFiles

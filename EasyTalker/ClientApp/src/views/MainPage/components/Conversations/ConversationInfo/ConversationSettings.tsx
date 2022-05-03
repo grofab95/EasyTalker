@@ -1,13 +1,13 @@
 ﻿import React, {useState} from 'react'
 import {Modal} from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
-import Conversation from "../../../../interfaces/Conversations/Conversation";
-import User from "../../../../interfaces/Users/User";
-import {ConversationStatus} from "../../../../interfaces/Conversations/ConversationStatus";
-import {updateConversationStatus} from "../../../../utils/apiCalls";
-import {errorNotification, successNotification} from "../../../../utils/notifications/notificationFactory";
-import AddParticipants from "../Participants/AddParticipants";
-import ParticipantsManagement from "../Participants/ParticipantsManagement";
+import Conversation from '../../../../../interfaces/Conversations/Conversation'
+import { ConversationStatus } from '../../../../../interfaces/Conversations/ConversationStatus'
+import User from '../../../../../interfaces/Users/User'
+import { updateConversationStatus } from '../../../../../utils/apiCalls'
+import { successNotification, errorNotification } from '../../../../../utils/notifications/notificationFactory'
+import AddParticipants from '../../Participants/AddParticipants'
+import ParticipantsManagement from '../../Participants/ParticipantsManagement'
 
 const ConversationSettings: React.FC<{ conversation: Conversation, users: User[] }> = props => {
 

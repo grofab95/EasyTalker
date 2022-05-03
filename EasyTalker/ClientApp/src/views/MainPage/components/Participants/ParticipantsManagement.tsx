@@ -26,7 +26,7 @@ const ParticipantsManagement: React.FC<{ conversation: Conversation, onUpdated: 
         .concat([ 'All' ])
         .sort()
 
-    const particpants = users.map(user => {
+    const participants = users.map(user => {
         const accessStatus = getAccessStatus(user)
 
         return {
@@ -36,19 +36,19 @@ const ParticipantsManagement: React.FC<{ conversation: Conversation, onUpdated: 
     })
 
     const getFilteredParticipants = () => {
-        let filteringUsers = [...particpants]
+        let filteredParticipants = [...participants]
 
         if (filteringUsername) {
-            filteringUsers = filteringUsers.filter(u => u.user.userName.includes(filteringUsername))
+            filteredParticipants = filteredParticipants.filter(u => u.user.userName.includes(filteringUsername))
         }
 
         if (filteringAccessStatus) {
-            filteringUsers = filteringAccessStatus === 'All'
-                ? filteringUsers
-                : filteringUsers.filter(u => u.accessStatus === filteringAccessStatus)
+            filteredParticipants = filteringAccessStatus === 'All'
+                ? filteredParticipants
+                : filteredParticipants.filter(u => u.accessStatus === filteringAccessStatus)
         }
 
-        return filteringUsers
+        return filteredParticipants
     }
 
     const getParticipantsList = () => {
