@@ -10,4 +10,15 @@ public class UserConversationDto
     public DateTime CreatedAt { get; set; }
     public string AccessStatus { get; set; }
     public DateTime LastSeenAt { get; set; }
+    
+    public UserConversationDto(string userId, long conversationId)
+    {
+        UserId = userId;
+        ConversationId = conversationId;
+    }
+
+    public UserConversationDto()
+    {
+        
+    }
 }

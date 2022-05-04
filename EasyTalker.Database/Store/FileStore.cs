@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -21,8 +22,17 @@ public class FileStore : IFileStore
 
     public async Task<FileDto> SaveFileInfo(string ownerId, UploadFileDto uploadFileDto)
     {
-        // if (await IsFileExist(dbContext, uploadFileDto))
-        //     throw new Exception("Uploading file is already exist in this conversation");
+        var isFileExist = await _dbConnection.QueryFirstOrDefaultAsync<FileDto>(@"
+            SELECT Id
+            FROM Files
+            WHERE ExternalId = @externalId AND FileName = @fileName", new
+        {
+            externalId = uploadFileDto.ExternalId,
+            fileName = uploadFileDto.File.FileName
+        }) != null;
+        
+        if (isFileExist) 
+            throw new Exception("Uploading file is already exist in this conversation");
         
         var fileType = DetermineFileType(uploadFileDto.File);
         var savedFileId = await _dbConnection.QuerySingleAsync<long>(@"
@@ -35,7 +45,7 @@ public class FileStore : IFileStore
             fileName = uploadFileDto.File.FileName,
             ownerId,
             fileStatus = FileStatus.Saved.ToString(),
-            fileType
+            fileType = fileType.ToString()
         });
         
         var savedFile =  await _dbConnection.QueryFirstOrDefaultAsync<FileDto>(@"
@@ -46,15 +56,10 @@ public class FileStore : IFileStore
             id = savedFileId
         });
 
-        savedFile.DbId = savedFileId;
+        savedFile.Id = savedFileId;
         return savedFile;
     }
-
-    // private async Task<bool> IsFileExist(EasyTalkerContext dbContext, UploadFileDto uploadFileDto)
-    // {
-    //     return await dbContext.Files.AnyAsync(x => x.ExternalId == uploadFileDto.ExternalId && x.FileName == uploadFileDto.File.FileName);
-    // }
-
+    
     public async Task<FileDto[]> GetFilesInfoByExternalIds(string[] externalIds)
     {
         return (await _dbConnection.QueryAsync<FileDto>(@"
@@ -85,7 +90,7 @@ public class FileStore : IFileStore
             id = dbId
         });
 
-        updatedFile.DbId = dbId;
+        updatedFile.Id = dbId;
         return updatedFile;
     }
 

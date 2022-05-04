@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Dapper;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.Conversation;
@@ -11,18 +10,15 @@ using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Dto.UserConversation;
 using EasyTalker.Core.Enums;
-using EasyTalker.Database.Entities;
 
 namespace EasyTalker.Database.Store;
 
 public class ConversationStore : IConversationStore
 {
-    private readonly IMapper _mapper;
     private readonly IDbConnection _dbConnection;
 
-    public ConversationStore(IMapper mapper, IDbConnection dbConnection)
+    public ConversationStore(IDbConnection dbConnection)
     {
-        _mapper = mapper;
         _dbConnection = dbConnection;
     }
     
@@ -65,35 +61,28 @@ public class ConversationStore : IConversationStore
         if (string.IsNullOrEmpty(conversationCreateDto.CreatorId))
             throw new Exception("Creator is required");
 
-        // if (await dbContext.Conversations.AnyAsync() && (!conversationCreateDto.ParticipantsId?.Any() ?? false))
-        //     throw new Exception("At least one participant is required");
+        var anyConversations = await _dbConnection.QueryFirstOrDefaultAsync<int>(@"
+            SELECT Count(Id)
+            FROM Conversations") > 0;
         
-        var conversationDb = new ConversationDb
-        {
-            CreatorId = conversationCreateDto.CreatorId,
-            Title = conversationCreateDto.Title
-        };
-
+        if (anyConversations && (!conversationCreateDto.ParticipantsId?.Any() ?? false))
+            throw new Exception("At least one participant is required");
+        
         var createdConversationId = await _dbConnection.QuerySingleAsync<long>(@"
             DECLARE @InsertedRows AS TABLE (Id bigint);
             INSERT INTO Conversations (CreatorId, Title, Status) OUTPUT Inserted.Id INTO @InsertedRows
             VALUES (@creatorId, @title, @status);
             SELECT Id FROM @InsertedRows", new
         {
-            creatorId = conversationDb.CreatorId,
-            title = conversationDb.Title,
+            creatorId = conversationCreateDto.CreatorId,
+            title = conversationCreateDto.Title,
             status = ConversationStatus.Open.ToString()
         });
-
-        conversationDb.Id = createdConversationId;
         
-        var userConversations = conversationCreateDto.ParticipantsId
-            .Select(x => new UserConversationDb(x, conversationDb.Id))
-            .ToList();
-        
-        userConversations.Add(new UserConversationDb(conversationCreateDto.CreatorId, conversationDb.Id));
+        var participantsIds = conversationCreateDto.ParticipantsId.ToList();
+        participantsIds.Add(conversationCreateDto.CreatorId);
 
-        foreach (var userConversation in userConversations)
+        foreach (var participantId in participantsIds)
         {
             await _dbConnection.QueryAsync<long>(@"
                 INSERT INTO UsersConversations
@@ -104,33 +93,28 @@ public class ConversationStore : IConversationStore
                 VALUES
                    (@userId, @conversationId, @accessStatus, @lastSeenAt)", new
                 {
-                    userId = userConversation.UserId,
-                    conversationId = userConversation.ConversationId,
-                    accessStatus = userConversation.AccessStatus.ToString(),
+                    userId = participantId,
+                    conversationId = createdConversationId,
+                    accessStatus = ConversationAccessStatus.ReadAndWrite.ToString(),
                     lastSeenAt = DateTime.Now.AddDays(-1)
                 });
         }
-        
-        var conversation = _mapper.Map<ConversationDto>(conversationDb);
-        conversation.CreatorId = conversationCreateDto.CreatorId;
-        var conversationParticipants = new List<ConversationParticipantDto>
+
+        return new ConversationDto
         {
-            new(conversation.CreatorId, ConversationAccessStatus.ReadAndWrite)
+            Id = createdConversationId,
+            Title = conversationCreateDto.Title,
+            Status = ConversationStatus.Open,
+            CreatorId = conversationCreateDto.CreatorId,
+            Participants = participantsIds
+                .Select(x => new ConversationParticipantDto(x, ConversationAccessStatus.ReadAndWrite))
+                .ToArray()
         };
-        
-        conversationParticipants.AddRange(conversationCreateDto.ParticipantsId.Select(x => new ConversationParticipantDto(x, ConversationAccessStatus.ReadAndWrite)));
-        conversation.Participants = conversationParticipants.ToArray();
-        
-        return conversation;
     }
     
     public async Task AddUsersToConversation(long conversationId, IEnumerable<string> userIds)
     {
-        var newUserConversations = userIds
-            .Select(x => new UserConversationDb(x, conversationId))
-            .ToArray();
-        
-        foreach (var userConversation in newUserConversations)
+        foreach (var userId in userIds)
         {
             await _dbConnection.QueryAsync<long>(@"
                 INSERT INTO UsersConversations
@@ -141,9 +125,9 @@ public class ConversationStore : IConversationStore
                 VALUES
                    (@userId, @conversationId, @accessStatus, @lastSeenAt)", new
             {
-                userId = userConversation.UserId,
-                conversationId = userConversation.ConversationId,
-                accessStatus = userConversation.AccessStatus.ToString(),
+                userId,
+                conversationId,
+                accessStatus = ConversationAccessStatus.ReadAndWrite.ToString(),
                 lastSeenAt = DateTime.Now.AddDays(-1)
             });
         }

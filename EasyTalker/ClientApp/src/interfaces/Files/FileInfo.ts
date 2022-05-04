@@ -1,7 +1,7 @@
 ﻿import { FileType } from './FileType'
 
 export interface FileInfo {
-    dbId: number,
+    id: number,
     externalId: string,
     ownerId: string,
     fileName: string,

@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using EasyTalker.Core.Adapters;
-using EasyTalker.Database.Mapper;
 using EasyTalker.Database.Store;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +12,6 @@ public static class ServiceExtensions
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("Database");
-        services.AddAutoMapper(typeof(AutoMapperProfile));
         
         services.AddTransient<IDbConnection>(_ => new SqlConnection(connectionString));
         services.AddTransient<IConversationStore, ConversationStore>();

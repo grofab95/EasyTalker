@@ -1,7 +1,7 @@
 ﻿using System;
 using EasyTalker.Core.Enums;
 
-namespace EasyTalker.Database.Entities;
+namespace EasyTalker.Core.Dto.Message;
 
 public class LastMessageDto
 {
