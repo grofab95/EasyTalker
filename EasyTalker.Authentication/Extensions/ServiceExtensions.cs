@@ -1,6 +1,5 @@
 ﻿using EasyTalker.Authentication.Database;
 using EasyTalker.Authentication.Database.Entities;
-using EasyTalker.Authentication.Database.Mapper;
 using EasyTalker.Authentication.Database.Store;
 using EasyTalker.Authentication.Handlers;
 using EasyTalker.Authentication.Options;
@@ -22,7 +21,6 @@ public static class ServiceExtensions
         var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
         var connectionString = configuration.GetConnectionString("Database");
         
-        services.AddAutoMapper(typeof(AutoMapperProfile));
         services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer(connectionString));
         services.AddIdentity<UserDb, IdentityRole>(options => 
             {

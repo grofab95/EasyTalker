@@ -2,12 +2,10 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
-using AutoMapper;
 using EasyTalker.Authentication.Database;
 using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Authentication.Handlers;
 using EasyTalker.Core.Dto;
-using EasyTalker.Core.Dto.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,19 +20,16 @@ public class AuthenticationService : IAuthenticationService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ITokenHandler _tokenHandler;
-    private readonly IMapper _mapper;
 
     public AuthenticationService(UserManager<UserDb> userManager,
         RoleManager<IdentityRole> roleManager, 
         IServiceScopeFactory serviceScopeFactory,
-        ITokenHandler tokenHandler, 
-        IMapper mapper)
+        ITokenHandler tokenHandler)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _serviceScopeFactory = serviceScopeFactory;
         _tokenHandler = tokenHandler;
-        _mapper = mapper;
     }
 
     public async Task<AuthenticationResultDto> Authenticate(string username, string password, string ipAddress)
@@ -50,7 +45,7 @@ public class AuthenticationService : IAuthenticationService
         user.RefreshTokens ??= new List<RefreshTokenDb>();
         user.RefreshTokens.Add(refreshToken);
         await _userManager.UpdateAsync(user);
-        return new AuthenticationResultDto(_mapper.Map<UserDto>(user), accessToken, refreshToken.Token);
+        return new AuthenticationResultDto(user.ToUserDto(), accessToken, refreshToken.Token);
     }
 
     public async Task<AuthenticationResultDto> RefreshToken(string token)
@@ -73,7 +68,7 @@ public class AuthenticationService : IAuthenticationService
         dbContext.Update(user);
         await dbContext.SaveChangesAsync();
         var jwtToken = await GetAccessToken(user);
-        return new AuthenticationResultDto(_mapper.Map<UserDto>(user), jwtToken, newRefreshToken.Token);
+        return new AuthenticationResultDto(user.ToUserDto(), jwtToken, newRefreshToken.Token);
     }
 
     public async Task RevokeToken(string token)
@@ -123,7 +118,7 @@ public class AuthenticationService : IAuthenticationService
         return await _tokenHandler.GenerateAccessToken(
             claims,
             currentDateTime,
-            currentDateTime.AddMinutes(30) // to appsettings
+            currentDateTime.AddMinutes(30)
         );
     }
 

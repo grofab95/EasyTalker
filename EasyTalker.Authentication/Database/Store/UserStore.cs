@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using EasyTalker.Authentication.Database.Entities;
+﻿using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Core;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
@@ -15,13 +13,11 @@ public class UserStore : IUserStore
 {
     private readonly UserManager<UserDb> _userManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IMapper _mapper;
 
-    public UserStore(UserManager<UserDb> userManager, IServiceScopeFactory serviceScopeFactory, IMapper mapper)
+    public UserStore(UserManager<UserDb> userManager, IServiceScopeFactory serviceScopeFactory)
     {
         _userManager = userManager;
         _serviceScopeFactory = serviceScopeFactory;
-        _mapper = mapper;
     }
         
     public async Task<UserDto> RegisterUser(string username, string email, string password)
@@ -48,7 +44,7 @@ public class UserStore : IUserStore
         if (!result.Succeeded)
             throw new Exception(string.Join(';', result.Errors.Select(x => x.Description)));
 
-        return _mapper.Map<UserDto>(userDb);
+        return userDb.ToUserDto();
     }
 
     public async Task<UserDto> GetById(string userId)
@@ -56,7 +52,7 @@ public class UserStore : IUserStore
         var userDb = await _userManager.FindByIdAsync(userId)
                      ?? throw new Exception($"User with id {userId} not found");
 
-        return _mapper.Map<UserDto>(userDb);
+        return userDb.ToUserDto();
     }
 
     public async Task<UserDto[]> GetAll()
@@ -65,7 +61,7 @@ public class UserStore : IUserStore
             .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         return await dbContext.Users
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+            .Select(x => x.ToUserDto())
             .ToArrayAsync();
     }
 
