@@ -1,28 +1,22 @@
-﻿using System.IO;
-using EasyTalker.Database.Entities;
-using EasyTalker.Database.Views;
-using EasyTalker.Infrastructure.Constants;
+﻿using EasyTalker.Authentication.Database.Entities;
+using EasyTalker.Core.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace EasyTalker.Database;
+namespace EasyTalker.Authentication.Database;
 
-public class EasyTalkerContext : IdentityDbContext<UserDb>
+public class EasyTalkerAuthenticationContext : IdentityDbContext<UserDb>
 {
-    public DbSet<ConversationDb> Conversations { get; set; }
-    public DbSet<MessageDb> Messages { get; set; }
-    public DbSet<UserConversationDb> UsersConversations { get; set; }
     public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
-    public DbSet<FileDb> Files { get; set; }
-    public DbSet<ConversationInfosView> ConversationInfosView { get; set; }
-
-    public EasyTalkerContext()
+    
+    
+    public EasyTalkerAuthenticationContext()
     {
                 
     }
         
-    public EasyTalkerContext(DbContextOptions<EasyTalkerContext> options) : base(options)
+    public EasyTalkerAuthenticationContext(DbContextOptions<EasyTalkerAuthenticationContext> options) : base(options)
     {
             
     }
@@ -47,13 +41,7 @@ public class EasyTalkerContext : IdentityDbContext<UserDb>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<ConversationInfosView>(x =>
-        {
-            x.HasNoKey();
-            x.ToView("ConversationInfosView"); 
-        });
         
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EasyTalkerContext).Assembly); 
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(EasyTalkerAuthenticationContext).Assembly); 
     }
 }

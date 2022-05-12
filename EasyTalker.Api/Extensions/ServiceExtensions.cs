@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Easy.MessageHub;
 using EasyTalker.Api.Hubs;
 using EasyTalker.Core.Adapters;
@@ -8,15 +7,9 @@ using EasyTalker.Core.Configuration;
 using EasyTalker.Core.EventHandlers;
 using EasyTalker.Core.Events;
 using EasyTalker.Core.Files;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace EasyTalker.Api.Extensions;

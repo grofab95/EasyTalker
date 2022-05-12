@@ -1,30 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using EasyTalker.Core;
+﻿using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Exceptions;
-using EasyTalker.Database.Entities;
+using EasyTalker.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EasyTalker.Database.Store;
+namespace EasyTalker.Authentication.Database.Store;
 
 public class UserStore : IUserStore
 {
     private readonly UserManager<UserDb> _userManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IMapper _mapper;
 
-    public UserStore(UserManager<UserDb> userManager, IServiceScopeFactory serviceScopeFactory, IMapper mapper)
+    public UserStore(UserManager<UserDb> userManager, IServiceScopeFactory serviceScopeFactory)
     {
         _userManager = userManager;
         _serviceScopeFactory = serviceScopeFactory;
-        _mapper = mapper;
     }
         
     public async Task<UserDto> RegisterUser(string username, string email, string password)
@@ -51,7 +44,7 @@ public class UserStore : IUserStore
         if (!result.Succeeded)
             throw new Exception(string.Join(';', result.Errors.Select(x => x.Description)));
 
-        return _mapper.Map<UserDto>(userDb);
+        return userDb.ToUserDto();
     }
 
     public async Task<UserDto> GetById(string userId)
@@ -59,23 +52,23 @@ public class UserStore : IUserStore
         var userDb = await _userManager.FindByIdAsync(userId)
                      ?? throw new Exception($"User with id {userId} not found");
 
-        return _mapper.Map<UserDto>(userDb);
+        return userDb.ToUserDto();
     }
 
     public async Task<UserDto[]> GetAll()
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         return await dbContext.Users
-            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
+            .Select(x => x.ToUserDto())
             .ToArrayAsync();
     }
 
     public async Task UpdateUserConnectionStatus(string userId, bool isOnline)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
         
         var user = await dbContext.Users.FindAsync(userId);
         if (user != null)
@@ -88,7 +81,7 @@ public class UserStore : IUserStore
     public async Task SetAllUsersAsOffline()
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
         
         var users = await dbContext.Users.ToListAsync();
         users.ForEach(u => u.IsOnline = false);
@@ -98,13 +91,13 @@ public class UserStore : IUserStore
     public async Task<string[]> ChangePassword(string userId, string currentPassword, string newPassword)
     {
         await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+            .GetRequiredService<EasyTalkerAuthenticationContext>();
 
         var user = await _userManager.FindByIdAsync(userId)
                    ?? throw new Exception($"User with id {userId} not found");
 
         var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-        return IdentityErrors.GetErrors(result);
+        return result.GetErrors();
     }
 
     private async Task ValidatePassword(UserDb userDb, string password)
@@ -115,8 +108,8 @@ public class UserStore : IUserStore
         var validatorResult = await passwordValidator.ValidateAsync(_userManager, userDb, password);
         if (validatorResult.Succeeded)
             return;
-            
-        var errors = IdentityErrors.GetErrors(validatorResult);
+
+        var errors = validatorResult.GetErrors();
         throw new PasswordValidatorException(errors);
     }
 }

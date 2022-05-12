@@ -8,8 +8,7 @@ import styles from '../Conversations/ConversationFiles.module.css'
 
 const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     
-    const files = useSelector((state: ApplicationState) => state.file.files.filter(f => f.externalId === props.conversation.id.toString()))
-    
+    const files = useSelector((state: ApplicationState) => state.file.files.filter(f => f.externalId === props.conversation.id.toString()))    
     const dispatch = useDispatch()
     
     React.useEffect(() => {
@@ -17,7 +16,7 @@ const ConversationFiles: React.FC<{ conversation: Conversation }> = props => {
     }, [dispatch])
     
     return <div className={styles.filesList}>
-        {files && files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
+        {files.map((f, i) => <p key={i}><a href={getFileUrl(f)}>{f.fileName}</a></p>)}
     </div>
 }
 export default ConversationFiles

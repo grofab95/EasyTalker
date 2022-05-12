@@ -28,7 +28,7 @@ const fileSlice = createSlice({
     initialState: getDefaultState(),
     reducers: {
         fileUploaded(state, action: PayloadAction<FileInfo>) {
-            const index = state.files?.findIndex(x => x.dbId === action.payload.dbId)
+            const index = state.files?.findIndex(x => x.id === action.payload.id)
             if (index === -1 && action.payload.ownerId !== getLoggedUserId()) {
                 state.files?.push(action.payload)
             }
@@ -59,8 +59,8 @@ const fileSlice = createSlice({
             .addCase(getFiles.fulfilled, (state, action: PayloadAction<FileInfo[]>) => {
                 //successNotification(`File ${action.payload.fileName} has been successfully uploaded`)
                 
-                const existingDbIds = state.files.map(f => f.dbId)
-                const newFiles = action.payload.filter(f => !existingDbIds.includes(f.dbId))                 
+                const existingDbIds = state.files.map(f => f.id)
+                const newFiles = action.payload.filter(f => !existingDbIds.includes(f.id))                 
                 
                 state.files.push(...newFiles)
                 

@@ -1,4 +1,4 @@
-﻿namespace EasyTalker.Infrastructure.Constants;
+﻿namespace EasyTalker.Core.Constants;
 
 public static class Application
 {

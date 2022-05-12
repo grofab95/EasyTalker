@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyTalker.Infrastructure.Extensions;
+namespace EasyTalker.Core.Extensions;
 
 public static class CollectionExtensions
 {

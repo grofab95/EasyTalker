@@ -1,10 +1,11 @@
 ﻿using EasyTalker.Api;
 using EasyTalker.Api.Extensions;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
+using EasyTalker.Authentication.Database;
+using EasyTalker.Authentication.Database.Entities;
 using Serilog;
+using LoggerFactory = EasyTalker.Core.Logger.LoggerFactory;
 
-Log.Logger = EasyTalker.Infrastructure.Logger.LoggerFactory.Create();
+Log.Logger = LoggerFactory.Create();
 //FakeData();
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
@@ -17,7 +18,7 @@ builder
 
 void FakeData()
 {
-    var users = Enumerable.Range(1, 20)
+    var users = Enumerable.Range(1, 200)
         .Select(x => new UserDb
         {
             IsActive = true,
@@ -26,7 +27,7 @@ void FakeData()
         });
 
    
-    var ctx = new EasyTalkerContext();
+    var ctx = new EasyTalkerAuthenticationContext();
     
     ctx.Users.AddRange(users);
     ctx.SaveChanges();

@@ -1,5 +1,6 @@
-﻿using EasyTalker.Core.Dto;
-using EasyTalker.Database.Entities;
+﻿using EasyTalker.Authentication.Database.Entities;
+using EasyTalker.Core.Dto;
+using EasyTalker.Core.Dto.Authentications;
 
 namespace EasyTalker.Authentication.Services;
 
