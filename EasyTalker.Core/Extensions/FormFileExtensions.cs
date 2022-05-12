@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Http;
 
-namespace EasyTalker.Infrastructure.Extensions;
+namespace EasyTalker.Core.Extensions;
 
 public static class FormFileExtensions
 {

@@ -1,5 +1,5 @@
 ﻿using EasyTalker.Authentication.Database.Entities;
-using EasyTalker.Infrastructure.Constants;
+using EasyTalker.Core.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

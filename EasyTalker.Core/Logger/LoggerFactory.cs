@@ -2,7 +2,7 @@
 using Serilog.Events;
 using Serilog.Extensions.Hosting;
 
-namespace EasyTalker.Infrastructure.Logger;
+namespace EasyTalker.Core.Logger;
 
 public static class LoggerFactory
 {

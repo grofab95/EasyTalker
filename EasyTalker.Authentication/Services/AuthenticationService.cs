@@ -6,6 +6,7 @@ using EasyTalker.Authentication.Database;
 using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Authentication.Handlers;
 using EasyTalker.Core.Dto;
+using EasyTalker.Core.Dto.Authentications;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

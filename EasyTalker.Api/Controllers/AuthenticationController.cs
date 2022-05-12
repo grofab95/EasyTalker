@@ -4,6 +4,7 @@ using EasyTalker.Api.Models;
 using EasyTalker.Api.Requests;
 using EasyTalker.Authentication.Services;
 using EasyTalker.Core.Dto;
+using EasyTalker.Core.Dto.Authentications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

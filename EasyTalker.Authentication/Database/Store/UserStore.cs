@@ -1,8 +1,8 @@
 ﻿using EasyTalker.Authentication.Database.Entities;
-using EasyTalker.Core;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Exceptions;
+using EasyTalker.Core.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,7 +97,7 @@ public class UserStore : IUserStore
                    ?? throw new Exception($"User with id {userId} not found");
 
         var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-        return IdentityErrors.GetErrors(result);
+        return result.GetErrors();
     }
 
     private async Task ValidatePassword(UserDb userDb, string password)
@@ -108,8 +108,8 @@ public class UserStore : IUserStore
         var validatorResult = await passwordValidator.ValidateAsync(_userManager, userDb, password);
         if (validatorResult.Succeeded)
             return;
-            
-        var errors = IdentityErrors.GetErrors(validatorResult);
+
+        var errors = validatorResult.GetErrors();
         throw new PasswordValidatorException(errors);
     }
 }

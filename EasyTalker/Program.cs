@@ -3,8 +3,9 @@ using EasyTalker.Api.Extensions;
 using EasyTalker.Authentication.Database;
 using EasyTalker.Authentication.Database.Entities;
 using Serilog;
+using LoggerFactory = EasyTalker.Core.Logger.LoggerFactory;
 
-Log.Logger = EasyTalker.Infrastructure.Logger.LoggerFactory.Create();
+Log.Logger = LoggerFactory.Create();
 //FakeData();
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();

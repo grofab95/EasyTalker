@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EasyTalker.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
-namespace EasyTalker.Core;
+namespace EasyTalker.Core.Extensions;
 
-public static class IdentityErrors
+public static class IdentityResultExtensions
 {
     private static readonly Dictionary<string, string> ErrorsDesc = new()
     {
@@ -32,7 +31,7 @@ public static class IdentityErrors
         ["PasswordRequiresUpper"] = "Password requires upper"
     };
 
-    public static string[] GetErrors(IdentityResult identityResult)
+    public static string[] GetErrors(this IdentityResult identityResult)
     {
         if (identityResult.Succeeded || identityResult.Errors == null)
             return null;
@@ -49,9 +48,7 @@ public static class IdentityErrors
                 .Select(x => x.Code)
                 .ToArray();
             
-            Log.Error("{0} | Missing error desc={1}", 
-                nameof(IdentityErrors), 
-                string.Join(", ", missingDesc));
+            Log.Error("GetErrors | Missing error desc={0}", string.Join(", ", missingDesc));
         }
 
         return errors;
