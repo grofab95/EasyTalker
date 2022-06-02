@@ -6,7 +6,7 @@ using Dapper;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Enums;
-using EasyTalker.Infrastructure.Extensions;
+using EasyTalker.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace EasyTalker.Database.Store;

@@ -5,7 +5,6 @@ using EasyTalker.Api.Hubs;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Configuration;
 using EasyTalker.Core.EventHandlers;
-using EasyTalker.Core.Events;
 using EasyTalker.Core.Files;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,7 @@ using Microsoft.OpenApi.Models;
 
 namespace EasyTalker.Api.Extensions;
 
-public static class ServiceExtensions
+public static class ServiceCollectionExtensions
 {  
     public static void AddSwagger(this IServiceCollection services)
     {
@@ -32,7 +31,7 @@ public static class ServiceExtensions
             });
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                Description = "JWT Authorization",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,

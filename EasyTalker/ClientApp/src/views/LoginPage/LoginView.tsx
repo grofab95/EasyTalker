@@ -9,7 +9,6 @@ import { useFormik } from 'formik'
 import { login } from '../../store/userSession/api'
 import { Button, Col, Form, Modal, Spinner } from 'react-bootstrap'
 import Logo from '../../app/dashboard/Logo'
-import registerView from '../RegisterPage/RegisterView'
 import RegisterView from '../RegisterPage/RegisterView'
 
 const LoginView: React.FC = () => {
@@ -121,7 +120,6 @@ const LoginView: React.FC = () => {
                     Don&apos;t have an account yet? <span className="ms-1" style={{color: 'green'}}><p onClick={() => setShowRegisterModal(true)}>Sign Up!</p></span>
                 </Col>
             </Form>
-            {/*{showRegisterModal ? <RegisterView /> : null}*/}
         </div>
     </>
 }

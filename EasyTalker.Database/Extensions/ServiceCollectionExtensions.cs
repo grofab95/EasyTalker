@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Database.Extensions;
 
-public static class ServiceExtensions
+public static class ServiceCollectionExtensions
 {
     public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {

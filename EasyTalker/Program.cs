@@ -10,11 +10,19 @@ Log.Logger = LoggerFactory.Create();
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 Startup.ConfigureServices(builder.Services);
-builder
-    .Build()
-    .ConfigureService()
-    .Run();
 
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
+
+var app = builder.Build();
+
+
+app.UseHttpsRedirection();
+    
+app.ConfigureService().Run();
 
 void FakeData()
 {
@@ -25,7 +33,6 @@ void FakeData()
             Email = Faker.Internet.Email(),
             UserName = Faker.Internet.UserName() 
         });
-
    
     var ctx = new EasyTalkerAuthenticationContext();
     

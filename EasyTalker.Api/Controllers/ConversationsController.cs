@@ -92,12 +92,19 @@ public class ConversationsController : ControllerBase
     
     [HttpPut]
     [Route("{conversationId:long}/participants/add")]
-    public async Task<ApiResponse<ConversationDto>> AddUserToConversation([FromRoute] long conversationId, [FromBody] string[] userIds)
+    public async Task<ApiResponse<ConversationDto>> AddUsersToConversation(
+        [FromRoute] long conversationId,
+        [FromBody] string[] userIds)
     {
         try
         {
-            await _conversationStore.AddUsersToConversation(conversationId, userIds);
-            var updatedConversation = await NotifyConversationUpdated(conversationId);
+            await _conversationStore.AddUsersToConversation(
+                conversationId,
+                userIds);
+            
+            var updatedConversation = await NotifyConversationUpdated(
+                conversationId);
+            
             return ApiResponse<ConversationDto>.Success(updatedConversation);
         }
         catch (Exception ex)

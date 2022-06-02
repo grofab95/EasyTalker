@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Easy.MessageHub;
-using EasyTalker.Core.EventHandlers;
 
-namespace EasyTalker.Core.Events;
+namespace EasyTalker.Core.EventHandlers;
 
 public class EventHandlerCollector
 {

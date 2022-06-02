@@ -1,4 +1,4 @@
-﻿namespace EasyTalker.Authentication.Options;
+﻿namespace EasyTalker.Authentication.Configuration;
 
 public class PasswordOption
 {

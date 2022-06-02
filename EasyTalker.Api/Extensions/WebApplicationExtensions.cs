@@ -1,8 +1,7 @@
 ﻿using EasyTalker.Api.Hubs;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Configuration;
-using EasyTalker.Core.Events;
-using EasyTalker.Database;
+using EasyTalker.Core.EventHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;

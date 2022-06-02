@@ -30,8 +30,4 @@
       <ProjectReference Include="..\EasyTalker.Core\EasyTalker.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Remove="Database\Entities\EntityDb.cs" />
-    </ItemGroup>
-
 </Project>

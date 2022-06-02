@@ -1,8 +1,8 @@
-﻿using EasyTalker.Authentication.Database;
+﻿using EasyTalker.Authentication.Configuration;
+using EasyTalker.Authentication.Database;
 using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Authentication.Database.Store;
 using EasyTalker.Authentication.Handlers;
-using EasyTalker.Authentication.Options;
 using EasyTalker.Authentication.Services;
 using EasyTalker.Core.Adapters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,24 +14,30 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace EasyTalker.Authentication.Extensions;
 
-public static class ServiceExtensions
+public static class ServiceCollectionExtensions
 {
     public static void AddAppAuthentication(this IServiceCollection services, IConfigurationRoot configuration)
     {
-        var authenticationOption = configuration.GetSection(AuthenticationOption.SectionKey).Get<AuthenticationOption>();
+        var authenticationOption = configuration
+            .GetSection(AuthenticationOption.SectionKey)
+            .Get<AuthenticationOption>();
+        
+        var passOptions = authenticationOption.Password;
         var connectionString = configuration.GetConnectionString("Database");
         
-        services.AddDbContext<EasyTalkerAuthenticationContext>(o => o.UseSqlServer(connectionString));
+        services.AddDbContext<EasyTalkerAuthenticationContext>(
+            o => o.UseSqlServer(connectionString));
+        
         services.AddIdentity<UserDb, IdentityRole>(options => 
-            {
-                options.Password.RequiredLength = authenticationOption.Password.RequiredLength;
-                options.Password.RequireDigit = authenticationOption.Password.RequireDigit;
-                options.Password.RequireLowercase = authenticationOption.Password.RequireLowercase;
-                options.Password.RequireUppercase = authenticationOption.Password.RequireUppercase;
-                options.Password.RequireNonAlphanumeric = authenticationOption.Password.RequireNonAlphanumeric;
-            })
-            .AddEntityFrameworkStores<EasyTalkerAuthenticationContext>()
-            .AddDefaultTokenProviders(); 
+        {
+            options.Password.RequiredLength = passOptions.RequiredLength;
+            options.Password.RequireDigit = passOptions.RequireDigit;
+            options.Password.RequireLowercase = passOptions.RequireLowercase;
+            options.Password.RequireUppercase = passOptions.RequireUppercase;
+            options.Password.RequireNonAlphanumeric = passOptions.RequireNonAlphanumeric;
+        })
+        .AddEntityFrameworkStores<EasyTalkerAuthenticationContext>()
+        .AddDefaultTokenProviders(); 
         
         services.AddScoped<ITokenHandler, Handlers.TokenHandler>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();

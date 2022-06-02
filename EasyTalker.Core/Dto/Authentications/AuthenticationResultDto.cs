@@ -2,4 +2,4 @@
 
 namespace EasyTalker.Core.Dto.Authentications;
 
-public record AuthenticationResultDto(UserDto User, string AccessToken, string RefreshToken);
+public record AuthenticationResultDto(UserDto User, string AccessToken);

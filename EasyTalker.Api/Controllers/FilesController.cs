@@ -27,12 +27,17 @@ public class FilesController : Controller
 
     [HttpPost]
     [DisableRequestSizeLimit, RequestFormLimits(
-         MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-    public async Task<ApiResponse<FileDto>> UploadFile([FromForm] UploadFileDto uploadFileDto)
+         MultipartBodyLengthLimit = int.MaxValue,
+         ValueLengthLimit = int.MaxValue)]
+    public async Task<ApiResponse<FileDto>> UploadFile(
+        [FromForm] UploadFileDto uploadFileDto)
     {
         try
         {
-            var fileDto = await _filePersistenceManager.UploadFile(User.GetId(), uploadFileDto);
+            var fileDto = await _filePersistenceManager.UploadFile(
+                User.GetId(),
+                uploadFileDto);
+            
             _messageHub.Publish(new FileUploaded(fileDto));
             return ApiResponse<FileDto>.Success(fileDto);
         }

@@ -8,9 +8,6 @@ namespace EasyTalker.Authentication.Database;
 
 public class EasyTalkerAuthenticationContext : IdentityDbContext<UserDb>
 {
-    public DbSet<RefreshTokenDb> RefreshTokens { get; set; }
-    
-    
     public EasyTalkerAuthenticationContext()
     {
                 
