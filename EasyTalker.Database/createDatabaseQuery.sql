@@ -1,12 +1,10 @@
-﻿CREATE DATABASE [EasyTalker]
-Go
-USE [EasyTalker]
-GO
+﻿USE [DATABASE_NAME]
+
 /****** Object:  Table [dbo].[AspNetRoleClaims]    Script Date: 03.05.2022 14:25:55 ******/
 SET ANSI_NULLS ON
-GO
+
 SET QUOTED_IDENTIFIER ON
-GO
+
 CREATE TABLE [dbo].[AspNetRoleClaims](
     [Id] [int] IDENTITY(1,1) NOT NULL,
     [RoleId] [nvarchar](450) NOT NULL,
@@ -17,12 +15,12 @@ CREATE TABLE [dbo].[AspNetRoleClaims](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetRoles]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetRoles](
     [Id] [nvarchar](450) NOT NULL,
     [Name] [nvarchar](256) NULL,
@@ -33,12 +31,12 @@ CREATE TABLE [dbo].[AspNetRoles](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetUserClaims]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetUserClaims](
     [Id] [int] IDENTITY(1,1) NOT NULL,
     [UserId] [nvarchar](450) NOT NULL,
@@ -49,12 +47,12 @@ CREATE TABLE [dbo].[AspNetUserClaims](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetUserLogins]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetUserLogins](
     [LoginProvider] [nvarchar](450) NOT NULL,
     [ProviderKey] [nvarchar](450) NOT NULL,
@@ -66,12 +64,12 @@ CREATE TABLE [dbo].[AspNetUserLogins](
 [ProviderKey] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetUserRoles]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetUserRoles](
     [UserId] [nvarchar](450) NOT NULL,
     [RoleId] [nvarchar](450) NOT NULL,
@@ -81,12 +79,12 @@ CREATE TABLE [dbo].[AspNetUserRoles](
 [RoleId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetUsers]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetUsers](
     [Id] [nvarchar](450) NOT NULL,
     [IsActive] [bit] NOT NULL,
@@ -110,12 +108,12 @@ CREATE TABLE [dbo].[AspNetUsers](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[AspNetUserTokens]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[AspNetUserTokens](
     [UserId] [nvarchar](450) NOT NULL,
     [LoginProvider] [nvarchar](450) NOT NULL,
@@ -128,12 +126,12 @@ CREATE TABLE [dbo].[AspNetUserTokens](
 [Name] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[Conversations]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[Conversations](
     [Id] [bigint] IDENTITY(1,1) NOT NULL,
     [CreatorId] [nvarchar](450) NULL,
@@ -145,12 +143,12 @@ CREATE TABLE [dbo].[Conversations](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[Files]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[Files](
     [Id] [bigint] IDENTITY(1,1) NOT NULL,
     [ExternalId] [nvarchar](450) NULL,
@@ -164,12 +162,12 @@ CREATE TABLE [dbo].[Files](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 /****** Object:  Table [dbo].[Messages]    Script Date: 03.05.2022 14:25:55 ******/
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[Messages](
     [Id] [bigint] IDENTITY(1,1) NOT NULL,
     [SenderId] [nvarchar](max) NULL,
@@ -182,33 +180,11 @@ CREATE TABLE [dbo].[Messages](
 [Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
-/****** Object:  Table [dbo].[RefreshTokens]    Script Date: 03.05.2022 14:25:55 ******/
+
     SET ANSI_NULLS ON
-    GO
+    
     SET QUOTED_IDENTIFIER ON
-    GO
-CREATE TABLE [dbo].[RefreshTokens](
-    [Id] [int] IDENTITY(1,1) NOT NULL,
-    [Token] [nvarchar](max) NULL,
-    [ExpiredAt] [datetime2](7) NOT NULL,
-    [CreatedAt] [datetime2](7) NOT NULL,
-    [CreationById] [nvarchar](max) NULL,
-    [RevokedAt] [datetime2](7) NULL,
-    [RevokenByIp] [nvarchar](max) NULL,
-    [ReplacedByToken] [nvarchar](max) NULL,
-    [UserDbId] [nvarchar](450) NULL,
-    CONSTRAINT [PK_RefreshTokens] PRIMARY KEY CLUSTERED
-(
-[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-    ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
-/****** Object:  Table [dbo].[UsersConversations]    Script Date: 03.05.2022 14:25:55 ******/
-    SET ANSI_NULLS ON
-    GO
-    SET QUOTED_IDENTIFIER ON
-    GO
+    
 CREATE TABLE [dbo].[UsersConversations](
     [Id] [bigint] IDENTITY(1,1) NOT NULL,
     [UserId] [nvarchar](450) NULL,
@@ -226,68 +202,63 @@ CREATE TABLE [dbo].[UsersConversations](
 [UserId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
     ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-    GO
+    
 ALTER TABLE [dbo].[Conversations] ADD  DEFAULT (getdate()) FOR [CreatedAt]
-    GO
+    
 ALTER TABLE [dbo].[Files] ADD  DEFAULT (getdate()) FOR [CreatedAt]
-    GO
+    
 ALTER TABLE [dbo].[Messages] ADD  DEFAULT (getdate()) FOR [CreatedAt]
-    GO
+    
 ALTER TABLE [dbo].[UsersConversations] ADD  DEFAULT (getdate()) FOR [CreatedAt]
-    GO
+    
 ALTER TABLE [dbo].[AspNetRoleClaims]  WITH CHECK ADD  CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId] FOREIGN KEY([RoleId])
     REFERENCES [dbo].[AspNetRoles] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetRoleClaims] CHECK CONSTRAINT [FK_AspNetRoleClaims_AspNetRoles_RoleId]
-    GO
+    
 ALTER TABLE [dbo].[AspNetUserClaims]  WITH CHECK ADD  CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId] FOREIGN KEY([UserId])
     REFERENCES [dbo].[AspNetUsers] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetUserClaims] CHECK CONSTRAINT [FK_AspNetUserClaims_AspNetUsers_UserId]
-    GO
+    
 ALTER TABLE [dbo].[AspNetUserLogins]  WITH CHECK ADD  CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId] FOREIGN KEY([UserId])
     REFERENCES [dbo].[AspNetUsers] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetUserLogins] CHECK CONSTRAINT [FK_AspNetUserLogins_AspNetUsers_UserId]
-    GO
+    
 ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_AspNetUserRoles_AspNetRoles_RoleId] FOREIGN KEY([RoleId])
     REFERENCES [dbo].[AspNetRoles] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_AspNetUserRoles_AspNetRoles_RoleId]
-    GO
+    
 ALTER TABLE [dbo].[AspNetUserRoles]  WITH CHECK ADD  CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId] FOREIGN KEY([UserId])
     REFERENCES [dbo].[AspNetUsers] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetUserRoles] CHECK CONSTRAINT [FK_AspNetUserRoles_AspNetUsers_UserId]
-    GO
+    
 ALTER TABLE [dbo].[AspNetUserTokens]  WITH CHECK ADD  CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId] FOREIGN KEY([UserId])
     REFERENCES [dbo].[AspNetUsers] ([Id])
     ON DELETE CASCADE
-GO
+
 ALTER TABLE [dbo].[AspNetUserTokens] CHECK CONSTRAINT [FK_AspNetUserTokens_AspNetUsers_UserId]
-    GO
+    
 ALTER TABLE [dbo].[Messages]  WITH CHECK ADD  CONSTRAINT [FK_Messages_Conversations] FOREIGN KEY([ConversationId])
     REFERENCES [dbo].[Conversations] ([Id])
-    GO
+    
 ALTER TABLE [dbo].[Messages] CHECK CONSTRAINT [FK_Messages_Conversations]
-    GO
-ALTER TABLE [dbo].[RefreshTokens]  WITH CHECK ADD  CONSTRAINT [FK_RefreshTokens_AspNetUsers_UserDbId] FOREIGN KEY([UserDbId])
-    REFERENCES [dbo].[AspNetUsers] ([Id])
-    GO
-ALTER TABLE [dbo].[RefreshTokens] CHECK CONSTRAINT [FK_RefreshTokens_AspNetUsers_UserDbId]
-    GO
+
 ALTER TABLE [dbo].[UsersConversations]  WITH CHECK ADD  CONSTRAINT [FK_UsersConversations_AspNetUsers] FOREIGN KEY([UserId])
     REFERENCES [dbo].[AspNetUsers] ([Id])
-    GO
+    
 ALTER TABLE [dbo].[UsersConversations] CHECK CONSTRAINT [FK_UsersConversations_AspNetUsers]
-    GO
+    
 ALTER TABLE [dbo].[UsersConversations]  WITH CHECK ADD  CONSTRAINT [FK_UsersConversations_Conversations] FOREIGN KEY([ConversationId])
     REFERENCES [dbo].[Conversations] ([Id])
-    GO
+    
 ALTER TABLE [dbo].[UsersConversations] CHECK CONSTRAINT [FK_UsersConversations_Conversations]
-    GO
+    

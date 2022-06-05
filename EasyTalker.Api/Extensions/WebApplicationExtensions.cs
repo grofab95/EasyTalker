@@ -2,6 +2,7 @@
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Configuration;
 using EasyTalker.Core.EventHandlers;
+using EasyTalker.Database;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -40,11 +41,9 @@ public static class WebApplicationExtensions
         var eventHandlerCollector = app.Services.GetRequiredService<EventHandlerCollector>();
         eventHandlerCollector.RegisterHandlers();
         
+        DatabaseManager.EnsureCreated(app.Configuration);
+        
         using var scope = app.Services.CreateScope();
-        
-        // var databaseInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
-        // databaseInitializer?.Initialize().Wait();
-        
         var userStore = scope.ServiceProvider.GetService<IUserStore>();
         userStore?.SetAllUsersAsOffline()?.Wait();
         

@@ -20,4 +20,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="createDatabaseQuery.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
