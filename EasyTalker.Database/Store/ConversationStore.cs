@@ -153,7 +153,7 @@ public class ConversationStore : IConversationStore
             SET LastSeenAt = @lastSeenAt
             WHERE ConversationId = @conversationId AND UserId = @userId", new
         {
-            lastSeenAt = DateTime.Now.AddHours(-2),
+            lastSeenAt = DateTime.Now,
             conversationId,
             userId = loggedUserId
         });

@@ -11,6 +11,7 @@ import {
 import Message from '../../interfaces/Messages/Message'
 import ConversationLastSeen from '../../interfaces/Conversations/ConversationLastSeen'
 import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
+import { getLoggedUserId } from '../../utils/authUtils'
 
 interface ConversationMessages {
     conversationId: number,
@@ -40,6 +41,10 @@ const conversationSlice = createSlice({
         conversationCreated(state, action: PayloadAction<Conversation>) {
             const conversation = action.payload
 
+            if (!conversation.participants.some(p => p.id === getLoggedUserId())) {
+                return
+            }
+
             const index = state.conversationList.findIndex(x => x.id === conversation.id)
             if (index === -1) {
                 state.conversationList.push(conversation)
@@ -47,6 +52,10 @@ const conversationSlice = createSlice({
         },
         conversationUpdated(state, action: PayloadAction<Conversation>) {
             const conversation = action.payload
+
+            if (!conversation.participants.some(p => p.id === getLoggedUserId())) {
+                return
+            }
 
             const index = state.conversationList.findIndex(x => x.id === conversation.id)
             if (index !== -1) {
@@ -86,7 +95,6 @@ const conversationSlice = createSlice({
             })
             .addCase(createConversation.fulfilled, (state, action: PayloadAction<Conversation>) => {
                 successNotification(`The ${action.payload.title} conversation has been successfully created`)
-                //state.conversationList.push(action.payload)
                 state.isBusy = false
             })
             .addCase(createConversation.rejected, (state, action) => {
@@ -108,21 +116,6 @@ const conversationSlice = createSlice({
                 state.isBusy = true
             })
             .addCase(addMessage.fulfilled, (state, action: PayloadAction<Message>) => {
-              
-                // const conversationMessages = state.messageList.find(x => x.conversationId === action.payload.conversationId)?.messages
-                //
-                // if (conversationMessages === undefined)
-                // {
-                //     state.messageList.push({
-                //         conversationId = action.payload.conversationId,
-                //         messages = action.payload
-                //     } as ConversationMessages)
-                // }
-                // else
-                // {
-                //    
-                // }
-                
                 state.isBusy = false
             })
             .addCase(addMessage.rejected, (state, action) => {
@@ -140,9 +133,6 @@ const conversationSlice = createSlice({
                 }
                 
                 state.selectedConversationId = conversationId
-                
-                //console.log(action.payload)
-                
                 const conversationMessages = state.messageList.find(x => x.conversationId === conversationId)?.messages
 
                 if (conversationMessages === undefined)
