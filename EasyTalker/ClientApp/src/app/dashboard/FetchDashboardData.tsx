@@ -13,10 +13,7 @@ const FetchDashboardData: React.FC = () => {
     
     const conversations = useSelector((state: ApplicationState) => state.conversation.conversationList)
     
-    const fetchData = useCallback(() => {
-        //dispatch(getSystemInfo())
-        // if permission -> dispatch ...
-        
+    const fetchData = useCallback(() => {        
         const loggedUserId = getLoggedUserId();
         
         dispatch(getUser(loggedUserId))

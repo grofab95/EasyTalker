@@ -1,14 +1,11 @@
-﻿// @ts-ignore
-import styles from './RegisterView.module.css'
+﻿import styles from './RegisterView.module.css'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ApplicationState } from '../../store'
 import { useHistory } from 'react-router-dom'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { login } from '../../store/userSession/api'
 import { Button, Col, Form, Modal, Spinner } from 'react-bootstrap'
-import Logo from '../../app/dashboard/Logo'
 import { registerUser } from '../../store/users/api'
 import RegisterUser from '../../interfaces/Users/RegisterUser'
 
@@ -19,14 +16,7 @@ interface Props {
 const RegisterView: React.FC<Props> = (props) => {
     const dispatch = useDispatch()
     const anyBusy = useSelector((state: ApplicationState) => state.user.isBusy)
-    // const token = useSelector((state: ApplicationState) => state.userSession.currentToken)
     const history = useHistory()
-    //
-    // React.useEffect(() => {
-    //     if (token !== '') {
-    //         history.replace('/app')
-    //     }
-    // }, [history, token])
 
     const getInitialValues = () => {
         return {

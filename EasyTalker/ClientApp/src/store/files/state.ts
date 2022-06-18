@@ -5,15 +5,9 @@ import { errorNotification, successNotification } from '../../utils/notification
 import User from '../../interfaces/Users/User'
 import { getLoggedUserId } from '../../utils/authUtils'
 
-interface ExternalIdFiles {
-    externalId: string,
-    files: FileInfo[]
-}
-
 export interface FileState {
     isBusy: boolean,
     files: FileInfo[]
-    //externalIdFiles: ExternalIdFiles[]
 }
 
 const getDefaultState = () => {
@@ -50,21 +44,17 @@ const fileSlice = createSlice({
                 state.isBusy = false
             })
             .addCase(getFiles.pending, (state) => {
-                //state.isBusy = true
+                
             })
             .addCase(getFiles.rejected, (state, action) => {
-                //errorNotification((action.payload as any).error ?? 'Server Error')
-                //state.isBusy = false
+                
             })
             .addCase(getFiles.fulfilled, (state, action: PayloadAction<FileInfo[]>) => {
-                //successNotification(`File ${action.payload.fileName} has been successfully uploaded`)
                 
                 const existingDbIds = state.files.map(f => f.id)
                 const newFiles = action.payload.filter(f => !existingDbIds.includes(f.id))                 
                 
                 state.files.push(...newFiles)
-                
-                //state.isBusy = false
             })
     }
 })

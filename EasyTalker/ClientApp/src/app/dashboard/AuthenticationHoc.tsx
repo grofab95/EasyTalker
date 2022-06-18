@@ -20,21 +20,6 @@ const AuthenticationHoc: React.FC<React.ReactNode> = props => {
         return <Redirect to="/login" />
     }
     
-    // if (!getUserData().isActive) {
-    //     return <Redirect to="/account-not-active" />
-    // }
-
-    // if (user.forcePasswordChange) {
-    //     console.log('force password change')
-    //     return <PasswordChange />
-    // }
-
-    // if (!hasPermissions(permissionType.ALL)) {
-    //     return <>
-    //         <h1>You are not authorized to view this page.</h1>
-    //     </>
-    // }
-    
     if (connection.state === HubConnectionState.Disconnected) {
         connection.start()
     }

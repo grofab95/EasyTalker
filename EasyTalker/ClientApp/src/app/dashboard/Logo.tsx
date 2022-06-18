@@ -6,7 +6,7 @@ interface Props {
 }
 const Logo: React.FC<Props> = props => {     
     return <>
-        {[...'EasyTalker'] .map((ch, i) => <span key={i} className={`LogoTxt ${props.isNav ? 'nav' : ''}`}>{ch}</span>)}
+        {[...'EasyTalker'].map((ch, i) => <span key={i} className={`LogoTxt ${props.isNav ? 'nav' : ''}`}>{ch}</span>)}
     </>
 }
 export default Logo
