@@ -8,7 +8,6 @@ using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.User;
 using EasyTalker.Core.Events;
 using EasyTalker.Core.Exceptions;
-using EasyTalker.Database.Store;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

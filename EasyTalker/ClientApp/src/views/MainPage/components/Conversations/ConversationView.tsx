@@ -12,6 +12,7 @@ import {ConversationAccessStatus} from "../../../../interfaces/Conversations/Con
 import {getAccessStatus} from "../../../../utils/helpers/conversationHelpers";
 import MessageCreate from "../Messages/MessageCreate";
 import Message from "../../../../interfaces/Messages/Message";
+import { ConversationStatus } from '../../../../interfaces/Conversations/ConversationStatus';
 
 const ConversationView: React.FC<{ conversationId: number }> = props => {
 
@@ -42,6 +43,11 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
     }
 
     React.useEffect(() => {
+        if (props.conversationId === 0) {
+            return
+        }
+
+        console.log(`GET MESSAGES FOR ID: ${props.conversationId}`)
         dispatch(getMessages(props.conversationId))
     }, [dispatch, props.conversationId])
 
@@ -74,7 +80,7 @@ const ConversationView: React.FC<{ conversationId: number }> = props => {
                     <SingleMessage key={i} {...m} />)}
             </div>
 
-            {getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
+            {conversation.status === ConversationStatus.Open && getAccessStatus(conversation) == ConversationAccessStatus.ReadAndWrite &&
                 <MessageCreate conversationId={props.conversationId}/>}
         </Card>
     </>

@@ -6,7 +6,6 @@ import Header from './Header'
 
 const Layout: React.FC = props => {
     const anyBusy = useSelector((state: ApplicationState) => state.file.isBusy)
-    //const anyBusy = useSelector((state: ApplicationState) => state.user.isBusy || state.file.isBusy)
     
     return <>
         <div className="wrapper">

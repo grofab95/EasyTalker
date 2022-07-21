@@ -1,66 +1,97 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.File;
 using EasyTalker.Core.Enums;
-using EasyTalker.Database.Entities;
-using EasyTalker.Infrastructure.Extensions;
+using EasyTalker.Core.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Database.Store;
 
 public class FileStore : IFileStore
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IDbConnection _dbConnection;
 
-    public FileStore(IServiceScopeFactory serviceScopeFactory)
+    public FileStore(IDbConnection dbConnection)
     {
-        _serviceScopeFactory = serviceScopeFactory;
+        _dbConnection = dbConnection;
     }
 
     public async Task<FileDto> SaveFileInfo(string ownerId, UploadFileDto uploadFileDto)
     {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-
-        if (await IsFileExist(dbContext, uploadFileDto))
+        var isFileExist = await _dbConnection.QueryFirstOrDefaultAsync<FileDto>(@"
+            SELECT Id
+            FROM Files
+            WHERE ExternalId = @externalId AND FileName = @fileName", new
+        {
+            externalId = uploadFileDto.ExternalId,
+            fileName = uploadFileDto.File.FileName
+        }) != null;
+        
+        if (isFileExist) 
             throw new Exception("Uploading file is already exist in this conversation");
+        
         var fileType = DetermineFileType(uploadFileDto.File);
-        var savedFile = await dbContext.Files.AddAsync(new FileDb(ownerId, uploadFileDto, fileType));
-        await dbContext.SaveChangesAsync();
-        return savedFile.Entity.ToFileDto();
-    }
+        var savedFileId = await _dbConnection.QuerySingleAsync<long>(@"
+            DECLARE @InsertedRows AS TABLE (Id bigint);
+            INSERT INTO Files (ExternalId, FileName, OwnerId, FileStatus, FileType) OUTPUT Inserted.Id INTO @InsertedRows
+            VALUES (@externalId, @fileName, @ownerId, @fileStatus, @fileType);
+            SELECT Id FROM @InsertedRows", new
+        {
+            externalId = uploadFileDto.ExternalId,
+            fileName = uploadFileDto.File.FileName,
+            ownerId,
+            fileStatus = FileStatus.Saved.ToString(),
+            fileType = fileType.ToString()
+        });
+        
+        var savedFile =  await _dbConnection.QueryFirstOrDefaultAsync<FileDto>(@"
+            SELECT Id, ExternalId, OwnerId, FileName, FileStatus, FileType, CreatedAt
+            FROM Files
+            WHERE Id = @id", new
+        {
+            id = savedFileId
+        });
 
-    private async Task<bool> IsFileExist(EasyTalkerContext dbContext, UploadFileDto uploadFileDto)
-    {
-        return await dbContext.Files.AnyAsync(x => x.ExternalId == uploadFileDto.ExternalId && x.FileName == uploadFileDto.File.FileName);
+        savedFile.Id = savedFileId;
+        return savedFile;
     }
-
+    
     public async Task<FileDto[]> GetFilesInfoByExternalIds(string[] externalIds)
     {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-
-        return await dbContext.Files
-            .Where(x => externalIds.Contains(x.ExternalId))
-            .Select(x => x.ToFileDto())
-            .ToArrayAsync();
+        return (await _dbConnection.QueryAsync<FileDto>(@"
+            SELECT Id, ExternalId, OwnerId, FileName, FileStatus, FileType, CreatedAt
+            FROM Files
+            WHERE ExternalId In @externalIds", new
+        {
+            externalIds
+        })).ToArray();
     }
 
     public async Task<FileDto> UpdateFileStatus(long dbId, FileStatus fileStatus)
     {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
+        await _dbConnection.QueryAsync(@"
+            UPDATE Files
+            SET FileStatus = @fileStatus
+            WHERE Id = @id", new
+        {
+            id = dbId,
+            fileStatus = fileStatus.ToString()
+        });
 
-        var fileDb = await dbContext.Files.FindAsync(dbId)
-            ?? throw new Exception($"File with id {dbId} not found");
+        var updatedFile = await _dbConnection.QueryFirstOrDefaultAsync<FileDto>(@"
+            SELECT Id, ExternalId, OwnerId, FileName, FileStatus, FileType, CreatedAt
+            FROM Files
+            WHERE Id = @id", new
+        {
+            id = dbId
+        });
 
-        fileDb.FileStatus = fileStatus;
-        await dbContext.SaveChangesAsync();
-        return fileDb.ToFileDto();
+        updatedFile.Id = dbId;
+        return updatedFile;
     }
 
     private FileType DetermineFileType(IFormFile file)

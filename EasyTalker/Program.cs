@@ -1,33 +1,23 @@
 ﻿using EasyTalker.Api;
 using EasyTalker.Api.Extensions;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
 using Serilog;
+using LoggerFactory = EasyTalker.Core.Logger.LoggerFactory;
 
-Log.Logger = EasyTalker.Infrastructure.Logger.LoggerFactory.Create();
-//FakeData();
+Log.Logger = LoggerFactory.Create();
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 Startup.ConfigureServices(builder.Services);
-builder
-    .Build()
-    .ConfigureService()
-    .Run();
 
-
-void FakeData()
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
-    var users = Enumerable.Range(1, 20)
-        .Select(x => new UserDb
-        {
-            IsActive = true,
-            Email = Faker.Internet.Email(),
-            UserName = Faker.Internet.UserName() 
-        });
+    builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
 
-   
-    var ctx = new EasyTalkerContext();
+
+var app = builder.Build();
+
+
+app.UseHttpsRedirection();
     
-    ctx.Users.AddRange(users);
-    ctx.SaveChanges();
-}
+app.ConfigureService().Run();

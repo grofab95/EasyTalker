@@ -1,5 +1,4 @@
-﻿// @ts-ignore
-import styles from './ChangePassword.module.css'
+﻿import styles from './ChangePassword.module.css'
 import React, { useState } from 'react'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'

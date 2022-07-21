@@ -1,15 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text.Json;
-using AutoMapper;
+using EasyTalker.Authentication.Database.Entities;
 using EasyTalker.Authentication.Handlers;
-using EasyTalker.Core.Dto;
-using EasyTalker.Core.Dto.User;
-using EasyTalker.Database;
-using EasyTalker.Database.Entities;
+using EasyTalker.Core.Dto.Authentications;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyTalker.Authentication.Services;
@@ -22,22 +17,19 @@ public class AuthenticationService : IAuthenticationService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ITokenHandler _tokenHandler;
-    private readonly IMapper _mapper;
 
     public AuthenticationService(UserManager<UserDb> userManager,
         RoleManager<IdentityRole> roleManager, 
         IServiceScopeFactory serviceScopeFactory,
-        ITokenHandler tokenHandler, 
-        IMapper mapper)
+        ITokenHandler tokenHandler)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _serviceScopeFactory = serviceScopeFactory;
         _tokenHandler = tokenHandler;
-        _mapper = mapper;
     }
 
-    public async Task<AuthenticationResultDto> Authenticate(string username, string password, string ipAddress)
+    public async Task<AuthenticationResultDto> Authenticate(string username, string password)
     {
         var user = await _userManager.FindByNameAsync(username)
                    ?? throw new Exception("Login not found");
@@ -46,53 +38,8 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception("Incorrect password");
             
         var accessToken = await GetAccessToken(user);
-        var refreshToken = GetRefreshToken();
-        user.RefreshTokens ??= new List<RefreshTokenDb>();
-        user.RefreshTokens.Add(refreshToken);
         await _userManager.UpdateAsync(user);
-        return new AuthenticationResultDto(_mapper.Map<UserDto>(user), accessToken, refreshToken.Token);
-    }
-
-    public async Task<AuthenticationResultDto> RefreshToken(string token)
-    {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-
-        var user = await dbContext.Users
-                       //.Include(x => x.RefreshTokens)
-                       .SingleOrDefaultAsync(x => x.RefreshTokens.Any(y => y.Token == token))
-                   ?? throw new Exception("Invalid token");
-
-        var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
-        if (!refreshToken.IsActive)
-            throw new Exception("Invalid token");
-
-        var newRefreshToken = GetRefreshToken();
-        user.RefreshTokens.Add(newRefreshToken);
-        user.RefreshTokens.Remove(refreshToken);
-        dbContext.Update(user);
-        await dbContext.SaveChangesAsync();
-        var jwtToken = await GetAccessToken(user);
-        return new AuthenticationResultDto(_mapper.Map<UserDto>(user), jwtToken, newRefreshToken.Token);
-    }
-
-    public async Task RevokeToken(string token)
-    {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-        
-        var user = await dbContext.Users
-                      .Include(x => x.RefreshTokens)
-                      .SingleOrDefaultAsync(x => x.RefreshTokens.Any(y => y.Token == token))
-                  ?? throw new Exception("Invalid token");
-        
-        var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
-        if (!refreshToken.IsActive)
-            throw new Exception("Invalid token");
-        
-        refreshToken.RevokedAt = DateTime.Now;
-        dbContext.Update(user);
-        await dbContext.SaveChangesAsync();
+        return new AuthenticationResultDto(user.ToUserDto(), accessToken);
     }
 
     public async Task<string> GetAccessToken(UserDb user)
@@ -123,20 +70,7 @@ public class AuthenticationService : IAuthenticationService
         return await _tokenHandler.GenerateAccessToken(
             claims,
             currentDateTime,
-            currentDateTime.AddMinutes(30) // to appsettings
+            currentDateTime.AddMinutes(30)
         );
-    }
-
-    public RefreshTokenDb GetRefreshToken()
-    {
-        var randomBytes = new byte[64];
-        using var rngCrypto = RandomNumberGenerator.Create();
-        rngCrypto.GetBytes(randomBytes);
-        return new RefreshTokenDb
-        {
-            Token = Convert.ToBase64String(randomBytes),
-            CreatedAt = DateTime.Now,
-            ExpiredAt = DateTime.Now.AddDays(1)
-        };
     }
 }

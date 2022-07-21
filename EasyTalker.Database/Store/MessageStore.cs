@@ -1,44 +1,54 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using EasyTalker.Core.Adapters;
 using EasyTalker.Core.Dto.Message;
 using EasyTalker.Core.Dto.User;
-using EasyTalker.Database.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using EasyTalker.Core.Enums;
 
 namespace EasyTalker.Database.Store;
 
 public class MessageStore : IMessageStore
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IMapper _mapper;
-    private readonly UserManager<UserDb> _userManager;
+    private readonly IDbConnection _dbConnection;
 
-    public MessageStore(IServiceScopeFactory serviceScopeFactory, IMapper mapper, UserManager<UserDb> userManager)
+    public MessageStore(IDbConnection dbConnection)
     {
-        _serviceScopeFactory = serviceScopeFactory;
-        _mapper = mapper;
-        _userManager = userManager;
+        _dbConnection = dbConnection;
     }
 
     public async Task<MessageDto> Add(MessageCreateDto messageCreateDto)
     {
-        await using var dbContext = _serviceScopeFactory.CreateScope().ServiceProvider
-            .GetRequiredService<EasyTalkerContext>();
-
-        var mappedMessage = _mapper.Map<MessageDb>(messageCreateDto);
-        var messageDb = await dbContext.Messages.AddAsync(mappedMessage);
-        await dbContext.SaveChangesAsync();
-        var sender = await _userManager.FindByIdAsync(messageDb.Entity.SenderId);
-        return new MessageDto
+        messageCreateDto.Status = MessageStatus.Send.ToString();
+        
+        var createdMessageId = await _dbConnection.QuerySingleAsync<long>(@"
+                    DECLARE @InsertedRows AS TABLE (Id bigint);
+                    INSERT INTO Messages (SenderId, ConversationId, Text, Status) OUTPUT Inserted.Id INTO @InsertedRows
+                    VALUES (@senderId, @conversationId, @text, @status);
+                    SELECT Id FROM @InsertedRows", new
         {
-            Id = messageDb.Entity.Id,
-            ConversationId = messageDb.Entity.ConversationId,
-            Status = messageDb.Entity.Status,
-            Text = messageDb.Entity.Text,
-            CreatedAt = messageDb.Entity.CreatedAt,
-            Sender = _mapper.Map<UserDto>(sender)
-        };
+            messageCreateDto.SenderId,
+            messageCreateDto.ConversationId,
+            messageCreateDto.Text,
+            messageCreateDto.Status
+        });
+
+        var query = @"
+                SELECT m.Id, m.CreatedAt, m.SenderId, m.ConversationId, m.Text, m.Status, u.Id, u.UserName, u.Email, u.IsActive, u.IsOnline 
+                FROM Messages m
+                LEFT JOIN AspNetUsers u ON u.Id = m.SenderId
+                WHERE m.Id = @id";
+        
+        var messageDb = (await _dbConnection.QueryAsync<MessageDto, UserDto, MessageDto>(
+            query, 
+            (message, user) =>
+            {
+                message.Sender = user;
+                return message;
+            },
+        new { id = createdMessageId })).Single();
+
+        return messageDb;
     }
 }

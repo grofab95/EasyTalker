@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EasyTalker.Authentication.Handlers;
@@ -56,14 +55,5 @@ public class TokenHandler : ITokenHandler
         {
             return null;
         }
-    }
-
-    public Task<string> GenerateRefreshToken()
-    {
-        var randomBytes = new byte[64];
-        using var rngCrypto = RandomNumberGenerator.Create();
-        rngCrypto.GetBytes(randomBytes);
-        var randomValue = Convert.ToBase64String(randomBytes);
-        return Task.FromResult(randomValue);
     }
 }

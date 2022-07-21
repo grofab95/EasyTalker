@@ -2,8 +2,8 @@ using System.IO;
 using System.Text.Json.Serialization;
 using EasyTalker.Api.Extensions;
 using EasyTalker.Authentication.Extensions;
+using EasyTalker.Core.Constants;
 using EasyTalker.Database.Extensions;
-using EasyTalker.Infrastructure.Constants;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +26,7 @@ public static class Startup
         services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            
         }).AddControllersAsServices();
     }
 

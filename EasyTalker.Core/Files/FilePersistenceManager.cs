@@ -24,7 +24,7 @@ public class FilePersistenceManager
     {
         var fileDto = await _fileStore.SaveFileInfo(ownerId, uploadFileDto);
         await SaveOnDisc(uploadFileDto.File, fileDto);
-        return await SetUploadedStatus(fileDto.DbId);
+        return await SetUploadedStatus(fileDto.Id);
     }
 
     public async Task<FileDto[]> GetFilesInfoByExternalId(string externalId)

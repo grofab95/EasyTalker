@@ -5,7 +5,7 @@ namespace EasyTalker.Core.Dto.File;
 
 public class FileDto
 {
-    public long DbId { get; set; }
+    public long Id { get; set; }
     public string ExternalId { get; set; }
     public string OwnerId { get; set; }
     public string FileName { get; set; }

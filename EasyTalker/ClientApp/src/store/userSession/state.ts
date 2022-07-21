@@ -61,19 +61,16 @@ const userSessionSlice = createSlice({
             .addCase(logout.fulfilled, (state, action: PayloadAction<ApiResponseWithoutData>) => {
                 console.log('logout.fulfilled')
                 deleteTokens()
-                //window.location.href = "/";
                 window.location.reload()
             })
             .addCase(logout.pending, (state) => {
                 console.log('logout.pending')
                 deleteTokens()
-                //window.location.href = "/";
                 window.location.reload()                         
             })
             .addCase(logout.rejected, (state) => {
                 console.log('logout.rejected')
                 deleteTokens()
-                //window.location.href = "/";
                 window.location.reload()
             })
             .addCase(getUser.fulfilled, (state, action: PayloadAction<User>) => {

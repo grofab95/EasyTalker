@@ -20,7 +20,6 @@ import dashboard from './app/dashboard'
 import { LoginView } from './views/LoginPage'
 
 const history = createBrowserHistory()
-// const baseUrl = document.getElementsByTagName('base')[0]?.getAttribute('href')
 
 ReactDOM.render(
     <Provider store={store}>
@@ -28,9 +27,6 @@ ReactDOM.render(
             <React.StrictMode>
                 <ReactNotification/>
                 <Router history={history}>
-                    {/*<Route exact path="/" render={() => (<Redirect to="/app/dashboard/"/>)}/>*/}
-                    {/*<Route exact path="/app" render={() => (<Redirect to="/app/dashboard/"/>)}/>*/}
-
                     <Route path="/" component={dashboard}/>
                     <Route path="/login" component={LoginView}/>
                 </Router>

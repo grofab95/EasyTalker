@@ -34,15 +34,19 @@ const ConversationsList: React.FC<Props> = (props) => {
     }, [conversations])
     
     const [selectedId, setSelectedId] = useState<number>(0)
+
+    const getLastMessage = (conversation: Conversation) => {
+        return [...files]
+            .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
+            .find(f => f.externalId === conversation.id.toString() && f.fileType === FileType.Image)    
+    }
         
     const isSeen = (conversation: Conversation) => {      
         if (conversation.lastMessage === null) {
             return false            
         }
 
-        const lastImage = [...files]
-            .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
-            .find(f => f.externalId === conversation.id.toString() && f.fileType === FileType.Image)
+        const lastImage = getLastMessage(conversation)
         
         if (lastImage && lastImage.createdAt >= conversation.lastSeenAt) {
             return false

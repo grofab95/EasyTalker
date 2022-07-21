@@ -12,7 +12,6 @@ const TOKENS_KEY = 'tokens'
 export const getTokens = (): AuthTokens => {
     try {
         const storedTokens = localStorage.getItem(TOKENS_KEY)
-        //console.log(storedTokens)
         
         if (!storedTokens)
             return {} as AuthTokens
