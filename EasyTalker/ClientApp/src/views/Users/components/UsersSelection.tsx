@@ -1,7 +1,6 @@
-﻿import styles from './UsersSelection.module.css'
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import User from '../../../interfaces/Users/User'
-import { Button } from 'react-bootstrap'
+import { Dropdown } from 'react-bootstrap'
 
 interface Props {
     users: User[],
@@ -44,25 +43,44 @@ const UsersSelection: React.FC<Props> = props => {
         setUsers(filteredUsers)
     }
 
+    const getSelectedList = () => {
+        if (selectedUsers.length === 0) {
+            return <></>
+        }
+
+        return  <Dropdown.Menu show style={{height: '150px', width: '465px', overflow: 'auto', marginBottom: '5px'}}>
+                    {selectedUsers.map((u, i) =><> 
+                        <Dropdown.Item key={i} onClick={(() => handleUserSelection(u, false))}>
+                            {u.userName}
+                        </Dropdown.Item>
+                    </>)}          
+                </Dropdown.Menu> 
+    }
+
+    const getNotSelectedList = () => {
+        return  <Dropdown.Menu show style={{height: '315px', width: '465px', overflow: 'auto'}}>
+                    {users.filter(u => !selectedUsers.includes(u)).map((u, i) => <>
+                        <Dropdown.Item key={i} onClick={(() => handleUserSelection(u, true))}>
+                            {u.userName}
+                        </Dropdown.Item>
+                    </>)}               
+                </Dropdown.Menu>                
+    }
+
     return <>
-        <div className={styles.selectedUsers}>
-            {selectedUsers && selectedUsers.map((u, i) => <Button key={i}
-                                                                  style={{margin: '5px'}}
-                                                                  variant='danger' size='sm'
-                                                                  onClick={(() => handleUserSelection(u, false))}>{u.userName}</Button>)}
-        </div>
-        <hr />
         <input placeholder='Search'
+               className='form-control mb-4'
                style={{width: '100%'}}
                onChange={e => onSearchedTextChanged(e.target.value)} />
-        <hr />
-        <ul style={{height: '400px', overflow: 'auto'}}>
-            {users.filter(u => !selectedUsers.includes(u)).map((u, i) => <li key={i}><Button variant='success'
-                                                     style={{marginBottom: '5px'}}
-                                                     size='sm'
-                                                     onClick={(() => handleUserSelection(u, true))}>{u.userName}</Button> </li>)}
-        </ul>
-        <hr />
+               
+        {selectedUsers.length > 0
+            ?   <div style={{height: '150px', width: '465px', marginBottom: '5px'}}>
+                    {getSelectedList()} 
+                </div>
+            : <></>} 
+        <div style={{height: '315px', width: '465px', marginBottom: '10px'}}>
+            {getNotSelectedList()}
+        </div>
     </>
 }
 export default UsersSelection

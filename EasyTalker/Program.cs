@@ -17,7 +17,7 @@ builder
 
 void FakeData()
 {
-    var users = Enumerable.Range(1, 20)
+    var users = Enumerable.Range(1, 200)
         .Select(x => new UserDb
         {
             IsActive = true,

@@ -11,6 +11,7 @@ import {
 import Message from '../../interfaces/Messages/Message'
 import ConversationLastSeen from '../../interfaces/Conversations/ConversationLastSeen'
 import { errorNotification, successNotification } from '../../utils/notifications/notificationFactory'
+import { getLoggedUserId } from '../../utils/authUtils'
 
 interface ConversationMessages {
     conversationId: number,
@@ -39,6 +40,10 @@ const conversationSlice = createSlice({
     reducers: {
         conversationCreated(state, action: PayloadAction<Conversation>) {
             const conversation = action.payload
+
+            if (!conversation.participants.some(p => p.id === getLoggedUserId())) {
+                return
+            }
 
             const index = state.conversationList.findIndex(x => x.id === conversation.id)
             if (index === -1) {
